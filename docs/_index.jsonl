@@ -4552,3 +4552,4 @@
 {"url": "https://docs.copilotkit.ai/teams/google-adk/human-in-the-loop/", "file": "teams/google-adk/human-in-the-loop.md", "title": "HITL Overview", "method": "scrapling+scrapegraph"}
 {"url": "https://docs.copilotkit.ai/angular/strands/ag-ui/", "file": "angular/strands/ag-ui.md", "title": "AG-UI", "method": "scrapling+scrapegraph"}
 {"url": "https://docs.copilotkit.ai/angular/strands-typescript/quickstart/", "file": "angular/strands-typescript/quickstart.md", "title": "Angular quickstart", "method": "scrapling+scrapegraph"}
+{"url": "https://docs.copilotkit.ai/ms-agent-harness-dotnet/tutorials/ai-powered-textarea/step-2-setup-copilotkit/", "file": "ms-agent-harness-dotnet/tutorials/ai-powered-textarea/step-2-setup-copilotkit.md", "title": "https://docs.copilotkit.ai/ms-agent-harness-dotnet/tutorials/ai-powered-textarea/step-2-setup-copilotkit/", "method": "crawl4ai+scrapegraph (scrapling: scrapling status 500)"}
