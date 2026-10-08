@@ -1,0 +1,31 @@
+name: daily-docs-update
+on:
+  schedule:
+    - cron: "0 3 * * *"   # daily 03:00 UTC
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: daily-docs-update
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          pip install crawl4ai scrapling scrapegraphai beautifulsoup4 lxml html2text httpx
+          python -m playwright install chromium
+      - name: Incremental update (new docs only, never recrawls)
+        run: python3 update_incremental.py --concurrency 10
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git diff --cached --quiet && echo "no changes" || (git commit -m "chore: daily docs update $(date -u +%F)" && git push)
