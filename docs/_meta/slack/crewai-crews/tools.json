@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/crewai-crews/tools/",
+  "file": "slack/crewai-crews/tools.md",
+  "title": "Slack + CrewAI Flows: Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:27:03.067513+00:00",
+  "html_len": 239912,
+  "md_len": 8916,
+  "depth": 0
+}

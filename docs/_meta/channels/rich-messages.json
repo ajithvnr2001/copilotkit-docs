@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/channels/rich-messages/",
+  "file": "channels/rich-messages.md",
+  "title": "Slack: Rich messages and components",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:35:31.765965+00:00",
+  "html_len": 190761,
+  "md_len": 7850,
+  "depth": 1
+}

@@ -1,0 +1,247 @@
+---
+url: https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/headless-ui/
+title: Headless UI
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:29:28.911333+00:00
+---
+
+# Headless UI
+
+> Source: https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/headless-ui/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendAWS Strands (TypeScript)
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/strands-typescript)[Quickstart](https://docs.copilotkit.ai/strands-typescript/quickstart)[Build with agents](https://docs.copilotkit.ai/strands-typescript/build-with-agents)[Intelligence](https://docs.copilotkit.ai/strands-typescript/intelligence/overview)
+
+Basics
+
+Chat
+
+Prebuilt Components
+
+Custom Look and Feel
+
+[CSS Customization](https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/css)[Slots (Subcomponents)](https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/slots)[Markdown Rendering](https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/markdown)[Headless UI](https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/headless-ui)[Reasoning Messages](https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/reasoning-messages)
+
+[Multimodal Attachments](https://docs.copilotkit.ai/strands-typescript/multimodal-attachments)[Voice](https://docs.copilotkit.ai/strands-typescript/voice)[Reasoning](https://docs.copilotkit.ai/strands-typescript/generative-ui/reasoning)
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/strands-typescript/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/strands-typescript/webmcp)
+
+Agent capabilities
+
+AWS Strands (TypeScript)
+
+[Sub-agents](https://docs.copilotkit.ai/strands-typescript/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/strands-typescript/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/strands-typescript/learning)
+
+[User Memories](https://docs.copilotkit.ai/strands-typescript/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/strands-typescript/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/strands-typescript/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/strands-typescript/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/strands-typescript/intelligence/analytics)[Channels](https://docs.copilotkit.ai/strands-typescript/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Deployment
+
+Debugging
+
+Learn
+
+Concepts
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/strands-typescript/telemetry)[Community frameworks](https://docs.copilotkit.ai/strands-typescript/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Headless UI
+
+BasicsChatCustom Look and Feel
+
+# Headless UI
+
+Build any UI — chat or not — on top of the CopilotKit primitives with zero UI opinions.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+DemoCode
+
+agent.ts
+
+page.tsx
+
+route.ts
+
+chat.tsx
+
+use-tool-renderers.tsx
+
+use-frontend-components.ts
+
+use-headless-suggestions.ts
+
+use-attachments-config.ts
+
+weather-card.tsx
+
+stock-card.tsx
+
+chart-card.tsx
+
+highlight-note.tsx
+    
+    
+    /** * Agent factories for the Strands TypeScript showcase backend. * * `buildShowcaseAgent` is the single shared agent that serves the vast * majority of demos (the frontend differentiates each demo via * useFrontendTool / useRenderTool / useHumanInTheLoop / useAgentContext). * It mirrors the Python sibling's `build_showcase_agent` minus A2UI. * * The tool-free specialized agents (voice, byoc-hashbrown, byoc-json-render) * are mounted on dedicated sub-paths by `server.ts`. */import { readFileSync } from "node:fs";import { dirname, join } from "node:path";import { fileURLToPath } from "node:url";import { Agent, tool } from "@strands-agents/sdk";import { z } from "zod";import type { RunAgentInput } from "@ag-ui/core";import { StrandsAgent } from "@ag-ui/aws-strands";import type { StrandsAgentConfig } from "@ag-ui/aws-strands";import {  A2UI_OPERATIONS_KEY,  createSurface,  updateComponents,  updateDataModel,} from "@ag-ui/a2ui-toolkit";import { createModel } from "./model-factory";import { SHOWCASE_TOOLS } from "./tools";import {  withStateContext,  salesStateFromArgs,  notesStateFromArgs,  stepsStateFromArgs,  documentStateFromArgs,  makeSubagentStateFromResult,} from "./state";import {  SYSTEM_PROMPT,  VOICE_SYSTEM_PROMPT,  BYOC_HASHBROWN_SYSTEM_PROMPT,  BYOC_JSON_RENDER_SYSTEM_PROMPT,} from "./prompts";export class ShowcaseStrandsAgent extends StrandsAgent {  override async *run(inputData: RunAgentInput) {    // The adapter exposes context during model calls and restores history afterward.    yield* super.run(withStateContext(inputData));  }}export async function buildShowcaseAgent(): Promise<StrandsAgent> {  const config: StrandsAgentConfig = {    toolBehaviors: {      // The tool keeps the sales pipeline in appState; this snapshot, built      // from the args, only carries it to the UI.      manage_sales_todos: {        skipMessagesSnapshot: true,        stateFromArgs: salesStateFromArgs,      },      // Shared State (Read + Write) — notes panel.      set_notes: { stateFromArgs: notesStateFromArgs },      // gen-ui-agent — live progress card driven by set_steps transitions.      set_steps: { stateFromArgs: stepsStateFromArgs },      // shared-state-streaming — stream the document string into state.      write_document: { stateFromArgs: documentStateFromArgs },      // Sub-agents — append a delegation entry carrying the actual output.      research_agent: {        stateFromResult: makeSubagentStateFromResult("research_agent"),      },      writing_agent: {        stateFromResult: makeSubagentStateFromResult("writing_agent"),      },      critique_agent: {        stateFromResult: makeSubagentStateFromResult("critique_agent"),      },    },  };  const strandsAgent = new Agent({    model: await createModel(),    systemPrompt: SYSTEM_PROMPT,    tools: SHOWCASE_TOOLS,  });  return new ShowcaseStrandsAgent({    agent: strandsAgent,    name: "strands_agent",    description:      "A polished CopilotKit demo assistant: chat, tools, shared state, HITL, sub-agents.",    config,  });}/** Tool-free agent for the voice demo (transcription + basic chat). */export async function buildVoiceAgent(): Promise<StrandsAgent> {  const strandsAgent = new Agent({    model: await createModel(),    systemPrompt: VOICE_SYSTEM_PROMPT,    tools: [],  });  return new StrandsAgent({    agent: strandsAgent,    name: "voice_agent",    description: "Simple assistant for the voice demo — no tools.",  });}/** Tool-free hashbrown UI-kit envelope generator (declarative-hashbrown). */export async function buildByocHashbrownAgent(): Promise<StrandsAgent> {  const strandsAgent = new Agent({    model: await createModel(),    systemPrompt: BYOC_HASHBROWN_SYSTEM_PROMPT,    tools: [],  });  return new StrandsAgent({    agent: strandsAgent,    name: "byoc_hashbrown",    description:      "Hashbrown UI-kit envelope generator for the declarative-hashbrown demo.",  });}/** Tool-free json-render flat-spec generator (declarative-json-render). */export async function buildByocJsonRenderAgent(): Promise<StrandsAgent> {  const strandsAgent = new Agent({    model: await createModel(),    systemPrompt: BYOC_JSON_RENDER_SYSTEM_PROMPT,    tools: [],  });  return new StrandsAgent({    agent: strandsAgent,    name: "byoc_json_render",    description:      "json-render flat-spec generator for the declarative-json-render demo.",  });}// ---------------------------------------------------------------------------// A2UI Fixed Schema (declarative-generative-ui) — dedicated backend tool.// ---------------------------------------------------------------------------//// Unlike the dynamic A2UI demo (which relies on the adapter auto-injecting a// `generate_a2ui` tool to *generate* a surface), the fixed-schema demo wires a// single plain backend tool — `display_flight` — that returns the// `a2ui_operations` envelope (createSurface -> updateComponents ->// updateDataModel). The component tree is fixed and authored ahead of time// (./a2ui_schemas/flight_schema.json); only the *data* changes per call. The// runtime A2UIMiddleware detects the envelope in the tool result and paints.// No sub-agent, no generation, no `generate_a2ui` injection.//// The schema's component names + data paths must match the showcase frontend// catalog at src/app/demos/a2ui-fixed-schema/a2ui/{definitions,renderers,// catalog}.ts — catalog id `copilotkit://flight-fixed-catalog`. This mirrors// the canonical langgraph-python demo (src/agents/a2ui_fixed.py).const _A2UI_DIR = dirname(fileURLToPath(import.meta.url));const A2UI_FIXED_CATALOG_ID = "copilotkit://flight-fixed-catalog";const A2UI_FIXED_SURFACE_ID = "flight-fixed-schema";// Fixed, pre-authored component layout. Loaded from JSON so it can be authored// and reviewed independently of the agent code.const FLIGHT_SCHEMA: Array<Record<string, unknown>> = JSON.parse(  readFileSync(join(_A2UI_DIR, "a2ui_schemas", "flight_schema.json"), "utf-8"),);const A2UI_FIXED_SYSTEM_PROMPT =  "You help users find flights. When asked about a flight, call " +  "`display_flight` exactly ONCE with origin, destination, airline, and " +  'price. Use short airport codes (e.g. "SFO", "JFK") for ' +  'origin/destination and a price string like "$289". The tool\'s return ' +  "value is an A2UI surface descriptor — the flight card is already rendered " +  "to the user; do NOT call `display_flight` again for the same trip and do " +  "NOT repeat the flight details in text. After the tool returns, reply with " +  "one short confirmation sentence and stop.";/** * Dedicated agent for the A2UI fixed-schema demo. Returns the envelope as a * plain OBJECT (not a JSON string): the Strands TS SDK wraps an object * tool-return in a `json` content block the adapter reads and re-stringifies * into the TOOL_CALL_RESULT the client A2UIMiddleware scans for * `a2ui_operations`. (A bare string return lands in no content block and the * result comes through empty — unlike the Python SDK, which wraps strings.) */export async function buildA2uiFixedSchemaAgent(): Promise<StrandsAgent> {  const displayFlight = tool({    name: "display_flight",    description:      "Show a flight card for the given trip. Use short airport codes " +      '(e.g. "SFO", "JFK") for origin/destination and a price string like ' +      '"$289". After this tool returns, the flight card is already rendered ' +      "to the user via the A2UI surface — do NOT call it again for the same " +      "flight; reply with one short confirmation sentence and stop.",    inputSchema: z.object({      origin: z.string().describe('Origin airport code, e.g. "SFO".'),      destination: z.string().describe('Destination airport code, e.g. "JFK".'),      airline: z.string().describe('Airline name, e.g. "United".'),      price: z.string().describe('Price string, e.g. "$289".'),    }),    callback: ({ origin, destination, airline, price }) => ({      [A2UI_OPERATIONS_KEY]: [        createSurface(A2UI_FIXED_SURFACE_ID, A2UI_FIXED_CATALOG_ID),        updateComponents(A2UI_FIXED_SURFACE_ID, FLIGHT_SCHEMA),        updateDataModel(A2UI_FIXED_SURFACE_ID, {          origin,          destination,          airline,          price,        }),      ],    }),  });  const strandsAgent = new Agent({    // Chat Completions API: the Responses adapter buffers tool-call argument    // deltas, which would defeat A2UI's progressive surface streaming.    model: await createModel({ openaiApi: "chat" }),    systemPrompt: A2UI_FIXED_SYSTEM_PROMPT,    tools: [displayFlight],  });  return new StrandsAgent({    agent: strandsAgent,    name: "a2ui_fixed_schema",    description:      "A2UI surface from a fixed, pre-authored schema (direct backend tool)",  });}// ---------------------------------------------------------------------------// A2UI Dynamic Schema (declarative-gen-ui) — adapter auto-injects generate_a2ui.// ---------------------------------------------------------------------------//// Unlike the fixed-schema demo (which wires a `display_flight` tool returning a// pre-authored envelope), the dynamic demo lets the agent *generate* the// surface layout on the fly. The Next.js route// (app/api/copilotkit-declarative-gen-ui/route.ts) sets// `a2ui: { injectA2UITool: true, defaultCatalogId: "declarative-gen-ui-catalog" }`;// the runtime forwards the flag, the Strands adapter auto-injects a// `generate_a2ui` tool and drives a secondary render planner. The// `config.a2ui` block below supplies the catalog id stamped into generated// surfaces and the composition guide that teaches the planner the page's// catalog. Mirrors the ag-ui dynamic-schema reference example.//// The compositionGuide MUST describe the catalog the page registers at// src/app/demos/declarative-gen-ui/a2ui/{definitions,renderers,catalog}.ts// (catalog id `declarative-gen-ui-catalog`): Card / StatusBadge / Metric /// InfoRow / PrimaryButton / PieChart / BarChart / DataTable, composed inside// the basic catalog's Row / Column / Text (`includeBasicCatalog: true`).//// Grounding dataset + composition rules are kept in spirit with the frontend// `sales-context.ts` (SALES_DATASET + COMPOSITION_RULES) the page registers via// `useAgentContext`. The frontend context steers the PRIMARY agent; this// compositionGuide is the channel the adapter feeds to the secondary// `render_a2ui` planner (it gets `guidelines`, not the frontend App Context),// so the planner is self-contained.const A2UI_DYNAMIC_CATALOG_ID = "declarative-gen-ui-catalog";const A2UI_DYNAMIC_SALES_DATASET = `Vantage Threads (fictional B2B apparel company) — Q2 sales data. Ground every visual in these numbers; invent only plausible details consistent with them.- Quarterly revenue: $4.2M (up 12% QoQ). New customers: 186 (up 8%). Win rate: 31% (down 2pts). Avg deal size: $22.6k (up 5%).- Revenue by region: North America $1.9M, EMEA $1.3M, APAC $720k, LATAM $280k.- Monthly revenue: Jan $1.21M, Feb $1.34M, Mar $1.65M, Apr $1.38M, May $1.42M, Jun $1.40M.- Reps (vs quota): Dana Whitfield 124%, Marcus Lee 108%, Priya Sharma 97%, Tom Okafor 88%, Elena Vasquez 71%.- At-risk: total $615k ARR across 3 accounts — Northwind Retail ($340k renewal, no contact 6 weeks; severity high), Cascadia Outfitters ($180k, champion left; severity medium), Atlas Goods ($95k, stalled legal review; severity medium).- Biggest account: Meridian Apparel Group — owner Dana Whitfield, region North America, ARR $612k, renewal Sep 30, last contact 3 days ago, health green, 4 open opportunities worth $210k.- Meridian revenue by product line: Outerwear $260k, Footwear $180k, Accessories $112k, Custom $60k.`;const A2UI_DYNAMIC_COMPOSITION_RULES = `Use ONLY these exact component names (the registered catalog — any other name fails to render): Card, Column, Row, Text, Metric, PieChart, BarChart, DataTable, StatusBadge, InfoRow, PrimaryButton. The single-value KPI tile component is named exactly "Metric" (NOT "MetricTile" or "MetricCard").Pick A2UI components by the shape of the question — never ask which chart the user wants:1. Overall snapshot / "sales dashboard" → a Column (gap 16) whose first child is a Row (gap 16) of 4 Metric components (each with trend + trendValue), followed by a Row with a PieChart (revenue by region) next to a BarChart (monthly revenue, all six months Jan-Jun). Do NOT wrap the dashboard in a surrounding Card — the charts carry their own card chrome. Do NOT use StatusBadge, DataTable, or InfoRow here.2. Rep / team performance → a Column (gap 16) with a Card containing a DataTable (columns: rep, attainment, pipeline) next to or above a BarChart of quota attainment % per rep — no StatusBadge or InfoRow.3. Risk / health checks → a Column (gap 16): first a Row (gap 16) of 3 Metric components (ARR at risk $615k trend down, accounts at risk 3, biggest exposure Northwind $340k), then a Row (gap 16) with one compact Card per at-risk account (title = account name, subtitle = ARR at stake) containing a StatusBadge (error for high severity, warning otherwise) above a one-line Text with the reason and the recommended next action — no DataTable or InfoRow.4. Single account/entity details → a Row (gap 16) with a Card of InfoRow facts (owner, region, ARR, renewal date, last contact) next to a PieChart of that account's revenue by product line — no DataTable or StatusBadge.5. Part-of-whole follow-ups → PieChart; trends or comparisons over time/categories → BarChart.Compose generously — a dashboard should feel like a real analytics product, not a single widget.`;const A2UI_DYNAMIC_COMPOSITION_GUIDE = `${A2UI_DYNAMIC_SALES_DATASET}\n\n${A2UI_DYNAMIC_COMPOSITION_RULES}`;// Mirrors the langgraph-python demo's a2ui_dynamic.py SYSTEM_PROMPT.const A2UI_DYNAMIC_SYSTEM_PROMPT =  "You are the embedded sales analyst for Vantage Threads, the fictional " +  "B2B apparel company described in your App Context. Answer every " +  "business question by calling `generate_a2ui` to draw a rich visual " +  "surface, and keep the chat reply to one short sentence.\n\n" +  "Ground every number in the sales dataset from App Context — never " +  "invent figures that contradict it. Follow the dashboard composition " +  "rules from App Context when choosing components: pick the component " +  "by the shape of the question (snapshot → composed KPI dashboard with " +  "charts; team performance → table; risk → status badges; single " +  "account → info rows; part-of-whole → pie; trend/comparison → bar). " +  "Never ask the user which chart they want. `generate_a2ui` takes no " +  "arguments and handles the rendering automatically. Compose " +  "generously — a dashboard should feel like a real analytics product, " +  "not a single widget.";/** * Dedicated agent for the A2UI dynamic-schema demo. Wires NO `generate_a2ui` * tool — the runtime's `injectA2UITool: true` makes the adapter auto-inject it * and drive a secondary render planner to GENERATE the surface. */export async function buildA2uiDynamicAgent(): Promise<StrandsAgent> {  const strandsAgent = new Agent({    // Chat Completions API: the Responses adapter buffers tool-call argument    // deltas, which would defeat A2UI's progressive surface streaming.    model: await createModel({ openaiApi: "chat" }),    systemPrompt: A2UI_DYNAMIC_SYSTEM_PROMPT,  });  const config: StrandsAgentConfig = {    a2ui: {      defaultCatalogId: A2UI_DYNAMIC_CATALOG_ID,      guidelines: { compositionGuide: A2UI_DYNAMIC_COMPOSITION_GUIDE },    },  };  return new StrandsAgent({    agent: strandsAgent,    name: "a2ui_dynamic_schema",    description:      "Dynamic A2UI surfaces generated on the fly (auto-injected tool)",    config,  });}// ---------------------------------------------------------------------------// A2UI Error Recovery (a2ui-recovery) — adapter auto-injects + runs recovery.// ---------------------------------------------------------------------------//// Same auto-injected dynamic-schema setup as buildA2uiDynamicAgent, but the// aimock fixtures force the inner render_a2ui to emit free-form/sloppy args// (heal pill) or a structurally-invalid surface on every attempt (exhaust// pill). The Strands adapter runs the toolkit validate->retry recovery loop on// its auto-inject path (default 3 attempts) and returns the// a2ui_recovery_exhausted hard-fail envelope when the cap is hit — so this// agent wires NO tool, unlike the langgraph/ADK siblings (which own the tool// explicitly via getA2UITools + injectA2UITool:false). Mirrors the ag-ui dojo// aws-strands recovery example./** * Dedicated agent for the A2UI error-recovery demo. Wires NO `generate_a2ui` * tool — the runtime's `injectA2UITool: true` makes the adapter auto-inject it, * drive the secondary render planner, and run the recovery loop. */export async function buildA2uiRecoveryAgent(): Promise<StrandsAgent> {  const strandsAgent = new Agent({    // Chat Completions API: the Responses adapter buffers tool-call argument    // deltas, which would defeat A2UI's progressive surface streaming.    model: await createModel({ openaiApi: "chat" }),    systemPrompt: A2UI_DYNAMIC_SYSTEM_PROMPT,  });  const config: StrandsAgentConfig = {    a2ui: {      defaultCatalogId: A2UI_DYNAMIC_CATALOG_ID,      guidelines: { compositionGuide: A2UI_DYNAMIC_COMPOSITION_GUIDE },    },  };  return new StrandsAgent({    agent: strandsAgent,    name: "a2ui_recovery",    description:      "Dynamic A2UI with automatic error recovery (auto-injected tool)",    config,  });}
+
+## What is this?#
+
+A headless UI gives you **full control** over the chat experience. You bring your own components, layout, and styling while CopilotKit handles agent communication, message management, tool-call rendering, and streaming. No `<CopilotChat>`, no slot overrides, just your components composed on top of the low-level hooks.
+
+## When should I use this?#
+
+Use headless UI when:
+
+  * The [slot system](https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/slots) isn't enough: you need a completely different layout.
+  * You're embedding chat into an existing UI with its own patterns.
+  * You're building a **non-chat surface** that still talks to an agent (a dashboard, a canvas, an inspector) and want `useRenderToolCall` / `useRenderActivityMessage` on their own.
+  * You want to render generative UI primitives outside of a chat entirely.
+
+
+
+## The core hooks#
+
+Three hooks power it, and they're the same ones `<CopilotChat>` uses internally.
+
+  * `useAgent({ agentId })` — exposes the current conversation (`messages`, `isRunning`) and the run-state object.
+  * `useCopilotKit()` — returns the runtime handle you call `runAgent({ agent })` on.
+  * `useRenderToolCall()` — returns a function that paints any registered tool call inline.
+
+
+
+## Minimal example#
+
+Start with a hand-rolled message list and composer built from `useAgent` \+ `useCopilotKit`:
+
+chat.tsx
+    
+    
+      const { agent } = useAgent({ agentId: "headless-simple" });  const { copilotkit } = useCopilotKit();  const [input, setInput] = useState("");  const send = (text: string) => {    const trimmed = text.trim();    if (!trimmed || agent.isRunning) return;    agent.addMessage({      id: generateMessageId(),      role: "user",      content: trimmed,    });    setInput("");    void copilotkit.runAgent({ agent }).catch((err) => {      // The Headless Simple demo is the canonical "two hooks, your      // design system" example users copy-paste as a starting point.      // Silently swallowing errors here would model broken practice;      // log so a network failure / runtime error / transport disconnect      // surfaces in the console for the developer.      console.error("[langgraph-python:headless-simple] runAgent failed", err);    });  };
+
+The message list is a plain `.map()` over `agent.messages`: user messages render as right-aligned bubbles, assistant messages render streamed text plus inline tool calls via `renderToolCall({ toolCall })`:
+
+chat.tsx
+    
+    
+                    {visible.map((m) =>                  m.role === "user" ? (                    <UserBubble key={m.id} content={m.content} />                  ) : (                    <AssistantBubble key={m.id} content={m.content} />                  ),                )}
+
+No `<CopilotChat />`, no slots. The trade-off: you only get text and tool calls. Reasoning messages, activity messages, and custom before/after slots won't show up unless you wire them in yourself, which is exactly what the complete example covers.
+
+## Complete example#
+
+The `headless-complete` cell rebuilds the **full** generative-UI composition from the low-level hooks directly, without importing `<CopilotChatMessageView>`: text, tool calls, reasoning cards, A2UI + MCP Apps activity messages, and custom before/after message slots.
+
+### The `useRenderedMessages` hook#
+
+The cell's central piece is a hand-rolled `useRenderedMessages(messages, isRunning)` that returns the same flat list of messages, each augmented with a `renderedContent: ReactNode` field. This hook is a **manual recreation of what`<CopilotChatMessageView>` does**:
+
+message-list.tsx
+    
+    
+      const renderToolCall = useRenderToolCall();  const { renderActivityMessage } = useRenderActivityMessage();  // Index tool results by their originating tool-call id so each tool-call  // card can hand the matching ToolMessage to `useRenderToolCall`.  // Without this the renderer can't see a result and the card stays in the  // "in-progress" state forever.  const toolMessagesByCallId = useMemo(() => {    const map = new Map<string, ToolMessage>();    for (const m of messages) {      if (m.role === "tool" && "toolCallId" in m && m.toolCallId) {        map.set(m.toolCallId, m as ToolMessage);      }    }    return map;  }, [messages]);
+
+Three low-level hooks feed it:
+
+  * `useRenderToolCall()` — returns the renderer for any registered tool call (per-tool via `useRenderTool` / `useComponent`, plus the wildcard from `useDefaultRenderTool`).
+  * `useRenderActivityMessage()` — renders A2UI + MCP Apps activity messages for the current agent scope.
+  * `useRenderCustomMessages()` — invokes `renderCustomMessage` hooks registered against the active `CopilotChatConfigurationProvider`, emitting `"before"` and `"after"` slots around every message.
+
+
+
+### Per-role dispatch#
+
+The role-switch mirrors `CopilotChatMessageView`'s `renderMessageBlock` exactly: assistant bodies get text and tool calls, user bodies get their text content, reasoning messages go through the `<CopilotChatReasoningMessage>` leaf, and activity messages route through `renderActivityMessage`:
+
+message-list.tsx
+    
+    
+          {messages.map((m) => {        if (m.role === "user") {          // Cast through the local input shape — UserBubble accepts a          // simplified version of the ag-ui content union.          return (            <UserBubble              key={m.id}              content={m.content as Parameters<typeof UserBubble>[0]["content"]}            />          );        }        if (m.role === "assistant") {          const toolCalls =            "toolCalls" in m && Array.isArray(m.toolCalls) ? m.toolCalls : [];          return (            <AssistantBubble              key={m.id}              content={typeof m.content === "string" ? m.content : undefined}            >              {toolCalls.map((tc) => {                const toolMessage = toolMessagesByCallId.get(tc.id);                const node = renderToolCall({                  toolCall: tc,                  toolMessage,                });                return node ? <div key={tc.id}>{node}</div> : null;              })}            </AssistantBubble>          );        }        if (m.role === "activity") {          const node = renderActivityMessage(m);          if (!node) return null;          return <ActivityWrapper key={m.id}>{node}</ActivityWrapper>;        }        return null;      })}
+
+### Tool-call composition#
+
+For each `toolCall` on an assistant message, we look up the sibling `tool`-role message (keyed by `toolCallId`) and hand both to `renderToolCall`:
+
+message-list.tsx
+    
+    
+                  {toolCalls.map((tc) => {                const toolMessage = toolMessagesByCallId.get(tc.id);                const node = renderToolCall({                  toolCall: tc,                  toolMessage,                });                return node ? <div key={tc.id}>{node}</div> : null;              })}
+
+### Bubble chrome#
+
+The `UserBubble` and `AssistantBubble` components are **pure chrome** : they receive the pre-rendered node from `useRenderedMessages` and drop it into a styled container. No chat primitives are imported here:
+
+message-assistant.tsx
+    
+    
+    export function AssistantBubble({  content,  children,}: {  content?: string;  children?: React.ReactNode;}) {  const hasText = typeof content === "string" && content.trim().length > 0;  const hasChildren = React.Children.count(children) > 0;  if (!hasText && !hasChildren) return null;  return (    <div      data-testid="headless-message-assistant"      data-message-role="assistant"      className="flex w-full items-start gap-3"    >      <Avatar className="h-8 w-8 shrink-0 border bg-muted text-muted-foreground">        <AvatarFallback className="bg-muted text-muted-foreground">          <Bot className="h-4 w-4" />        </AvatarFallback>      </Avatar>      <div className="flex max-w-[calc(100%-2.75rem)] flex-1 flex-col items-start gap-2">        {hasText && (          <div            className={cn(              "max-w-[90%] rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm leading-relaxed shadow-sm",              "bg-muted text-foreground",            )}          >            <ReactMarkdown              remarkPlugins={[remarkGfm]}              components={{                p: ({ children }) => (                  <p className="my-1 first:mt-0 last:mb-0">{children}</p>                ),                ul: ({ children }) => (                  <ul className="my-1 list-disc pl-5">{children}</ul>                ),                ol: ({ children }) => (                  <ol className="my-1 list-decimal pl-5">{children}</ol>                ),                li: ({ children }) => <li className="my-0.5">{children}</li>,                code: ({ children, className }) => {                  const isBlock = (className ?? "").includes("language-");                  if (isBlock) {                    return <code className={className}>{children}</code>;                  }                  return (                    <code className="rounded bg-background px-1 py-0.5 font-mono text-[0.85em]">                      {children}                    </code>                  );                },                pre: ({ children }) => (                  <pre className="my-2 overflow-x-auto rounded-md bg-background p-3 font-mono text-xs">                    {children}                  </pre>                ),                a: ({ children, href }) => (                  <a                    href={href}                    target="_blank"                    rel="noreferrer noopener"                    className="text-primary underline underline-offset-2 hover:opacity-80"                  >                    {children}                  </a>                ),                strong: ({ children }) => (                  <strong className="font-semibold">{children}</strong>                ),                h1: ({ children }) => (                  <h1 className="my-2 text-base font-semibold">{children}</h1>                ),                h2: ({ children }) => (                  <h2 className="my-2 text-base font-semibold">{children}</h2>                ),                h3: ({ children }) => (                  <h3 className="my-2 text-sm font-semibold">{children}</h3>                ),                blockquote: ({ children }) => (                  <blockquote className="my-2 border-l-2 border-border pl-3 italic text-muted-foreground">                    {children}                  </blockquote>                ),              }}            >              {content as string}            </ReactMarkdown>          </div>        )}        {hasChildren && (          <div className="flex w-full max-w-full flex-col gap-2">            {children}          </div>        )}      </div>    </div>  );}export function UserBubble({  content,}: {  content: string | MultimodalPart[];}) {  const { text, attachments } = splitContent(content);  const hasText = text.trim().length > 0;  const hasAttachments = attachments.length > 0;  if (!hasText && !hasAttachments) return null;  return (    <div      data-testid="headless-message-user"      data-message-role="user"      className="flex w-full items-start gap-3 flex-row-reverse"    >      <Avatar className="h-8 w-8 shrink-0 border bg-primary text-primary-foreground">        <AvatarFallback className="bg-primary text-primary-foreground">          <User className="h-4 w-4" />        </AvatarFallback>      </Avatar>      <div className="flex max-w-[80%] flex-col items-end gap-2">        {hasAttachments && (          <div className="flex flex-wrap justify-end gap-2">            {attachments.map((a) => (              <AttachmentChip key={a.id} attachment={a} />            ))}          </div>        )}        {hasText && (          <div            className={cn(              "rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm leading-relaxed shadow-sm",              "bg-primary text-primary-foreground",            )}          >            <p className="whitespace-pre-wrap break-words">{text}</p>          </div>        )}      </div>    </div>  );}function splitContent(content: string | MultimodalPart[]): {  text: string;  attachments: Attachment[];} {  if (typeof content === "string") {    return { text: content, attachments: [] };  }  let text = "";  const attachments: Attachment[] = [];  let i = 0;  for (const part of content) {    if (part.type === "text") {      text += part.text;      continue;    }    const meta = (part.metadata ?? {}) as {      filename?: string;      size?: number;    };    attachments.push({      id: `${part.type}-${i++}`,      type: part.type,      source: part.source,      filename: meta.filename,      size: meta.size,      status: "ready",    });  }  return { text, attachments };}
+
+## Next steps#
+
+  * [Slots](https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/slots) — less work than going fully headless, often enough.
+  * [CSS customization](https://docs.copilotkit.ai/strands-typescript/custom-look-and-feel/css) — when you just need to re-skin the defaults.
+
+
+
+### On this page
+
+What is this?When should I use this?The core hooksMinimal exampleComplete exampleThe useRenderedMessages hookPer-role dispatchTool-call compositionBubble chromeNext steps

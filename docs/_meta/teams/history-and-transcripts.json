@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/history-and-transcripts/",
+  "file": "teams/history-and-transcripts.md",
+  "title": "Microsoft Teams: History and transcripts",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:07.109166+00:00",
+  "html_len": 184335,
+  "md_len": 8087,
+  "depth": 0
+}

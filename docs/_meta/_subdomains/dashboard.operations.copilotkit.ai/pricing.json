@@ -1,0 +1,10 @@
+{
+  "url": "https://dashboard.operations.copilotkit.ai/pricing/",
+  "file": "_subdomains/dashboard.operations.copilotkit.ai/pricing.md",
+  "title": "CopilotKit Intelligence \u2014 Operations",
+  "method": "crawl4ai+scrapegraph (scrapling: scrapling thin content (104 chars), fallback to crawl4ai)",
+  "fetched_at": "2026-10-08T09:35:34.067360+00:00",
+  "html_len": 4013,
+  "md_len": 371,
+  "depth": 1
+}

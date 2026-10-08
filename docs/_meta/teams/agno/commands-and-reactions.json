@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/agno/commands-and-reactions/",
+  "file": "teams/agno/commands-and-reactions.md",
+  "title": "Microsoft Teams + Agno: Commands and reactions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:24.950953+00:00",
+  "html_len": 168415,
+  "md_len": 6888,
+  "depth": 0
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/strands/tools/",
+  "file": "teams/strands/tools.md",
+  "title": "Microsoft Teams + AWS Strands (Python): Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:34:16.015271+00:00",
+  "html_len": 236760,
+  "md_len": 8883,
+  "depth": 0
+}

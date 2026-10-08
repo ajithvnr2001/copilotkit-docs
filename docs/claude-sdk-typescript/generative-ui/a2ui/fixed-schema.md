@@ -1,0 +1,546 @@
+---
+url: https://docs.copilotkit.ai/claude-sdk-typescript/generative-ui/a2ui/fixed-schema/
+title: Fixed Schema A2UI
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T08:54:49.686526+00:00
+---
+
+# Fixed Schema A2UI
+
+> Source: https://docs.copilotkit.ai/claude-sdk-typescript/generative-ui/a2ui/fixed-schema/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendClaude Agent SDK (TypeScript)
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/claude-sdk-typescript)[Quickstart](https://docs.copilotkit.ai/claude-sdk-typescript/quickstart)[Build with agents](https://docs.copilotkit.ai/claude-sdk-typescript/build-with-agents)[Intelligence](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/claude-sdk-typescript/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+[A2UI](https://docs.copilotkit.ai/claude-sdk-typescript/generative-ui/a2ui)
+
+[Dynamic Schema A2UI](https://docs.copilotkit.ai/claude-sdk-typescript/generative-ui/a2ui/dynamic-schema)[Fixed Schema A2UI](https://docs.copilotkit.ai/claude-sdk-typescript/generative-ui/a2ui/fixed-schema)
+
+[JSON Render](https://docs.copilotkit.ai/claude-sdk-typescript/generative-ui/json-render)[Hashbrown](https://docs.copilotkit.ai/claude-sdk-typescript/generative-ui/hashbrown)
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/claude-sdk-typescript/webmcp)
+
+Agent capabilities
+
+[Sub-agents](https://docs.copilotkit.ai/claude-sdk-typescript/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/claude-sdk-typescript/learning)
+
+[User Memories](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/analytics)[Channels](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Deployment
+
+Debugging
+
+Learn
+
+Concepts
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/claude-sdk-typescript/telemetry)[Community frameworks](https://docs.copilotkit.ai/claude-sdk-typescript/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Fixed Schema A2UI
+
+Generative UIDeclarativeA2UI
+
+# Fixed Schema A2UI
+
+Pre-defined A2UI schema with dynamic data. The fastest approach, with no LLM schema generation needed.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+DemoCode
+
+a2ui-fixed-prompt.ts
+
+flight_schema.json
+
+page.tsx
+
+catalog.ts
+
+definitions.ts
+
+renderers.tsx
+
+route.ts
+    
+    
+    /** * A2UI Fixed Schema demo — backend agent constants. * * Mirrors `agents/a2ui_fixed.py` in the langgraph-python and ag2 references. * The component tree (schema) lives on the backend as JSON; the agent only * streams *data* into the data model at runtime via the `display_flight` * tool. The frontend catalog (see * `src/app/demos/a2ui-fixed-schema/a2ui/catalog.ts`) binds component names * from the JSON schema to React renderers. * * The dedicated runtime route at * `src/app/api/copilotkit-a2ui-fixed-schema/route.ts` runs the A2UI * middleware with `injectA2UITool: false` because this backend owns the * rendering tool itself. * * The schema is imported as JSON (resolveJsonModule: true in tsconfig) so * the build doesn't depend on filesystem layout at runtime. */import type Anthropic from "@anthropic-ai/sdk";import flightSchema from "./a2ui_schemas/flight_schema.json";export const A2UI_FIXED_CATALOG_ID = "copilotkit://flight-fixed-catalog";export const A2UI_FIXED_SURFACE_ID = "flight-fixed-schema";export const FLIGHT_SCHEMA: unknown[] = flightSchema as unknown[];export const A2UI_FIXED_SYSTEM_PROMPT =  "You help users find flights. When asked about a flight, call " +  "display_flight with origin (3-letter code), destination (3-letter " +  "code), airline, and price (e.g. '$289'). Keep any chat reply to one " +  "short sentence.";export const DISPLAY_FLIGHT_TOOL_SCHEMA: Anthropic.Tool = {  name: "display_flight",  description:    "Show a flight card for the given trip. Emits an a2ui_operations " +    "container the frontend renders into a flight card via the fixed " +    "schema catalog.",  input_schema: {    type: "object",    properties: {      origin: {        type: "string",        description: "Origin airport code, e.g. 'SFO'",      },      destination: {        type: "string",        description: "Destination airport code, e.g. 'JFK'",      },      airline: { type: "string", description: "Airline name, e.g. 'United'" },      price: { type: "string", description: "Price string, e.g. '$289'" },    },    required: ["origin", "destination", "airline", "price"],  },};/** * Build the `a2ui_operations` payload the A2UI runtime middleware * detects in tool results and forwards to the frontend renderer. * * Ops MUST use the v0.9 NESTED operation shape * (`{ version, createSurface: {...} }` / `updateComponents` / * `updateDataModel`) that `@ag-ui/a2ui-middleware`'s * `getOperationSurfaceId` and the React A2UI renderer walk. The legacy * flat shape (`{ type: "create_surface", surfaceId, ... }`) looks * plausible but the middleware's matcher never recognizes it — every op * lands on the fallback "default" surface and the renderer never * receives the schema, so the `a2ui-fixed-card` never mounts. See the * identical fix note in `showcase/shared/python/tools/generate_a2ui.py` * (`build_a2ui_operations_from_tool_call`). */export function buildDisplayFlightOperations(input: {  origin: string;  destination: string;  airline: string;  price: string;}): { a2ui_operations: unknown[] } {  return {    a2ui_operations: [      {        version: "v0.9",        createSurface: {          surfaceId: A2UI_FIXED_SURFACE_ID,          catalogId: A2UI_FIXED_CATALOG_ID,        },      },      {        version: "v0.9",        updateComponents: {          surfaceId: A2UI_FIXED_SURFACE_ID,          components: FLIGHT_SCHEMA,        },      },      {        version: "v0.9",        updateDataModel: {          surfaceId: A2UI_FIXED_SURFACE_ID,          path: "/",          value: input,        },      },    ],  };}
+
+In the fixed-schema approach, you design the UI schema once (by hand, or using the [A2UI Composer](https://a2ui-composer.ag-ui.com/)) and keep it on the agent side. The agent tool only provides the _data_ ; the surface appears instantly when the tool returns because nothing has to be generated at runtime.
+
+How the schema is _delivered_ to the runtime is the only thing that varies between integrations:
+
+  * **Schema-loading** (including Strands TypeScript), the schema is saved as a `.json` file next to the agent and loaded once at startup.
+  * **Schema-inline** (spring-ai, ms-agent-dotnet), the schema is declared inline as a typed literal in source. The host language doesn't ship a `load_schema` JSON loader, so the structure is compiled in directly.
+  * **LLM-driven** (Mastra and Strands Python), the agent runs a secondary LLM call to produce the operations container per-request. The catalog is still fixed; the schema is generated on demand.
+
+
+
+Ask about a flight and the agent renders a fully structured card from a pre-defined schema:
+
+The flight card is an illustrative domain
+
+Everything below uses flight booking so the wiring has something concrete to render — `display_flight`, `flight-fixed-catalog`, and the airport/airline components are this page's example, not part of the API.
+
+What transfers is the **shape** : a fixed catalog, a tool that returns data against it, and an operations container with `createSurface` \+ `updateComponents` \+ `updateDataModel`. Keep your own application's domain and substitute your own components and tool — a page teaching the pattern is not a brief to build a flight booker.
+
+## How it works#
+
+  1. The schema is made available to the agent, either loaded from a JSON file at startup, declared inline, or generated per-request, depending on the integration.
+  2. The agent's `display_flight` tool receives data from the primary LLM (origin / destination / airline / price).
+  3. The tool returns an operations container with `createSurface` \+ `updateComponents` \+ `updateDataModel` operations.
+  4. The A2UI middleware intercepts the tool result and the frontend renders the surface using the matching 5-component client catalog (Title, Airport, Arrow, AirlineBadge, PriceTag, plus the built-ins).
+
+
+
+## Compositional schemas#
+
+The example below ships a flight card assembled compositionally from small sub-components rather than one monolithic `FlightCard`:
+    
+    
+    Card
+     └─ Column
+         ├─ Title        ("Flight Details")
+         ├─ Row          (Airport → Arrow → Airport)
+         ├─ Row          (AirlineBadge · PriceTag)
+         └─ Button       (Book)
+
+That tree lives backend-side, as a JSON file, an inline literal, or a per-request LLM output, depending on the integration. Components without data bindings (like `Title` or `Arrow`) carry their value inline; components bound to the LLM's data (like `Airport`) reference fields via JSON Pointer paths such as `{ "path": "/origin" }`. The A2UI binder resolves those paths _before_ the React renderer runs, so your renderer receives the resolved value and never sees the path — but the _definition_ still has to declare that prop as a literal-or-binding union, because that union is the only signal the binder has that the prop is bindable. See Declare the component definitions.
+
+## The 5-component custom catalog#
+
+The frontend catalog declares just the domain-specific primitives (Title, Airport, Arrow, AirlineBadge, PriceTag) and merges in CopilotKit's basic catalog (Card, Column, Row, Text, Button, …) via `includeBasicCatalog: true`.
+
+### Install the renderer package#
+
+The catalog, definitions and renderers below all import from `@copilotkit/a2ui-renderer`. It ships separately from `@copilotkit/react-core`, and the definitions use `zod` for prop schemas:
+    
+    
+    npm install @copilotkit/a2ui-renderer zod
+
+### Declare the component definitions#
+
+Each component declares its props as a Zod schema. Any prop the schema binds to the data model — anything that can arrive as `{ "path": "/origin" }` rather than a literal — **must** be declared as a union of the literal type and the binding object. That is what the `DynString` helper below is for, and why `Airport`'s `code` uses it rather than a plain `z.string()`.
+
+The binder decides whether to resolve a prop by _inspecting its Zod type_ : a union with a `{ path }` member is treated as dynamic and resolved against the data model, while a plain literal type is treated as static and passed through untouched. So declaring a bound prop as `z.string()` does not merely lose type precision — it tells the binder not to resolve it, and the raw `{ path: "/origin" }` object reaches your renderer.
+
+Plain `z.string()` on a bound prop crashes the render
+
+Because the unresolved object reaches the renderer, the first thing that renders it as text throws React's [error #31](https://react.dev/errors/31): `Objects are not valid as a React child (found: object with keys {path})`. Nothing in that message points at the schema, so it reads as a renderer bug rather than a missing union. If you hit it, check the prop's declared type first.
+
+Props that are never bound (`Arrow`, or a `variant` enum) are fine as plain types. This applies only to props the schema binds.
+
+Once the union is declared, the binder resolves the path before your renderer runs, so the renderer still receives a plain string — the union describes what the _schema_ may send, not what the renderer must handle. `@copilotkit/a2ui-renderer` re-exports A2UI's canonical `DynamicStringSchema` (plus `DynamicNumberSchema`, `DynamicBooleanSchema` and the matching types) if you would rather not hand-roll the union:
+    
+    
+    import { DynamicStringSchema } from "@copilotkit/a2ui-renderer";
+
+definitions.ts
+    
+    
+    import { z } from "zod";import type { CatalogDefinitions } from "@copilotkit/a2ui-renderer";/** * Dynamic string: literal OR a data-model path binding. The GenericBinder * resolves path bindings to the actual value at render time. */const DynString = z.union([z.string(), z.object({ path: z.string() })]);export const definitions = {  /**   * Card override: gives the outer flight-card container a ShadCN look   * (rounded-xl, neutral-200 border, soft shadow). The basic catalog's   * Card uses inline styles; overriding here lets the demo's renderer   * adopt the demo's Tailwind aesthetic without touching the schema JSON.   */  Card: {    description: "A container card with a single child.",    props: z.object({      child: z.string(),    }),  },  Title: {    description: "A prominent heading for the flight card.",    props: z.object({      text: DynString,    }),  },  Airport: {    description: "A 3-letter airport code, displayed large.",    props: z.object({      code: DynString,    }),  },  Arrow: {    description: "A right-pointing arrow used between airports.",    props: z.object({}),  },  AirlineBadge: {    description: "A pill-styled airline name tag.",    props: z.object({      name: DynString,    }),  },  PriceTag: {    description: "A stylized price display (e.g. '$289').",    props: z.object({      amount: DynString,    }),  },  /**   * Button override: swaps in an ActionButton renderer that tracks   * its own `done` state so clicking "Book flight" visually updates to   * a "Booked ✓" confirmation. The basic catalog's Button is stateless,   * so without this override the click fires the action but the button   * looks unchanged. Mirrors the pattern in beautiful-chat   * (src/app/demos/beautiful-chat/declarative-generative-ui/renderers.tsx).   */  Button: {    description:      "An interactive button with an action event. Use 'child' with a Text component ID for the label. After click, the button shows a confirmation state.",    props: z.object({      child: z        .string()        .describe(          "The ID of the child component (e.g. a Text component for the label).",        ),      variant: z.enum(["primary", "secondary", "ghost"]).optional(),      // Union with { event } so GenericBinder resolves this as ACTION → callable () => void.      action: z        .union([          z.object({            event: z.object({              name: z.string(),              context: z.record(z.any()).optional(),            }),          }),          z.null(),        ])        .optional(),    }),  },} satisfies CatalogDefinitions;
+
+### Implement the React renderers#
+
+TypeScript enforces that the renderer map's keys and prop shapes match the definitions exactly, so refactors stay safe:
+
+renderers.tsx
+    
+    
+    export const renderers: CatalogRenderers<Definitions> = {  /**   * Card override: ShadCN-style outer container. The basic catalog's Card   * uses inline styles; overriding here keeps the demo's tailwind aesthetic.   * The flight schema renders Card > Column > [Title, Row, …]; the inner   * Column adds the vertical spacing.   */  Card: ({ props, children }) => (    <Card className="w-full max-w-md p-5" data-testid="a2ui-fixed-card">      {props.child ? children(props.child) : null}    </Card>  ),  Title: ({ props }) => (    <div className="flex items-center justify-between">      <div className="space-y-1">        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-500">          Itinerary        </p>        <h3 className="text-base font-semibold leading-none tracking-tight text-neutral-900">          {s(props.text)}        </h3>      </div>      <Badge variant="outline" className="font-mono">        1-stop · economy      </Badge>    </div>  ),  Airport: ({ props }) => (    <div className="flex flex-col items-center">      <span className="font-mono text-2xl font-semibold tracking-wider text-neutral-900">        {s(props.code)}      </span>    </div>  ),  Arrow: () => (    <div className="flex flex-1 items-center px-3">      <Separator className="flex-1 bg-neutral-200" />      <svg        width="16"        height="16"        viewBox="0 0 24 24"        fill="none"        stroke="currentColor"        strokeWidth="2"        strokeLinecap="round"        strokeLinejoin="round"        className="mx-1 text-neutral-400"        aria-hidden      >        <line x1="5" y1="12" x2="19" y2="12" />        <polyline points="12 5 19 12 12 19" />      </svg>      <Separator className="flex-1 bg-neutral-200" />    </div>  ),  AirlineBadge: ({ props }) => (    <Badge variant="secondary" className="uppercase tracking-[0.08em]">      {s(props.name)}    </Badge>  ),  PriceTag: ({ props }) => (    <div className="flex items-baseline gap-1">      <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-500">        Total      </span>      <span className="font-mono text-base font-semibold text-neutral-900">        {s(props.amount)}      </span>    </div>  ),  /**   * Button override: this is a pure-presentation demo, so the button just   * renders its label. The schema declares an `action` for visual fidelity,   * but the click handler is inert until the Python SDK exposes   * `action_handlers=` on `a2ui.render` (see `src/agents/a2ui_fixed.py`).   */  Button: ({ props, children }) => (    <UIButton className="w-full">      {props.child ? children(props.child) : null}    </UIButton>  ),};
+
+### Wire the catalog#
+
+`createCatalog(..., { includeBasicCatalog: true })` merges the custom renderers with CopilotKit's built-ins so the schema can reference `Card`, `Column`, `Row`, `Button` alongside the domain primitives:
+
+catalog.ts
+    
+    
+    import { createCatalog } from "@copilotkit/a2ui-renderer";import { definitions } from "./definitions";import { renderers } from "./renderers";export const CATALOG_ID = "copilotkit://flight-fixed-catalog";export const catalog = createCatalog(definitions, renderers, {  catalogId: CATALOG_ID,  includeBasicCatalog: true,});
+
+### Load the schema JSON at startup#
+
+The integration parses the pre-authored JSON schema once at startup. The agent then reuses that component tree for every tool call:
+
+a2ui-fixed-prompt.ts
+    
+    
+    import flightSchema from "./a2ui_schemas/flight_schema.json";export const A2UI_FIXED_CATALOG_ID = "copilotkit://flight-fixed-catalog";export const A2UI_FIXED_SURFACE_ID = "flight-fixed-schema";export const FLIGHT_SCHEMA: unknown[] = flightSchema as unknown[];
+
+### Return render operations from the tool#
+
+The agent tool returns an A2UI operations container. The A2UI middleware detects it in the tool result and forwards it to the frontend renderer. The LLM only supplies the four data fields (`origin`, `destination`, `airline`, `price`); the pre-authored schema defines the component tree:
+
+a2ui-fixed-prompt.ts
+    
+    
+    import flightSchema from "./a2ui_schemas/flight_schema.json";export const A2UI_FIXED_CATALOG_ID = "copilotkit://flight-fixed-catalog";export const A2UI_FIXED_SURFACE_ID = "flight-fixed-schema";export const FLIGHT_SCHEMA: unknown[] = flightSchema as unknown[];export const A2UI_FIXED_SYSTEM_PROMPT =  "You help users find flights. When asked about a flight, call " +  "display_flight with origin (3-letter code), destination (3-letter " +  "code), airline, and price (e.g. '$289'). Keep any chat reply to one " +  "short sentence.";export const DISPLAY_FLIGHT_TOOL_SCHEMA: Anthropic.Tool = {  name: "display_flight",  description:    "Show a flight card for the given trip. Emits an a2ui_operations " +    "container the frontend renders into a flight card via the fixed " +    "schema catalog.",  input_schema: {    type: "object",    properties: {      origin: {        type: "string",        description: "Origin airport code, e.g. 'SFO'",      },      destination: {        type: "string",        description: "Destination airport code, e.g. 'JFK'",      },      airline: { type: "string", description: "Airline name, e.g. 'United'" },      price: { type: "string", description: "Price string, e.g. '$289'" },    },    required: ["origin", "destination", "airline", "price"],  },};/** * Build the `a2ui_operations` payload the A2UI runtime middleware * detects in tool results and forwards to the frontend renderer. * * Ops MUST use the v0.9 NESTED operation shape * (`{ version, createSurface: {...} }` / `updateComponents` / * `updateDataModel`) that `@ag-ui/a2ui-middleware`'s * `getOperationSurfaceId` and the React A2UI renderer walk. The legacy * flat shape (`{ type: "create_surface", surfaceId, ... }`) looks * plausible but the middleware's matcher never recognizes it — every op * lands on the fallback "default" surface and the renderer never * receives the schema, so the `a2ui-fixed-card` never mounts. See the * identical fix note in `showcase/shared/python/tools/generate_a2ui.py` * (`build_a2ui_operations_from_tool_call`). */export function buildDisplayFlightOperations(input: {  origin: string;  destination: string;  airline: string;  price: string;}): { a2ui_operations: unknown[] } {  return {    a2ui_operations: [      {        version: "v0.9",        createSurface: {          surfaceId: A2UI_FIXED_SURFACE_ID,          catalogId: A2UI_FIXED_CATALOG_ID,        },      },      {        version: "v0.9",        updateComponents: {          surfaceId: A2UI_FIXED_SURFACE_ID,          components: FLIGHT_SCHEMA,        },      },      {        version: "v0.9",        updateDataModel: {          surfaceId: A2UI_FIXED_SURFACE_ID,          path: "/",          value: input,        },      },    ],  };}
+
+Nothing about A2UI depends on how the agent itself is built — the operations container is just the tool's return value, so the tool drops into whatever agent you already have.
+
+## Why compositional beats monolithic#
+
+A single big `FlightCard` component would be faster to write but would lock the design in place. Assembling the card from Card / Column / Row / Title / Airport / Arrow / AirlineBadge / PriceTag gives you:
+
+  * **Reusable primitives** the same `Airport` renderer works in search results, booking confirmations, and future seat maps.
+  * **Schema-level design iteration** re-arranging rows or swapping a badge requires only a JSON edit; the renderer code is untouched.
+  * **A2UI Composer compatibility** hand-written and Composer-built schemas share the same primitive vocabulary.
+
+
+
+## Registering the runtime#
+
+Your agent owns the tool in the fixed-schema approach, so you do not want the runtime to inject its own. Enable A2UI but turn injection off.
+
+Passing a catalog on the provider is enough to enable A2UI:
+
+app/page.tsx
+    
+    
+    <CopilotKit runtimeUrl="/api/copilotkit" a2ui={{ catalog: myCatalog }}>
+      {children}
+    </CopilotKit>
+
+Because a catalog auto-injects the A2UI tool by default, set `injectA2UITool: false` on the runtime so your agent's own tool is the only one in play. The middleware still auto-detects the operations the tool returns and renders the surface, with no subagent involved:
+
+app/api/copilotkit/route.ts
+    
+    
+    const runtime = new CopilotRuntime({
+      agents: { "a2ui-fixed-schema": agent },
+      a2ui: { injectA2UITool: false, agents: ["a2ui-fixed-schema"] },
+    });
+
+### Register the fixed-schema tool at the endpoint
+
+The dedicated endpoint supplies `DISPLAY_FLIGHT_TOOL_SCHEMA` to the shared agent loop. This is the first connection between the schema shown above and the executable backend tool.
+
+agent_server.ts
+    
+    
+    app.post(
+      "/a2ui-fixed-schema",
+      async (req: Request, res: Response): Promise<void> => {
+        await runAgenticLoop(req, res, {
+          systemPrompt: A2UI_FIXED_SYSTEM_PROMPT,
+          toolSchemas: [DISPLAY_FLIGHT_TOOL_SCHEMA] as Anthropic.Tool[],
+          initialState: {},
+        });
+      },
+    );
+
+### Select the Claude Agent SDK path
+
+A normal request has no runtime-provided tools, structured input, extended thinking, or aimock headers, so `shouldUseClaudeAgentSdk` selects the production `ClaudeAgentAdapter` path. The direct Anthropic Messages API loop remains a compatibility fallback for those excluded request shapes.
+
+claude-agent-sdk-adapter.ts
+    
+    
+    export function shouldUseClaudeAgentSdk({
+      input,
+      forwardedHeaders,
+      runtimeToolCount,
+      enableThinking,
+    }: {
+      input: RunAgentInput;
+      forwardedHeaders: Record<string, string>;
+      runtimeToolCount: number;
+      enableThinking?: boolean;
+    }): boolean {
+      if ((process.env.ANTHROPIC_BASE_URL ?? "").includes("aimock")) {
+        return false;
+      }
+      // The official adapter keeps a `headers` property for forward compatibility,
+      // but the Claude Agent SDK cannot forward per-request HTTP headers today.
+      if (hasHeader(forwardedHeaders, "x-aimock-context")) {
+        return false;
+      }
+      if (enableThinking) {
+        return false;
+      }
+      // The official Claude Agent SDK path can execute backend MCP tools, but it
+      // does not yet bridge CopilotKit frontend/runtime tools back through AG-UI.
+      if (runtimeToolCount > 0) {
+        return false;
+      }
+      if (hasStructuredUserContent(input)) {
+        return false;
+      }
+      return true;
+    }
+
+agent_server.ts
+    
+    
+    if (
+      shouldUseClaudeAgentSdk({
+        input,
+        forwardedHeaders,
+        runtimeToolCount: runtimeTools.length,
+        enableThinking: config.enableThinking,
+      })
+    ) {
+      await runWithClaudeAgentSdk({
+        input,
+        emit,
+        runId,
+        threadId,
+        systemPrompt,
+        toolSchemas: config.toolSchemas,
+        initialState: state,
+        model: config.model ?? CLAUDE_MODEL,
+        forwardedHeaders,
+        executeTool: (toolName, toolInput, currentState, toolEmit) =>
+          executeBackendTool(
+            toolName,
+            toolInput,
+            currentState,
+            toolEmit,
+            forwardedHeaders,
+            contextString,
+          ),
+      });
+      res.end();
+      return;
+    }
+
+### Expose `display_flight` through an SDK MCP server
+
+`runWithClaudeAgentSdk` converts the Anthropic tool schema into an in-process Claude SDK MCP tool, registers the server on `ClaudeAgentAdapter`, and adds the fully-qualified `mcp__copilotkit__display_flight` name to `allowedTools`.
+
+claude-agent-sdk-adapter.ts
+    
+    
+    function createClaudeAgentAdapter({
+      toolSchemas,
+      emit,
+      getState,
+      setState,
+      executeTool,
+      model,
+      systemPrompt,
+    }: {
+      toolSchemas: Anthropic.Tool[];
+      emit: Emit;
+      getState: () => Record<string, unknown>;
+      setState: (state: Record<string, unknown>) => void;
+      executeTool: ExecuteTool;
+      model: string;
+      systemPrompt: string;
+    }) {
+      const backendToolServer = buildBackendToolServer({
+        toolSchemas,
+        emit,
+        getState,
+        setState,
+        executeTool,
+      });
+    
+      return new ClaudeAgentAdapter({
+        agentId: "claude-sdk-typescript",
+        model: normalizeClaudeAgentSdkModel(model),
+        systemPrompt,
+        tools: [],
+        mcpServers: backendToolServer.mcpServers,
+        allowedTools: backendToolServer.allowedTools,
+        permissionMode: "dontAsk",
+        maxTurns: 10,
+      });
+    }
+
+claude-agent-sdk-adapter.ts
+    
+    
+    const COPILOTKIT_MCP_SERVER_NAME = "copilotkit";
+    const COPILOTKIT_TOOL_PREFIX = `mcp__${COPILOTKIT_MCP_SERVER_NAME}__`;
+    
+    function buildBackendToolServer({
+      toolSchemas,
+      emit,
+      getState,
+      setState,
+      executeTool,
+    }: {
+      toolSchemas: Anthropic.Tool[];
+      emit: Emit;
+      getState: () => Record<string, unknown>;
+      setState: (state: Record<string, unknown>) => void;
+      executeTool: ExecuteTool;
+    }): {
+      mcpServers?: Record<string, McpServerConfig>;
+      allowedTools: string[];
+    } {
+      if (toolSchemas.length === 0) {
+        return { allowedTools: [] };
+      }
+    
+      const tools = toolSchemas.map((schema) =>
+        sdkTool(
+          schema.name,
+          schema.description ?? "",
+          zodShapeFromJsonSchema(schema.input_schema),
+          async (args) => {
+            try {
+              const result = await executeTool(
+                schema.name,
+                args as Record<string, unknown>,
+                getState(),
+                emit,
+              );
+              if (result.state) {
+                setState(result.state);
+              }
+              return {
+                content: [{ type: "text" as const, text: result.resultText }],
+              };
+            } catch (error) {
+              const message =
+                error instanceof Error ? error.message : String(error);
+              return {
+                content: [{ type: "text" as const, text: message }],
+                isError: true,
+              };
+            }
+          },
+        ),
+      );
+    
+      return {
+        mcpServers: {
+          [COPILOTKIT_MCP_SERVER_NAME]: createSdkMcpServer({
+            name: COPILOTKIT_MCP_SERVER_NAME,
+            version: "1.0.0",
+            tools,
+          }),
+        },
+        allowedTools: toolSchemas.map(
+          (schema) => `${COPILOTKIT_TOOL_PREFIX}${schema.name}`,
+        ),
+      };
+    }
+
+### Execute the tool and return A2UI operations
+
+When the MCP tool invokes `display_flight`, the backend dispatches to the canonical handler, builds the fixed schema's A2UI operations, and returns them as the tool result for the middleware to render.
+
+agent_server.ts
+    
+    
+    if (toolName === "display_flight") {
+      const origin = typeof toolInput.origin === "string" ? toolInput.origin : "";
+      const destination =
+        typeof toolInput.destination === "string" ? toolInput.destination : "";
+      const airline =
+        typeof toolInput.airline === "string" ? toolInput.airline : "";
+      const price = typeof toolInput.price === "string" ? toolInput.price : "";
+      const ops = buildDisplayFlightOperations({
+        origin,
+        destination,
+        airline,
+        price,
+      });
+      return {
+        resultText: JSON.stringify(ops),
+        state: null,
+      };
+    }
+
+## Action handlers (reference)#
+
+The canonical reference pairs fixed schemas with `action_handlers={...}` to declare optimistic UI swaps (e.g. replacing the flight schema with `BOOKED_SCHEMA` when the user clicks "Book"). The Python SDK's `a2ui.render` does not yet accept `action_handlers`, so the cell omits them; the `booked_schema.json` sibling is retained so the swap can be wired up the moment the SDK exposes the handler kwarg.
+
+When available, a button declares its action like this:
+    
+    
+    {
+      "Button": {
+        "label": "Book",
+        "action": {
+          "name": "book_flight",
+          "context": [
+            { "key": "flightNumber", "value": { "path": "/flightNumber" } },
+            { "key": "price", "value": { "path": "/price" } }
+          ]
+        }
+      }
+    }
+
+And the Python tool matches it with a handler keyed by the action name (plus a `"*"` catch-all). Until the SDK lands, handle the click on the frontend instead — see [Advanced — Action Handlers](https://docs.copilotkit.ai/integrations/langgraph/generative-ui/a2ui/advanced#action-handlers) for the `createA2UIMessageRenderer` / `onAction` pattern.
+
+## When should I use fixed schemas?#
+
+  * The surface is well-known: flight cards, product tiles, order summaries, dashboards.
+  * You want deterministic, designer-controlled UI. No LLM schema drift.
+  * You want the fastest possible first paint; no secondary LLM call.
+
+
+
+If the UI must adapt per prompt, reach for **[dynamic schemas](https://docs.copilotkit.ai/claude-sdk-typescript/generative-ui/a2ui/fixed-schema/dynamic-schema)** instead.
+
+### On this page
+
+How it worksCompositional schemasThe 5-component custom catalogInstall the renderer packageDeclare the component definitionsImplement the React renderersWire the catalogLoad the schema JSON at startupReturn render operations from the toolWhy compositional beats monolithicRegistering the runtimeAction handlers (reference)When should I use fixed schemas?

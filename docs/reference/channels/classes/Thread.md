@@ -1,0 +1,173 @@
+---
+url: https://docs.copilotkit.ai/reference/channels/classes/Thread/
+title: Thread
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:25:14.189590+00:00
+---
+
+# Thread
+
+> Source: https://docs.copilotkit.ai/reference/channels/classes/Thread/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+🪁ChannelsSDK
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+Components
+
+[Actions](https://docs.copilotkit.ai/reference/channels/components/Actions)[Button](https://docs.copilotkit.ai/reference/channels/components/Button)[Chart](https://docs.copilotkit.ai/reference/channels/components/Chart)[Context](https://docs.copilotkit.ai/reference/channels/components/Context)[Divider](https://docs.copilotkit.ai/reference/channels/components/Divider)[Fields and Field](https://docs.copilotkit.ai/reference/channels/components/Fields)[Header](https://docs.copilotkit.ai/reference/channels/components/Header)[Image](https://docs.copilotkit.ai/reference/channels/components/Image)[Input](https://docs.copilotkit.ai/reference/channels/components/Input)[Markdown](https://docs.copilotkit.ai/reference/channels/components/Markdown)[Message](https://docs.copilotkit.ai/reference/channels/components/Message)[Modal](https://docs.copilotkit.ai/reference/channels/components/Modal)[Section](https://docs.copilotkit.ai/reference/channels/components/Section)[Select](https://docs.copilotkit.ai/reference/channels/components/Select)[Table, Row, and Cell](https://docs.copilotkit.ai/reference/channels/components/Table)
+
+Functions
+
+[bind](https://docs.copilotkit.ai/reference/channels/functions/bind)[createChannel](https://docs.copilotkit.ai/reference/channels/functions/createChannel)[defineChannelCommand](https://docs.copilotkit.ai/reference/channels/functions/defineChannelCommand)[defineChannelTool](https://docs.copilotkit.ai/reference/channels/functions/defineChannelTool)[renderToIR](https://docs.copilotkit.ai/reference/channels/functions/renderToIR)
+
+Classes
+
+[Channel](https://docs.copilotkit.ai/reference/channels/classes/Channel)[MemoryStore](https://docs.copilotkit.ai/reference/channels/classes/MemoryStore)[Thread](https://docs.copilotkit.ai/reference/channels/classes/Thread)[Transcripts](https://docs.copilotkit.ai/reference/channels/classes/Transcripts)
+
+Types
+
+[ActionStore](https://docs.copilotkit.ai/reference/channels/types/ActionStore)[AgentContentPart](https://docs.copilotkit.ai/reference/channels/types/AgentContentPart)[ChannelNode](https://docs.copilotkit.ai/reference/channels/types/ChannelNode)[IncomingMessage](https://docs.copilotkit.ai/reference/channels/types/IncomingMessage)[InteractionContext](https://docs.copilotkit.ai/reference/channels/types/InteractionContext)[JSX callbacks](https://docs.copilotkit.ai/reference/channels/types/JSXCallbacks)[MessageRef](https://docs.copilotkit.ai/reference/channels/types/MessageRef)[StateStore](https://docs.copilotkit.ai/reference/channels/types/StateStore)[StoreConfig](https://docs.copilotkit.ai/reference/channels/types/StoreConfig)
+
+SDKs
+
+[Direct provider adapters](https://docs.copilotkit.ai/reference/channels/sdk/direct-adapters)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+[Reference](https://docs.copilotkit.ai/reference)[channels](https://docs.copilotkit.ai/reference/channels)Classes
+
+# Thread
+
+Reference for replying, running and resuming agents, reading managed history, and storing per-conversation state.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+A Channels `Thread` is the SDK handle for one native conversation. Handlers, tools, and JSX callbacks receive it.
+
+## Properties
+
+Property| Type| Description  
+---|---|---  
+`conversationKey`| `string`| Stable managed conversation key. Also passed to the `agent(threadId)` factory.  
+`platform`| `string`| Native delivery provider. Managed Channels report `"slack"` or `"teams"`.  
+`supportsBlockingChoice`| `boolean | undefined`| `false` on the managed path. Use post-and-resume instead of `awaitChoice`.  
+  
+## Post and update
+
+Method| Returns| Description  
+---|---|---  
+`post(ui)`| `Promise<MessageRef>`| Send text or portable JSX.  
+`update(ref, ui)`| `Promise<MessageRef>`| Replace a prior message.  
+`delete(ref)`| `Promise<void>`| Remove a prior message when supported.  
+`stream(source)`| `Promise<MessageRef>`| Stream text where the adapter supports streaming.  
+`postFile(args)`| `Promise<{ ok, fileId?, assetId?, error? }>`| Upload bytes with a filename when supported.  
+`postEphemeral(user, ui, { fallbackToDM })`| `Promise<EphemeralResult | null>`| Provider-capability-gated private reply. The required boolean chooses whether to fall back to a direct message.  
+  
+handler.tsx
+    
+    
+    const ref = await thread.post("Working…");
+    await thread.update(ref, "Done.");
+
+The `MessageRef` returned by `thread.post()` is updateable or deletable only during the current managed delivery. Do not persist arbitrary refs and reuse them to update or delete messages across deliveries.
+
+In a later interaction, use the interaction-provided `message.ref`, which Intelligence stamps for that delivery. Only attempt an update when `message.ref.id` is non-empty, and treat that update as best-effort.
+
+Capability-result methods such as `postFile`, `react`, and `setSuggestedPrompts` can return `{ ok: false }` when unavailable. Message operations such as `update`, `delete`, and `stream` can reject when the current adapter or provider cannot perform them, so catch failures when they are not allowed to fail the workflow.
+
+On managed delivery, `assetId` identifies the canonical Intelligence asset. `fileId` may identify the provider's uploaded file. Treat both as optional and branch first on `ok`.
+
+## Run and resume the agent
+
+Method| Returns| Description  
+---|---|---  
+`runAgent(input?)`| `Promise<MessageRef | undefined>`| Run the thread's agent and render its output.  
+`resume(value, options?)`| `Promise<MessageRef | undefined>`| Consume the action continuation and re-enter an interrupted run.  
+  
+`runAgent` accepts:
+
+Field| Type| Description  
+---|---|---  
+`prompt`| `string | AgentContentPart[]`| Explicit user turn. When omitted in a message handler, the SDK injects the inbound text or content parts automatically.  
+`context`| `ContextEntry[]`| Context for this run only.  
+`tools`| `ChannelTool[]`| Tools for this run only.  
+`transcript`| `boolean | { limit?: number }`| Optional SDK transcript bridge when `identifyUser` resolves a user and transcripts are configured.  
+`memory`| `{ user?, project? }`| Per-run Intelligence Memory access. Each scope is `"none"`, `"read"`, or `"read-write"`; omission disables Memory.  
+  
+channel.ts
+    
+    
+    channel.onMessage(async ({ thread, message }) => {
+      await thread.runAgent({
+        prompt: message.contentParts?.length
+          ? [
+              ...(message.text
+                ? [{ type: "text" as const, text: message.text }]
+                : []),
+              ...message.contentParts,
+            ]
+          : message.text,
+        context: [{ description: "Originating platform", value: message.platform }],
+      });
+    });
+
+For managed approvals, post a registered component, return from the interrupt handler, and call `resume(value)` when a later click arrives. Do not call `awaitChoice`; see the interactive messages guide for [Slack](https://docs.copilotkit.ai/slack/interactive) or [Teams](https://docs.copilotkit.ai/teams/interactive).
+
+Personal Memory on resume needs a trusted subject selector:
+    
+    
+    await thread.resume(value, {
+      memory: { user: "read", project: "read" },
+      subject: "initiator", // or "actor"
+    });
+
+`initiator` keeps the application user that started this HITL chain. `actor` uses the application user resolved for the current interaction. Project-only Memory needs no subject and carries no made-up user. A continuation expires with action retention and can start only one resumed run.
+
+For the complete identity, group-conversation, and per-run Memory workflow, see [Identity and Memory for Slack](https://docs.copilotkit.ai/slack/identity-and-memory) or [Identity and Memory for Teams](https://docs.copilotkit.ai/teams/identity-and-memory).
+
+Memory and continuation failures expose stable codes:
+
+  * `channel_memory_grant_invalid`, `channel_memory_user_required`, and `channel_memory_unavailable`
+  * `channel_memory_subject_required`, `channel_continuation_required`, `channel_continuation_mismatch`, and `channel_action_expired`
+
+
+
+## Conversation history and users
+
+Method| Returns| Description  
+---|---|---  
+`getMessages()`| `Promise<ThreadMessage[]>`| Managed history in chronological order; returns `[]` if unavailable.  
+`lookupUser(query)`| `Promise<ProviderActor | undefined>`| Provider lookup where supported.  
+  
+## Per-conversation state
+
+Method| Returns| Description  
+---|---|---  
+`state<T>()`| `Promise<T | undefined>`| Read the value stored for this conversation.  
+`setState<T>(value)`| `Promise<void>`| Replace the full stored value. Validated when `store.state` is configured.  
+  
+State uses the Channel's `StateStore`. Without a durable `store.adapter`, the default MemoryStore keeps it only in the current process. See the threads and state guide for [Slack](https://docs.copilotkit.ai/slack/threads-and-state) or [Teams](https://docs.copilotkit.ai/teams/threads-and-state).
+
+## Provider-capability methods
+
+Method| Purpose  
+---|---  
+`react(ref, emoji)` / `unreact(ref, emoji)`| Add or remove the bot's reaction.  
+`setSuggestedPrompts(prompts, options?)`| Set prompts on surfaces such as an assistant pane.  
+`setTitle(title)`| Name the conversation.  
+`subscribe()` / `unsubscribe()` / `isSubscribed()`| Store a subscription flag. Proactive routing from that flag is not implemented.  
+  
+Managed Slack and Teams support `react` and `unreact` for the portable reaction set: `thumbs_up`, `thumbs_down`, `heart`, `fire`, `eyes`, `refresh`, `thinking`, and `tada`. Other methods remain provider-capability dependent; check `{ ok }` when the method returns a capability result.

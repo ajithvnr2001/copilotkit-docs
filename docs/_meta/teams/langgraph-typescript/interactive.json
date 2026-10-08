@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/langgraph-typescript/interactive/",
+  "file": "teams/langgraph-typescript/interactive.md",
+  "title": "Microsoft Teams + LangGraph (TypeScript): Interactive messages and approvals",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:25.536711+00:00",
+  "html_len": 218978,
+  "md_len": 10250,
+  "depth": 0
+}

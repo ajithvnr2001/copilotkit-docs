@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/deepagents/history-and-transcripts/",
+  "file": "teams/deepagents/history-and-transcripts.md",
+  "title": "Microsoft Teams + Deep Agents: History and transcripts",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:54.551380+00:00",
+  "html_len": 182124,
+  "md_len": 8278,
+  "depth": 0
+}

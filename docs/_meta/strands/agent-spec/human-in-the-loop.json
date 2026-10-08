@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/strands/agent-spec/human-in-the-loop/",
+  "file": "strands/agent-spec/human-in-the-loop.md",
+  "title": "Human-in-the-Loop",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:30:42.009688+00:00",
+  "html_len": 200482,
+  "md_len": 6491,
+  "depth": 0
+}

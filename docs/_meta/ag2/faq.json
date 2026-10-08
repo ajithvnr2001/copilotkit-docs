@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/ag2/faq/",
+  "file": "ag2/faq.md",
+  "title": "Common Questions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T08:44:04.030547+00:00",
+  "html_len": 162212,
+  "md_len": 6160,
+  "depth": 0
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/ms-agent-harness-dotnet/intelligence/self-hosting-observability/",
+  "file": "ms-agent-harness-dotnet/intelligence/self-hosting-observability.md",
+  "title": "Monitor self-hosted Intelligence with OpenTelemetry",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:20:51.460971+00:00",
+  "html_len": 276864,
+  "md_len": 17296,
+  "depth": 0
+}

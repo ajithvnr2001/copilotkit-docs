@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/crewai-crews/intelligence/self-hosting-observability/",
+  "file": "crewai-crews/intelligence/self-hosting-observability.md",
+  "title": "Monitor self-hosted Intelligence with OpenTelemetry",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T08:57:41.971674+00:00",
+  "html_len": 268582,
+  "md_len": 16977,
+  "depth": 0
+}

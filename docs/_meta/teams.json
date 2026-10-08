@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/",
+  "file": "teams.md",
+  "title": "Microsoft Teams: Channels",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:20.851446+00:00",
+  "html_len": 119088,
+  "md_len": 7031,
+  "depth": 0
+}

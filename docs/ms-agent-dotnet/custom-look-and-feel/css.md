@@ -1,0 +1,316 @@
+---
+url: https://docs.copilotkit.ai/ms-agent-dotnet/custom-look-and-feel/css/
+title: CSS Customization
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:18:22.348655+00:00
+---
+
+# CSS Customization
+
+> Source: https://docs.copilotkit.ai/ms-agent-dotnet/custom-look-and-feel/css/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendMS Agent Framework (.NET)
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/ms-agent-dotnet)[Quickstart](https://docs.copilotkit.ai/ms-agent-dotnet/quickstart)[Build with agents](https://docs.copilotkit.ai/ms-agent-dotnet/build-with-agents)[Intelligence](https://docs.copilotkit.ai/ms-agent-dotnet/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/ms-agent-dotnet/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/ms-agent-dotnet/webmcp)
+
+Agent capabilities
+
+Microsoft Agent Framework
+
+[Sub-agents](https://docs.copilotkit.ai/ms-agent-dotnet/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/ms-agent-dotnet/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/ms-agent-dotnet/learning)
+
+[User Memories](https://docs.copilotkit.ai/ms-agent-dotnet/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/ms-agent-dotnet/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/ms-agent-dotnet/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/ms-agent-dotnet/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/ms-agent-dotnet/intelligence/analytics)[Channels](https://docs.copilotkit.ai/ms-agent-dotnet/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Debugging
+
+Learn
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/ms-agent-dotnet/telemetry)[Community frameworks](https://docs.copilotkit.ai/ms-agent-dotnet/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+On this page
+
+[MS Agent Framework (.NET)](https://docs.copilotkit.ai/ms-agent-dotnet)Custom Look and Feel
+
+# CSS Customization
+
+Theme CopilotKit components via CSS variables and class overrides.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+DemoCode
+
+Program.cs
+
+page.tsx
+
+theme.css
+
+route.ts
+    
+    
+    using Microsoft.Agents.AI;using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;using Microsoft.AspNetCore.Http.Json;using Microsoft.Extensions.AI;using Microsoft.Extensions.Options;using OpenAI;using System.ClientModel;using System.ComponentModel;using System.Net.Http;using System.Text.Json;using System.Text.Json.Serialization;WebApplicationBuilder builder = WebApplication.CreateBuilder(args);builder.Services.ConfigureHttpJsonOptions(options =>{    options.SerializerOptions.TypeInfoResolverChain.Add(SalesAgentSerializerContext.Default);    // Serialize our enum types (SalesStage, Currency, FlightStatus) as their    // member name strings rather than numeric ordinals. This keeps the wire    // format human-readable and stable across enum re-ordering.    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());});builder.Services.AddAGUI();// STOPGAP: IHttpContextAccessor lets AimockHeaderPolicy read the current// request's forwarded x-* headers (stashed on HttpContext.Items by// AimockHeaderMiddleware) at outbound-LLM-call time. HttpContext flows across// the AG-UI SSE-pump ExecutionContext boundary, unlike a middleware-set// AsyncLocal. TODO(copilotkit-sdk-dotnet): migrate to SDK-level header propagation.builder.Services.AddHttpContextAccessor();WebApplication app = builder.Build();// STOPGAP: seed the static accessor the outbound header-forwarding policy reads// (the policy is created without DI, mirroring CvDiag.Logger).AimockHeaderPolicy.HttpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();// STOPGAP: Extract x-* prefixed headers from incoming AG-UI requests onto HttpContext.Items// so AimockHeaderPolicy can forward them to outgoing OpenAI calls.// TODO(copilotkit-sdk-dotnet): migrate to SDK-level header propagationapp.UseMiddleware<AimockHeaderMiddleware>();// CVDIAG: backend flap-observability emitter (plan unit L1-F; spec §3). OFF by// default (CVDIAG_BACKEND_EMITTER=on to arm). Seed the static singleton the// outbound LLM policy reads (created without DI), then register the// request-pipeline instrumentation AFTER AimockHeaderMiddleware so the forwarded// x-* correlation headers are already stashed on HttpContext.Items.CvdiagBackend.Instance = new CvdiagBackend();app.UseMiddleware<CvdiagInstrumentationMiddleware>();// Create the agent factory and map the AG-UI agent endpointvar loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();// CVDIAG: seed the static logger used by AimockHeaderPolicy (created without DI)// to emit the outbound-LLM header-forwarding breadcrumb.CvDiag.Logger = loggerFactory.CreateLogger("CvDiag");var jsonOptions = app.Services.GetRequiredService<IOptions<JsonOptions>>();var agentFactory = new SalesAgentFactory(builder.Configuration, loggerFactory, jsonOptions.Value.SerializerOptions);app.MapAGUI("/", agentFactory.CreateSalesAgent());var d5ParityFactory = new D5ParityAgentFactory(builder.Configuration, loggerFactory, jsonOptions.Value.SerializerOptions);app.MapAGUI("/headless-complete", d5ParityFactory.CreateHeadlessCompleteAgent());app.MapAGUI("/voice", d5ParityFactory.CreateVoiceAgent());app.MapAGUI("/gen-ui-agent", d5ParityFactory.CreateGenUiAgent());app.MapAGUI("/gen-ui-tool-based", d5ParityFactory.CreateGenUiToolBasedAgent());app.MapAGUI("/shared-state-streaming", d5ParityFactory.CreateSharedStateStreamingAgent());app.MapAGUI("/readonly-state-agent-context", d5ParityFactory.CreateReadonlyStateAgentContext());app.MapAGUI("/tool-rendering", d5ParityFactory.CreateToolRenderingAgent(reasoning: false));app.MapAGUI("/tool-rendering-reasoning-chain", d5ParityFactory.CreateToolRenderingAgent(reasoning: true));// Interrupt-adapted agent: mounted on its own path so the Next.js runtime// can proxy the `gen-ui-interrupt` and `interrupt-headless` demo names to// it. The two demos share this single backend — the differentiation happens// on the frontend (in-chat picker vs. headless/app-surface picker).var interruptAgentFactory = new InterruptAgentFactory(builder.Configuration, loggerFactory, jsonOptions.Value.SerializerOptions);app.MapAGUI("/interrupt-adapted", interruptAgentFactory.CreateInterruptAgent());// Multimodal demo agent (vision-capable gpt-5-mini, no tools).// The Microsoft AG-UI ASP.NET adapter currently rejects AG-UI content arrays// before the agent can see image/document parts, so this one endpoint parses// the request body directly and emits the small AG-UI SSE event subset the// chat UI needs for text streaming.app.MapPost("/multimodal", (HttpContext context) => MultimodalEndpoint.HandleAsync(    context,    agentFactory.CreateMultimodalChatClient(),    loggerFactory.CreateLogger("MultimodalEndpoint")));// A2UI Error Recovery demo. Backend-owned render->validate->retry loop with a// graceful a2ui_recovery_exhausted fallback. Mounted as a raw SSE endpoint (NOT// MapAGUI): the recovery-exhausted card only renders from an a2ui-surface// ACTIVITY_SNAPSHOT carrying status:"failed", which the MS Agent Framework AG-UI// adapter cannot emit — so this endpoint hand-writes the AG-UI SSE stream, the// same adapter-bypass pattern used by /multimodal. See agent/RecoveryAgent.cs.app.MapPost("/a2ui-recovery", (HttpContext context) => RecoveryAgent.HandleAsync(    context,    builder.Configuration,    loggerFactory.CreateLogger("RecoveryAgent")));// Beautiful Chat flagship demo.app.MapAGUI("/beautiful-chat", agentFactory.CreateBeautifulChatAgent());// Agent Config demo — wraps a basic ChatClientAgent in AgentConfigAgent.app.MapAGUI("/agent-config", agentFactory.CreateAgentConfigAgent());// Reasoning demo — wraps a basic ChatClientAgent in ReasoningAgent via a// static factory that builds its own chat client off the shared OpenAI client.app.MapAGUI("/reasoning", agentFactory.CreateReasoningAgent());// Declarative Gen UI (instance factory — builds its own chat client).var declarativeGenUiAgent = new DeclarativeGenUiAgent(builder.Configuration, loggerFactory, jsonOptions.Value.SerializerOptions);app.MapAGUI("/declarative-gen-ui", declarativeGenUiAgent.Create());// A2UI fixed-schema demo (instance factory).var a2uiFixedSchemaAgent = new A2uiFixedSchemaAgent(builder.Configuration, loggerFactory, jsonOptions.Value.SerializerOptions);app.MapAGUI("/a2ui-fixed-schema", a2uiFixedSchemaAgent.Create());// Open Generative UI — basic + advanced.var openGenUiFactory = new OpenGenUiAgentFactory(builder.Configuration);app.MapAGUI("/open-gen-ui", openGenUiFactory.CreateAgent());var openGenUiAdvancedFactory = new OpenGenUiAdvancedAgentFactory(builder.Configuration);app.MapAGUI("/open-gen-ui-advanced", openGenUiAdvancedFactory.CreateAgent());// BYOC demos (hashbrown + json-render).var byocHashbrownFactory = new ByocHashbrownAgentFactory(builder.Configuration, loggerFactory);app.MapAGUI("/byoc-hashbrown", byocHashbrownFactory.CreateAgent());var byocJsonRenderFactory = new ByocJsonRenderAgentFactory(builder.Configuration, loggerFactory);app.MapAGUI("/byoc-json-render", byocJsonRenderFactory.CreateAgent());// MCP Apps demo.var mcpAppsFactory = new McpAppsAgentFactory(builder.Configuration, loggerFactory);app.MapAGUI("/mcp-apps", mcpAppsFactory.CreateMcpAppsAgent());// In-app HITL demo.var hitlInAppFactory = new HitlInAppAgentFactory(builder.Configuration, loggerFactory);app.MapAGUI("/hitl-in-app", hitlInAppFactory.CreateHitlInAppAgent());// In-chat HITL demo (useHumanInTheLoop). The `book_call` tool is defined// entirely on the frontend via the hook; this backend is a plain// ChatClientAgent with a system prompt that nudges the model to call it.// See agent/HitlInChatAgent.cs.var hitlInChatFactory = new HitlInChatAgentFactory(builder.Configuration, loggerFactory);app.MapAGUI("/hitl-in-chat", hitlInChatFactory.CreateHitlInChatAgent());// Shared State (Read + Write) demo. UI owns `preferences`, agent owns// `notes` via a `set_notes` tool. See agent/SharedStateReadWriteAgent.cs// for the pattern.var sharedStateReadWriteFactory = new SharedStateReadWriteAgentFactory(builder.Configuration, loggerFactory, jsonOptions.Value.SerializerOptions);app.MapAGUI("/shared-state-read-write", sharedStateReadWriteFactory.CreateAgent());// Sub-Agents demo. Supervisor delegates to research / writing / critique// sub-agents via tools, recording each delegation in shared state for the// UI's live delegation log. See agent/SubagentsAgent.cs.var subagentsFactory = new SubagentsAgentFactory(builder.Configuration, loggerFactory, jsonOptions.Value.SerializerOptions);app.MapAGUI("/subagents", subagentsFactory.CreateAgent());app.MapGet("/health", () => Results.Ok(new { status = "ok" }));await app.RunAsync();// =================// State Management// =================// Stage of a deal in the sales pipeline. Modeled as an enum so callers and// the LLM's structured output both get a closed set of legal values, rather// than a free-form string that can drift. Serialized as the// enum member name via JsonStringEnumConverter on the JsonSerializerOptions.public enum SalesStage{    Prospect,    Qualified,    Proposal,    Negotiation,    ClosedWon,    ClosedLost,}// Currency code for deal values. Small closed set covers the demo use cases.// Previously `Value` was an `int` with no currency indication at all; we now// carry currency + decimal amount together.public enum Currency{    USD,    EUR,    GBP,    JPY,}public record SalesTodo{    /// <summary>    /// The stable identifier for this todo.    /// </summary>    /// <remarks>    /// The empty string is a load-bearing sentinel meaning "no id yet;    /// server should assign one". <see cref="SalesState.ReplaceTodos"/>    /// backfills any todo with <c>Id == ""</c> by generating a fresh Guid    /// (see that method's documentation). Callers that want to express    /// "pending, please assign" should use <see cref="NewPending"/> rather    /// than constructing with an arbitrary placeholder string.    ///    /// <see langword="required"/> is retained for compile-time presence so    /// callers have to acknowledge the id contract, but runtime validation    /// does NOT reject the empty-string sentinel — that would break the    /// server-assigned-id path described above.    /// </remarks>    [JsonPropertyName("id")]    public required string Id { get; init; }    /// <summary>    /// Factory for "pending" todos: creates a SalesTodo with a    /// freshly-generated Guid-derived id so the empty-string sentinel never    /// leaks into code that doesn't understand the backfill contract.    /// </summary>    public static SalesTodo NewPending(        string title = "",        SalesStage stage = SalesStage.Prospect,        decimal value = 0m,        Currency currency = Currency.USD,        DateOnly? dueDate = null,        string assignee = "") => new()        {            // 16 hex chars = 64 bits of entropy. 8 chars was ~32 bits and            // has a non-trivial collision risk at tens of thousands of            // todos; 16 pushes collision risk well past demo scale.            Id = Guid.NewGuid().ToString("n")[..16],            Title = title,            Stage = stage,            Value = value,            Currency = currency,            DueDate = dueDate,            Assignee = assignee,        };    [JsonPropertyName("title")]    public string Title { get; init; } = "";    [JsonPropertyName("stage")]    public SalesStage Stage { get; init; } = SalesStage.Prospect;    // Deal value as a decimal (money) with explicit currency. Previously an    // `int` with no sign or currency semantics. The init accessor validates    // non-negative — negative deal values are not a legal business state in    // this demo.    [JsonPropertyName("value")]    public decimal Value    {        get => _value;        init        {            if (value < 0m)            {                throw new ArgumentOutOfRangeException(                    nameof(value),                    value,                    "SalesTodo.Value must be non-negative.");            }            _value = value;        }    }    private readonly decimal _value;    [JsonPropertyName("currency")]    public Currency Currency { get; init; } = Currency.USD;    // Nullable DateOnly — previously a free-form string that accepted any    // input. System.Text.Json serializes DateOnly as ISO-8601 "YYYY-MM-DD".    [JsonPropertyName("dueDate")]    public DateOnly? DueDate { get; init; }    [JsonPropertyName("assignee")]    public string Assignee { get; init; } = "";    /// <summary>    /// Whether this deal is finished (won or lost). Derived from    /// <see cref="Stage"/> so that the pair cannot disagree: a Prospect deal    /// cannot be "completed", and a ClosedWon/ClosedLost deal cannot be    /// "incomplete". Previously <c>Completed</c> was an independent bool and    /// contradictions like <c>{Stage=ClosedWon, Completed=false}</c> were    /// representable.    /// </summary>    [JsonPropertyName("completed")]    public bool Completed => Stage is SalesStage.ClosedWon or SalesStage.ClosedLost;}// SalesState is the server-side in-memory store, SalesStateSnapshot is the// wire-format JSON Schema sent to the model. Previously both carried near-// identical List<SalesTodo>. We consolidate: SalesState holds a// read-only list behind an encapsulated replacement API, and// SalesStateSnapshot is a minimal record that wraps the same list for// serialization.public sealed class SalesState{    private IReadOnlyList<SalesTodo> _todos = Array.Empty<SalesTodo>();    /// <summary>    /// Current published todo list. Reads are lock-free: reference reads of    /// a field are atomic on .NET, and the single writer    /// (<see cref="ReplaceTodos"/>) publishes a new fully-materialized list    /// by a single reference assignment. We use <see cref="Volatile.Read{T}"/>    /// to prevent the JIT from hoisting the read past a synchronization    /// boundary on the reader side.    /// </summary>    public IReadOnlyList<SalesTodo> Todos => Volatile.Read(ref _todos);    /// <summary>    /// Atomically replaces the todo list, backfilling any todo whose    /// <see cref="SalesTodo.Id"/> is empty (or null) with a freshly-generated    /// Guid-derived id. This is the explicit contract for callers that want    /// server-assigned ids: pass a SalesTodo with <c>Id = ""</c> and this    /// method generates a stable id for it. Non-empty ids are preserved as-is.    /// </summary>    /// <remarks>    /// Generated ids are 16 hex chars (64 bits of entropy), derived from a    /// fresh <see cref="Guid"/>. The write is a single reference assignment    /// via <see cref="Volatile.Write{T}"/>, which is atomic and visible to    /// readers without a lock.    /// </remarks>    public void ReplaceTodos(IEnumerable<SalesTodo> todos)    {        ArgumentNullException.ThrowIfNull(todos);        var materialized = todos.Select(t => t with        {            // 16 hex chars = 64 bits. Previously 8 (32 bits) had a non-            // trivial collision probability at tens of thousands of todos.            Id = string.IsNullOrEmpty(t.Id) ? Guid.NewGuid().ToString("n")[..16] : t.Id,        }).ToArray();        Volatile.Write(ref _todos, materialized);    }}// =================// Flight Data// =================// Flight operational status. StatusColor was previously a separate string// field that could disagree with Status; we now derive color// from this enum deterministically in FlightInfo.StatusColor.public enum FlightStatus{    OnTime,    Delayed,    Cancelled,    Boarding,}public record FlightInfo{    [JsonPropertyName("airline")]    public string Airline { get; init; } = "";    [JsonPropertyName("airlineLogo")]    public string AirlineLogo { get; init; } = "";    [JsonPropertyName("flightNumber")]    public string FlightNumber { get; init; } = "";    [JsonPropertyName("origin")]    public string Origin { get; init; } = "";    [JsonPropertyName("destination")]    public string Destination { get; init; } = "";    [JsonPropertyName("date")]    public string Date { get; init; } = "";    [JsonPropertyName("departureTime")]    public string DepartureTime { get; init; } = "";    [JsonPropertyName("arrivalTime")]    public string ArrivalTime { get; init; } = "";    [JsonPropertyName("duration")]    public string Duration { get; init; } = "";    // Status as enum. Previously `Status` and `StatusColor` were    // independent free-form strings that could disagree (e.g. "On Time" with    // color "red"). Now StatusColor is derived from Status and the pair is    // guaranteed consistent.    [JsonPropertyName("status")]    public FlightStatus Status { get; init; } = FlightStatus.OnTime;    [JsonPropertyName("statusColor")]    public string StatusColor => Status switch    {        FlightStatus.OnTime => "green",        FlightStatus.Delayed => "yellow",        FlightStatus.Cancelled => "red",        FlightStatus.Boarding => "blue",        _ => "gray",    };    // Price as decimal (money) + separate Currency enum. The    // old shape carried both a display string like "$342" AND a currency    // code "USD" — redundant and easy to get out of sync.    [JsonPropertyName("price")]    public decimal Price { get; init; }    [JsonPropertyName("currency")]    public Currency Currency { get; init; } = Currency.USD;}// =================// Agent Factory// =================public class SalesAgentFactory{    private readonly IConfiguration _configuration;    private readonly SalesState _state;    private readonly OpenAIClient _openAiClient;    private readonly ILogger _logger;    private readonly ILoggerFactory _loggerFactory;    private readonly JsonSerializerOptions _jsonSerializerOptions;    public SalesAgentFactory(IConfiguration configuration, ILoggerFactory loggerFactory, JsonSerializerOptions jsonSerializerOptions)    {        _configuration = configuration;        _state = new();        _loggerFactory = loggerFactory;        _logger = loggerFactory.CreateLogger<SalesAgentFactory>();        _jsonSerializerOptions = jsonSerializerOptions;        var apiKey = ApiKeyResolver.ResolveApiKey(_configuration);        // Log the resolved OpenAI endpoint at startup so operators can tell        // whether we're hitting a custom OPENAI_BASE_URL or falling back to the        // GitHub Models / Azure default. Previously the fallback was silent.        var endpoint = ApiKeyResolver.ResolveEndpoint(_configuration);        _logger.LogInformation("Using OpenAI endpoint: {Endpoint}", endpoint);        _openAiClient = new(            new ApiKeyCredential(apiKey),            AimockHeaderPolicy.CreateOpenAIClientOptions(endpoint));    }    public AIAgent CreateSalesAgent()    {        var chatClient = _openAiClient.GetChatClient("gpt-5-mini").AsIChatClient();        var chatClientAgent = new ChatClientAgent(            chatClient,            name: "SalesAgent",            instructions: @"A helpful assistant that helps manage a sales pipeline.            You have tools available to get, update, and query sales data.            You can search for flights and generate dynamic UI.            When discussing deals or the pipeline, ALWAYS use the get_sales_todos tool to see the current state before mentioning, updating, or discussing deals with the user.",            tools: [                AIFunctionFactory.Create(GetSalesTodos, options: new() { Name = "get_sales_todos", SerializerOptions = _jsonSerializerOptions }),                AIFunctionFactory.Create(ManageSalesTodos, options: new() { Name = "manage_sales_todos", SerializerOptions = _jsonSerializerOptions }),                AIFunctionFactory.Create(QueryData, options: new() { Name = "query_data", SerializerOptions = _jsonSerializerOptions }),                AIFunctionFactory.Create(GetWeather, options: new() { Name = "get_weather", SerializerOptions = _jsonSerializerOptions }),                AIFunctionFactory.Create(SearchFlights, options: new() { Name = "search_flights", SerializerOptions = _jsonSerializerOptions }),                AIFunctionFactory.Create(GenerateA2ui, options: new() { Name = "generate_a2ui", SerializerOptions = _jsonSerializerOptions })            ]);        return new SharedStateAgent(chatClientAgent, _jsonSerializerOptions, _loggerFactory.CreateLogger<SharedStateAgent>());    }    // Factory method for the Multimodal demo's vision-capable agent. Reuses    // the shared OpenAIClient so we don't re-resolve credentials for each    // mount. No tools — the chat model consumes attachments natively.    public AIAgent CreateMultimodalAgent() => MultimodalAgentFactory.Create(_openAiClient);    public IChatClient CreateMultimodalChatClient() =>        _openAiClient.GetChatClient("gpt-5-mini").AsIChatClient();    // Factory method for the Beautiful Chat flagship demo. Holds its own    // per-factory tool surface + in-memory todo store so it doesn't    // interfere with the sales pipeline state owned by the main agent.    public AIAgent CreateBeautifulChatAgent()    {        var factory = new BeautifulChatAgentFactory(            _configuration,            _openAiClient,            _jsonSerializerOptions,            _loggerFactory.CreateLogger<BeautifulChatAgentFactory>());        return factory.Create();    }    // Factory method for the Agent Config demo. Wraps a neutral ChatClientAgent    // (no tools) in AgentConfigAgent so the tone/expertise/responseLength    // directives read from AG-UI shared state steer the inner model per-turn.    public AIAgent CreateAgentConfigAgent()    {        var chatClient = _openAiClient.GetChatClient("gpt-5-mini").AsIChatClient();        var inner = new ChatClientAgent(            chatClient,            name: "AgentConfigInner",            instructions: "You are a helpful assistant. Follow the tone, expertise, and response-length directives in the system message for each turn.",            tools: []);        return new AgentConfigAgent(inner, _loggerFactory.CreateLogger<AgentConfigAgent>());    }    // Factory method for the Reasoning demo. Delegates to the static    // ReasoningAgentFactory.Create(...) which expects an IChatClient +    // ILoggerFactory and wraps a ChatClientAgent in a DelegatingAIAgent that    // surfaces reasoning-chain events.    public AIAgent CreateReasoningAgent()    {        var chatClient = _openAiClient.GetChatClient("gpt-5-mini").AsIChatClient();        return ReasoningAgentFactory.Create(chatClient, _loggerFactory);    }    // =================    // Tools    // =================    [Description("Get the current sales pipeline")]    private List<SalesTodo> GetSalesTodos()    {        var todos = _state.Todos;        _logger.LogInformation("Getting sales todos: {Count} items", todos.Count);        // Return a snapshot list copy — callers (AIFunctionFactory) serialize        // this and we don't want concurrent ReplaceTodos mutating mid-serialize.        return todos.ToList();    }    [Description("Update the sales pipeline")]    private string ManageSalesTodos([Description("The updated list of sales todos")] List<SalesTodo> todos)    {        ArgumentNullException.ThrowIfNull(todos);        _logger.LogInformation("Updating sales todos: {Count} items", todos.Count);        _state.ReplaceTodos(todos);        return "Pipeline updated";    }    [Description("Query financial data for charts")]    private string QueryData([Description("The query to run")] string query)    {        _logger.LogInformation("Querying data: {Query}", query);        var categories = new[] { "Engineering", "Marketing", "Sales", "Support", "Design" };        var random = new Random();        var results = categories.Select(c => new { category = c, value = random.Next(10000, 100000), quarter = "Q1 2026" });        return JsonSerializer.Serialize(results);    }    [Description("Get the weather for a given location. Ensure location is fully spelled out.")]    private WeatherInfo GetWeather([Description("The location to get the weather for")] string location)    {        _logger.LogInformation("Getting weather for: {Location}", location);        return new()        {            City = location,            Temperature = 20,            Conditions = "sunny",            Humidity = 50,            WindSpeed = 10,            FeelsLike = 25        };    }    [Description("Search for available flights between two cities. Returns flight data with A2UI rendering.")]    private object SearchFlights(        [Description("Origin airport code or city")] string origin,        [Description("Destination airport code or city")] string destination)    {        _logger.LogInformation("Searching flights from {Origin} to {Destination}", origin, destination);        var flights = new List<FlightInfo>        {            new() { Airline = "United Airlines", AirlineLogo = "UA", FlightNumber = "UA 2451",                     Origin = origin, Destination = destination, Date = "2026-05-15",                     DepartureTime = "08:00", ArrivalTime = "16:35", Duration = "5h 35m",                     Status = FlightStatus.OnTime, Price = 342m, Currency = Currency.USD },            new() { Airline = "Delta Air Lines", AirlineLogo = "DL", FlightNumber = "DL 1087",                     Origin = origin, Destination = destination, Date = "2026-05-15",                     DepartureTime = "10:30", ArrivalTime = "19:15", Duration = "5h 45m",                     Status = FlightStatus.OnTime, Price = 289m, Currency = Currency.USD },            new() { Airline = "JetBlue Airways", AirlineLogo = "B6", FlightNumber = "B6 524",                     Origin = origin, Destination = destination, Date = "2026-05-15",                     DepartureTime = "14:15", ArrivalTime = "22:50", Duration = "5h 35m",                     Status = FlightStatus.OnTime, Price = 315m, Currency = Currency.USD },        };        var flightSchema = new object[]        {            new { id = "root", component = "Row",                  children = new { componentId = "flight-card", path = "/flights" }, gap = 16 },            new { id = "flight-card", component = "FlightCard",                  airline = new { path = "airline" }, airlineLogo = new { path = "airlineLogo" },                  flightNumber = new { path = "flightNumber" }, origin = new { path = "origin" },                  destination = new { path = "destination" }, date = new { path = "date" },                  departureTime = new { path = "departureTime" }, arrivalTime = new { path = "arrivalTime" },                  duration = new { path = "duration" }, status = new { path = "status" },                  price = new { path = "price" },                  action = new { @event = new { name = "book_flight",                      context = new { flightNumber = new { path = "flightNumber" },                          origin = new { path = "origin" }, destination = new { path = "destination" },                          price = new { path = "price" } } } } }        };        var operations = new object[]        {            new { version = "v0.9", createSurface = new { surfaceId = "flight-search-results",                  catalogId = "copilotkit://app-dashboard-catalog" } },            new { version = "v0.9", updateComponents = new { surfaceId = "flight-search-results",                  components = flightSchema } },            new { version = "v0.9", updateDataModel = new { surfaceId = "flight-search-results",                  path = "/", value = new { flights } } }        };        return new { a2ui_operations = operations };    }    [Description("Generate dynamic A2UI components using a secondary LLM call")]    private async Task<object> GenerateA2ui(        [Description("Conversation context to generate UI from.")] string context = "",        CancellationToken cancellationToken = default)    {        context ??= "";        // Correlation id so server logs can be tied to the structured error        // we return to the caller / LLM. Callers can quote this in bug        // reports without leaking stack traces or internal paths. 16 hex        // chars = 64 bits of entropy — matches ``SalesTodo.NewPending``'s        // ``Id`` field for the same rationale; 8 chars (~32 bits) has a        // non-trivial collision risk at operational scale and we want        // errorIds to uniquely correlate log lines even across busy        // deployments.        var errorId = Guid.NewGuid().ToString("n")[..16];        var userContent = string.IsNullOrWhiteSpace(context)            ? "Show me a sales dashboard with total revenue, new customers, and conversion rate metrics. Include a pie chart of revenue by category and a bar chart of monthly sales."            : context;        _logger.LogInformation("Generating A2UI (errorId={ErrorId}) for: {Request}", errorId, userContent);        // The outbound LLM call is awaited directly rather than blocked via        // .GetAwaiter().GetResult(), which would tie up a thread-pool thread        // for the full network round-trip.        //        // Exception handling is deliberately narrow: we catch only the        // expected failure modes (transport, upstream non-success, malformed        // JSON, shape mismatch, cancellation). Programmer errors like        // NullReferenceException or resource-exhaustion errors like        // OutOfMemoryException propagate unchanged so they surface in logs        // rather than being silently remapped to "upstream error". The        // user-facing structured error we return does NOT include        // ex.Message verbatim — we log the full exception server-side with        // the correlation id so operators can correlate without exposing        // provider internals to the caller.        string? content;        try        {            content = await A2uiSecondaryToolCaller.GetDesignToolArgumentsAsync(                _configuration,                BeautifulChatA2ui.DesignSystemPrompt(BeautifulChatA2ui.AppDashboardCatalogId),                userContent,                cancellationToken).ConfigureAwait(false);        }        catch (HttpRequestException ex)        {            // The secondary caller uses a raw HttpClient, so a non-success            // upstream status surfaces as HttpRequestException carrying a            // StatusCode (.NET 5+). Distinguish a definite upstream HTTP error            // (4xx/5xx) — which is NOT a transport problem and may not be worth            // a blind retry — from a transport/connection failure where            // StatusCode is null (DNS, TLS, connection refused, socket reset).            // The previous code routed every HttpRequestException to            // "upstream_unavailable" ("retry"), which mislabeled a 401/400/429            // as a transient reachability issue.            if (ex.StatusCode is { } status)            {                // 4xx (e.g. 400 bad request, 401 auth, 429 rate limit) are                // non-retryable from the model's perspective: retrying the same                // request unchanged will fail the same way. We log the status                // server-side but do not surface it verbatim to the model.                _logger.LogError(ex, "GenerateA2ui (errorId={ErrorId}): upstream returned error status {Status}", errorId, (int)status);                return StructuredError("upstream_error", "The upstream AI service returned an error.", "Try rephrasing the request — retrying the same request unchanged is unlikely to help.", errorId);            }            _logger.LogError(ex, "GenerateA2ui (errorId={ErrorId}): upstream transport failure", errorId);            return StructuredError("upstream_unavailable", "The upstream AI service is currently unreachable. Please retry.", "Retry the request in a few seconds.", errorId);        }        catch (A2uiUpstreamResponseException ex)        {            // 2xx status but a malformed/unexpected body shape. The upstream            // body is captured on the exception so we log the provider detail            // with the correlation id, but we return a categorical error            // without leaking the body to the model.            _logger.LogError(ex, "GenerateA2ui (errorId={ErrorId}): upstream returned malformed response body: {Body}", errorId, ex.Body);            return StructuredError("upstream_error", "The upstream AI service returned an unexpected response.", "Try rephrasing the request or retrying later.", errorId);        }        catch (OperationCanceledException)        {            // Cancellation is a normal control-flow signal. Log at Information            // level with the correlation id so operators can tie the log entry            // to any client-side retry, but don't treat it as an error. Rethrow            // to preserve ambient cancellation semantics for the caller.            _logger.LogInformation("GenerateA2ui (errorId={ErrorId}): cancelled", errorId);            throw;        }        // result.Text can legitimately return null (upstream returned no text        // content — e.g. model refused, empty completion, content filter).        // BuildA2uiResponseFromContent requires non-null input; catching the        // null here returns a structured error instead of letting an NRE        // escape uncaught and break the structured-error contract.        if (string.IsNullOrEmpty(content))        {            _logger.LogError("GenerateA2ui (errorId={ErrorId}): upstream returned no text content", errorId);            return StructuredError("empty_llm_output", "Model returned no text content", "Retry or check model availability", errorId);        }        return BuildA2uiResponseFromContent(            content,            errorId,            _logger,            forcedCatalogId: BeautifulChatA2ui.AppDashboardCatalogId);    }    /// <summary>    /// Parses an LLM-produced string into an A2UI operations payload, or a    /// structured error if the content is malformed, null, or empty. Exposed    /// as <c>internal static</c> so unit tests can exercise each error branch    /// (empty_llm_output, JsonException, shape mismatch, ArgumentException)    /// directly without standing up an OpenAI client.    /// </summary>    /// <remarks>    /// Null/empty content is reported as a structured <c>empty_llm_output</c>    /// error rather than thrown as an NRE. This matches the contract of the    /// <see cref="GenerateA2ui"/> caller (which guards null at the call site)    /// and ensures the helper itself is robust to defensive / test callers    /// that pass through whatever the upstream produced.    /// </remarks>    internal static object BuildA2uiResponseFromContent(        string? content,        string errorId,        ILogger logger,        string? forcedCatalogId = null) =>        BeautifulChatA2ui.BuildA2uiResponseFromContent(content, errorId, logger, forcedCatalogId);    // Structured error payload returned to the LLM/caller. We deliberately    // keep this short and categorical — no raw exception messages, no paths,    // no internal identifiers beyond the correlation id.    internal static object StructuredError(string category, string message, string remediation, string errorId) =>        BeautifulChatA2ui.StructuredError(category, message, remediation, errorId);}// =================// Data Models// =================// SalesStateSnapshot is the wire-format shape: what the model emits via// JSON Schema and what we serialize as DataContent on the outbound side.// Previously this was a separate mutable class that duplicated SalesState.// To avoid the previous duplication, this is an immutable record wrapping the same list type as// SalesState exposes, with explicit JsonPropertyName so the schema name// doesn't drift from PascalCase to camelCase under default policies.public sealed record SalesStateSnapshot(    [property: JsonPropertyName("todos")] IReadOnlyList<SalesTodo> Todos){    public SalesStateSnapshot() : this(Array.Empty<SalesTodo>()) { }}public class WeatherInfo{    [JsonPropertyName("temperature")]    public int Temperature { get; init; }    [JsonPropertyName("conditions")]    public string Conditions { get; init; } = string.Empty;    [JsonPropertyName("humidity")]    public int Humidity { get; init; }    [JsonPropertyName("wind_speed")]    public int WindSpeed { get; init; }    [JsonPropertyName("feels_like")]    public int FeelsLike { get; init; }    [JsonPropertyName("city")]    public string City { get; init; } = "";}public partial class Program { }// =================// Serializer Context// =================[JsonSerializable(typeof(SalesStateSnapshot))][JsonSerializable(typeof(SalesTodo))][JsonSerializable(typeof(List<SalesTodo>))][JsonSerializable(typeof(IReadOnlyList<SalesTodo>))][JsonSerializable(typeof(SalesStage))][JsonSerializable(typeof(Currency))][JsonSerializable(typeof(WeatherInfo))][JsonSerializable(typeof(FlightInfo))][JsonSerializable(typeof(List<FlightInfo>))][JsonSerializable(typeof(FlightStatus))][JsonSerializable(typeof(DateOnly))]internal sealed partial class SalesAgentSerializerContext : JsonSerializerContext;
+
+## What is this?#
+
+CopilotKit has a variety of ways to customize the colors and structure of the Copilot UI components via plain CSS. You can:
+
+  * Override CopilotKit CSS variables to re-tint the whole UI
+  * Target the built-in class names (`.copilotKit...`) for structural tweaks
+  * Swap fonts per surface (messages, input, bubbles)
+  * Replace icons and labels via component props
+
+
+
+If you need to change behavior, not just look, see [slots](https://docs.copilotkit.ai/ms-agent-dotnet/custom-look-and-feel/slots) or [fully headless UI](https://docs.copilotkit.ai/ms-agent-dotnet/custom-look-and-feel/headless-ui).
+
+## Scoping the theme#
+
+The demo keeps all of its styling in a sibling `theme.css` file and applies it only to the wrapper div holding `<CopilotChat>`. Importing the stylesheet from the page module is enough; Next.js bundles it with the route:
+
+page.tsx
+    
+    
+    import "./theme.css";
+
+Scoping every selector under a wrapper class keeps the overrides from leaking into the rest of the app.
+
+## CSS Variables (Easiest)#
+
+The easiest way to change the colors used in the Copilot UI components is to override CopilotKit CSS variables. The demo sets them on the scope wrapper so they cascade into every nested chat component:
+
+theme.css
+    
+    
+    /* HALCYON palette — a private library at golden hour. The whole theme is * one warm parchment hue, one warm ink, and a deep copper ember used * sparingly so it actually reads as a signal. */.chat-css-demo-scope {  --halcyon-paper: #f4efe6;  --halcyon-paper-soft: #ece6d9;  --halcyon-paper-elevated: #fbf8f2;  --halcyon-card: #ffffff;  --halcyon-rule: #d6cfbe;  --halcyon-rule-strong: #aea48a;  --halcyon-ink: #1a1714;  --halcyon-ink-soft: #3d362e;  --halcyon-ink-mute: #7a7468;  --halcyon-ember: #c44a1f;  --halcyon-ember-bright: #e45f2b;  --halcyon-ember-soft: #f3d7c5;  --halcyon-champagne: #98794a;  --halcyon-display:    "Instrument Serif", ui-serif, "Iowan Old Style", Georgia, serif;  --halcyon-serif:    "Fraunces", "Source Serif Pro", ui-serif, Georgia, "Times New Roman", serif;  --halcyon-sans:    "Inter Tight", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",    sans-serif;  --halcyon-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;  --halcyon-shadow-soft:    0 1px 0 rgba(26, 23, 20, 0.04), 0 12px 32px -18px rgba(26, 23, 20, 0.18);  --halcyon-shadow-ember:    0 1px 0 rgba(196, 74, 31, 0.18), 0 14px 36px -16px rgba(196, 74, 31, 0.42);}
+
+Once you've found the right variable, you can also apply the overrides inline via the `CopilotKitCSSProperties` helper:
+    
+    
+    import { CopilotKitCSSProperties } from "@copilotkit/react-ui";
+    
+    <div
+      style={
+        {
+          "--copilot-kit-primary-color": "#222222",
+        } as CopilotKitCSSProperties
+      }
+    >
+      <CopilotSidebar />
+    </div>
+
+### Reference#
+
+CSS Variable| Description  
+---|---  
+`--copilot-kit-primary-color`| Main brand/action color for buttons and interactive elements  
+`--copilot-kit-contrast-color`| Color that contrasts with primary, used for text on primary elements  
+`--copilot-kit-background-color`| Main page/container background color  
+`--copilot-kit-secondary-color`| Secondary background for cards, panels, and elevated surfaces  
+`--copilot-kit-secondary-contrast-color`| Primary text color for main content  
+`--copilot-kit-separator-color`| Border color for dividers and containers  
+`--copilot-kit-muted-color`| Muted color for disabled/inactive states  
+`--copilot-kit-shadow-sm` / `-md` / `-lg`| Elevation shadows for subtle surfaces, cards, and modals  
+  
+Two token systems
+
+The `--copilot-kit-*` variables above style the **v1** component CSS (`@copilotkit/react-ui`). The newer **v2** components (`@copilotkit/react-core/v2`) are Tailwind + shadcn-based and use a separate set of design tokens. See v2 design tokens below.
+
+## v2 Design Tokens (shadcn)#
+
+The v2 components (`@copilotkit/react-core/v2`) ship a Tailwind v4 theme built on the standard shadcn/ui token set. Instead of the `--copilot-kit-*` variables, they read [oklch](https://oklch.com) color tokens that are scoped to the `[data-copilotkit]` root and wired into Tailwind utilities through an `@theme inline` block. This means you can re-skin the entire v2 UI by overriding a handful of CSS custom properties. Every component picks the change up automatically.
+
+Override them on the `[data-copilotkit]` element (or any ancestor) the same way you would in a shadcn project:
+
+globals.css
+    
+    
+    [data-copilotkit] {
+      --primary: oklch(0.55 0.22 264); /* accent / action color */
+      --primary-foreground: oklch(0.99 0 0); /* text on primary */
+      --background: oklch(1 0 0); /* surface background */
+      --foreground: oklch(0.145 0 0); /* primary text */
+      --muted: oklch(0.97 0 0); /* subtle backgrounds */
+      --border: oklch(0.922 0 0); /* dividers, outlines */
+      --radius: 0.625rem; /* global corner radius */
+    }
+    
+    /* Dark mode is keyed off a `.dark` ancestor */
+    .dark [data-copilotkit] {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --border: oklch(0.269 0 0);
+    }
+
+### Reference#
+
+These are the most commonly overridden v2 tokens. Each light value has a matching dark-mode value under `.dark [data-copilotkit]`. The full set (popover, accent, destructive, chart, and sidebar variants) lives in `@copilotkit/react-core/v2/styles.css`.
+
+Token| Description  
+---|---  
+`--background` / `--foreground`| Base surface background and primary text color  
+`--primary` / `--primary-foreground`| Accent/action color and the text rendered on top of it  
+`--secondary` / `--secondary-foreground`| Secondary surfaces (cards, panels) and their text  
+`--muted` / `--muted-foreground`| Subtle backgrounds and de-emphasized text  
+`--accent` / `--accent-foreground`| Hover/active states and their text  
+`--border` / `--input` / `--ring`| Divider/outline color, input borders, focus ring  
+`--destructive` / `--destructive-foreground`| Error/danger color and its text  
+`--card` / `--popover` (+ `-foreground`)| Elevated surface backgrounds and their text  
+`--sidebar-*`| The sidebar's own background/foreground/border/ring set  
+`--radius`| Base corner radius; `--radius-sm/md/lg/xl` derive from it  
+  
+oklch values
+
+v2 tokens use the `oklch()` color space, which keeps perceived lightness consistent across hues. You can still pass `hsl()`, `rgb()`, or hex; any valid CSS color works.
+
+## Custom CSS#
+
+The CopilotKit CSS is structured to allow customization via CSS classes. You can target specific pieces of the UI from your own stylesheet:
+
+globals.css
+    
+    
+    .copilotKitButton {
+      border-radius: 0;
+    }
+    
+    .copilotKitMessages {
+      padding: 2rem;
+    }
+    
+    .copilotKitUserMessage {
+      background: #007AFF;
+    }
+
+The demo's `theme.css` wraps every selector under `.chat-css-demo-scope` so the overrides don't leak out. Here's the user message bubble block from that file:
+
+theme.css
+    
+    
+    /* User message — a "transmission" in JetBrains Mono on a paper card. The * outer wrapper is the right-aligning flex column; we leave it transparent * and style the inner bubble (which uses cpk:bg-muted, hence we also * target the substring class as a stable hook). */.chat-css-demo-scope .copilotKitMessage.copilotKitUserMessage {  background: transparent;  padding: 0;  border: none;  box-shadow: none;}.chat-css-demo-scope  .copilotKitMessage.copilotKitUserMessage  > [class*="bg-muted"] {  font-family: var(--halcyon-mono);  font-size: 0.875rem;  font-weight: 400;  color: var(--halcyon-ink);  background: var(--halcyon-paper-elevated);  border: 1px solid var(--halcyon-rule);  border-left: 2px solid var(--halcyon-ember);  border-radius: 0;  padding: 12px 16px 12px 18px;  letter-spacing: -0.005em;  line-height: 1.55;  box-shadow: 0 1px 0 rgba(26, 23, 20, 0.03);  position: relative;}/* A mono "→" marker before the user's text to read like a CLI prompt. */.chat-css-demo-scope  .copilotKitMessage.copilotKitUserMessage  > [class*="bg-muted"]::before {  content: "→";  display: inline-block;  margin-right: 10px;  color: var(--halcyon-ember);  font-weight: 500;}
+
+### Reference#
+
+CSS Class| Description  
+---|---  
+`.copilotKitMessages`| Main container for all chat messages  
+`.copilotKitMessage`| Base class applied to every message bubble (user and assistant)  
+`.copilotKitInput`| Text input container with typing area and send button  
+`.copilotKitUserMessage`| Styling for user messages  
+`.copilotKitAssistantMessage`| Styling for AI responses  
+`.copilotKitHeader`| Top bar of chat window containing title and controls  
+`.copilotKitButton`| Primary chat toggle button  
+`.copilotKitWindow`| Root container defining overall chat window dimensions  
+`.copilotKitMarkdown`| Styles for rendered markdown content  
+`.copilotKitCodeBlock`| Code snippet container with syntax highlighting  
+`.copilotKitSidebar`| Styles for sidebar chat mode  
+`.copilotKitPopup`| Styles for popup chat mode  
+  
+## Custom Fonts#
+
+You can customize the fonts by updating the `fontFamily` property on the relevant CopilotKit classes:
+
+globals.css
+    
+    
+    .copilotKitMessages {
+      font-family: "Arial, sans-serif";
+    }
+    
+    .copilotKitInput {
+      font-family: "Arial, sans-serif";
+    }
+
+## Custom Icons#
+
+Customize icons by passing the `icons` prop to `CopilotSidebar`, `CopilotPopup`, or `CopilotChat`:
+    
+    
+    <CopilotChat
+      icons={{
+        openIcon: <YourOpenIconComponent />,
+        closeIcon: <YourCloseIconComponent />,
+      }}
+    />
+
+## Custom Labels#
+
+Customize all user-facing copy via the `labels` prop:
+    
+    
+    <CopilotChat
+      labels={{
+        welcomeMessageText: "Hello! How can I help you today?",
+        modalHeaderTitle: "My Copilot",
+        chatInputPlaceholder: "Ask me anything!",
+      }}
+    />
+
+### On this page
+
+What is this?Scoping the themeCSS Variables (Easiest)Referencev2 Design Tokens (shadcn)ReferenceCustom CSSReferenceCustom FontsCustom IconsCustom Labels

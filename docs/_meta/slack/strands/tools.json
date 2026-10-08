@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/strands/tools/",
+  "file": "slack/strands/tools.md",
+  "title": "Slack + AWS Strands (Python): Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:28:56.768986+00:00",
+  "html_len": 237418,
+  "md_len": 8857,
+  "depth": 0
+}

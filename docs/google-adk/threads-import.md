@@ -1,0 +1,288 @@
+---
+url: https://docs.copilotkit.ai/google-adk/threads-import/
+title: Add AG-UI Streams to ADK Sessions
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:03:37.616674+00:00
+---
+
+# Add AG-UI Streams to ADK Sessions
+
+> Source: https://docs.copilotkit.ai/google-adk/threads-import/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendGoogle ADK
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/google-adk)[Quickstart](https://docs.copilotkit.ai/google-adk/quickstart)[Build with agents](https://docs.copilotkit.ai/google-adk/build-with-agents)[Intelligence](https://docs.copilotkit.ai/google-adk/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/google-adk/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/google-adk/webmcp)
+
+Agent capabilities
+
+Google ADK
+
+[Sub-agents](https://docs.copilotkit.ai/google-adk/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/google-adk/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Overview](https://docs.copilotkit.ai/google-adk/threads)[Bring your own thread system](https://docs.copilotkit.ai/google-adk/intelligence/bring-your-own-thread-system)[Add to Existing Threads](https://docs.copilotkit.ai/google-adk/threads-import)[Thread & History Lifecycle](https://docs.copilotkit.ai/google-adk/threads-lifecycle)[Streams & Framework Threads](https://docs.copilotkit.ai/google-adk/intelligence/threads-explained)
+
+[Automatic Learning](https://docs.copilotkit.ai/google-adk/learning)
+
+[User Memories](https://docs.copilotkit.ai/google-adk/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/google-adk/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/google-adk/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/google-adk/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/google-adk/intelligence/analytics)[Channels](https://docs.copilotkit.ai/google-adk/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Deployment
+
+Debugging
+
+Learn
+
+Concepts
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/google-adk/telemetry)[Community frameworks](https://docs.copilotkit.ai/google-adk/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Add to Existing Threads
+
+IntelligenceFeaturesAG-UI Streams
+
+# Add AG-UI Streams to ADK Sessions
+
+Add Intelligence’s AG-UI streams to your existing agent conversations, with optional historical import for supported stores.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+## Add Intelligence to your existing app#
+
+Give users reconnection, catch-up, and delivery across devices around your ADK agent. Follow the [Intelligence quickstart](https://docs.copilotkit.ai/google-adk/intelligence/quickstart) to connect your existing CopilotKit app and Runtime, then verify that a new conversation is saved. This enables AG-UI streams for runs through CopilotKit; no historical import is required.
+
+Keep ADK session storage and analytics configured for agent context and execution state. Maintain a stable mapping between CopilotKit `threadId` values and native ADK conversation identifiers so later runs reach the same conversation. See [how streams work with framework storage](https://docs.copilotkit.ai/google-adk/intelligence/threads-explained#how-threads-work-with-framework-storage).
+
+## Include earlier conversations (optional)#
+
+To let users reopen conversations recorded before Intelligence was connected, use the importer below to copy supported historical content. Importing does not enable live delivery or establish ongoing database replication, and it cannot recover history the source no longer exposes.
+
+The ADK importer reads persisted sessions from ADK database session stores and Vertex/Agent Engine session history.
+
+The following prerequisites and commands apply only to that historical import. Use Threads Drawer or [Headless Threads](https://docs.copilotkit.ai/google-adk/headless-threads) to open imported and new conversations through the same UI.
+
+## Prerequisites#
+
+  * An existing CopilotKit app with Intelligence connected.
+  * Persisted ADK sessions. In-memory ADK sessions cannot be exported.
+  * ADK source credentials in environment variables.
+  * An agent map from ADK `app_name` values to your live CopilotKit `agentId`s.
+
+
+
+Legacy ADK pickle stores
+
+Legacy ADK pickle stores are not parsed by the importer. Migrate those sessions with ADK's session migration command first, then re-run the import against the migrated store.
+
+## Confirm the target project#
+
+Choose the Intelligence project that will receive the history. Its app-api URL and project-scoped runtime key select the destination. You will export those values before importing.
+
+For a CLI-created app, you can select a cloud-hosted project:
+
+Terminal
+    
+    
+    npx copilotkit@latest project select
+
+The command updates the project selected for the current directory and writes its project-scoped runtime key to the app's generated `.env`.
+
+## Configure the source#
+
+Choose the ADK backend to read from.
+
+DatabaseVertex / Agent Engine
+
+Terminal
+    
+    
+    export ADK_SOURCE_BACKEND="database"
+    export ADK_DATABASE_CONNECTION_STRING="postgres://..."
+    export ADK_IMPORT_SCOPES="support:user-123"
+
+`ADK_IMPORT_SCOPES` accepts comma-separated selectors such as `app:user`, `app:*`, `*:user`, or `*`.
+
+Terminal
+    
+    
+    export ADK_SOURCE_BACKEND="vertex"
+    export ADK_VERTEX_PROJECT_ID="my-gcp-project"
+    export ADK_VERTEX_LOCATION="us-central1"
+    export ADK_VERTEX_AGENT_ENGINE_ID="..."
+    export ADK_IMPORT_SCOPES="support:*"
+
+The importer uses your Google application default credentials or service account credentials in the same way ADK does.
+
+You can also pass the backend and scopes as CLI flags:
+
+Terminal
+    
+    
+    npx copilotkit@latest import \
+      --source adk \
+      --adk-source-backend database \
+      --adk-import-scopes "support:user-123" \
+      --dry-run
+
+## Run a dry run#
+
+Preview the import before writing anything.
+
+Terminal
+    
+    
+    npx copilotkit@latest import --source adk --dry-run
+
+The dry run discovers ADK app names, counts sessions, reports sessions that cannot be imported, and estimates upload size. It does not need a CopilotKit Intelligence URL or API key.
+
+## Map ADK app names to CopilotKit agent IDs#
+
+The source agent key for ADK is `app_name`. Map each discovered app name to the `agentId` your live CopilotKit runtime uses.
+
+agent-map.json
+    
+    
+    {
+      "support": "support-agent",
+      "research": "research-agent"
+    }
+
+Using the same `agentId` as live traffic keeps imported sessions and future conversations grouped together.
+
+## Prepare the CopilotKit Intelligence destination#
+
+A real import needs the destination app-api URL and project-scoped runtime key. A CLI-created starter writes them to `.env`, but the importer reads the current process environment and does not load `.env` or `.copilotkit/project.json` automatically.
+
+Copy the generated values into your shell before importing:
+
+Terminal
+    
+    
+    export INTELLIGENCE_API_URL="https://..."
+    export CPK_INTELLIGENCE_API_KEY="cpk-..."
+
+`COPILOTKIT_API_KEY` is also accepted for the key. You can pass the destination directly with `--api-url` and `--api-key` instead.
+
+## Import the sessions#
+
+Run the import after the dry run and agent map look right.
+
+Terminal
+    
+    
+    npx copilotkit@latest import \
+      --source adk \
+      --agent-map ./agent-map.json
+
+For self-hosted CopilotKit Intelligence, pass the target connection explicitly:
+
+Terminal
+    
+    
+    npx copilotkit@latest import \
+      --source adk \
+      --api-url "$INTELLIGENCE_API_URL" \
+      --api-key "$CPK_INTELLIGENCE_API_KEY" \
+      --agent-map ./agent-map.json \
+      --yes
+
+ADK user attribution defaults to `session.user_id`. This value must match the application user ID returned by your runtime's `identifyUser`. Sessions without a recoverable user are omitted by default; use `--unrecoverable imported-unknown` only when you intentionally want to place those sessions under an imported fallback user.
+
+## Verify the imported sessions#
+
+Sign in as the application user whose ID you imported. Open the conversation from the Threads Drawer and make sure that its earlier messages appear. Send a message and make sure that ADK updates the same native session.
+
+## Re-run or replace#
+
+Re-running the same import is idempotent. Sessions already imported from the same source are skipped.
+
+Use `--replace` to refresh an earlier import. Running sessions and sessions continued after import remain unchanged:
+
+Terminal
+    
+    
+    npx copilotkit@latest import \
+      --source adk \
+      --agent-map ./agent-map.json \
+      --replace
+
+## Continue using ADK persistence#
+
+Importing copies supported history; it does not establish ongoing database replication. Intelligence rename, archive, and delete operations affect only Intelligence records, leaving the native ADK session records unchanged.
+
+Your CLI-created app sends future CopilotKit conversations to CopilotKit Intelligence. To keep each conversation continuous, reopen it with the same CopilotKit `threadId`. If your agent remains wired to a durable ADK session service and retains its sessions, the same future runs continue to persist in ADK for its native storage and analytics.
+
+  * **Threads Drawer:** already included in CLI-created starters. Use the [Threads Drawer guide](https://docs.copilotkit.ai/google-adk/prebuilt-components/copilot-threads-drawer) to customize its ready-made thread UI.
+  * **Headless Threads:** use the [Headless Threads guide](https://docs.copilotkit.ai/google-adk/headless-threads) only when you need a custom UI. Select a thread with `useThreads`, store its `thread.id`, and pass that value to your chat component as `threadId`.
+
+
+
+Keep the mapping between CopilotKit thread IDs and ADK session IDs stable so a resumed thread reaches the expected ADK session.
+
+Create one new conversation through CopilotKit, then confirm that it appears in CopilotKit Intelligence and in the ADK session store that remains connected to your agent.
+
+### On this page
+
+Add Intelligence to your existing appInclude earlier conversations (optional)PrerequisitesConfirm the target projectConfigure the sourceRun a dry runMap ADK app names to CopilotKit agent IDsPrepare the CopilotKit Intelligence destinationImport the sessionsVerify the imported sessionsRe-run or replaceContinue using ADK persistence

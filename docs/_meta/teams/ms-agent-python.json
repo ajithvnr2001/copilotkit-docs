@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/ms-agent-python/",
+  "file": "teams/ms-agent-python.md",
+  "title": "Microsoft Teams: Channels",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:51.011389+00:00",
+  "html_len": 120434,
+  "md_len": 7311,
+  "depth": 0
+}

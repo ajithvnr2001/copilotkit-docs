@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/commands-and-reactions/",
+  "file": "teams/commands-and-reactions.md",
+  "title": "Microsoft Teams: Commands and reactions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:40.648537+00:00",
+  "html_len": 171094,
+  "md_len": 6817,
+  "depth": 0
+}

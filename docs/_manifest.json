@@ -1,0 +1,40 @@
+{
+  "base": "https://docs.copilotkit.ai",
+  "generated_at": "2026-10-08T09:49:50.014130+00:00",
+  "sitemap": {
+    "total": 3993,
+    "covered": 3992,
+    "pct": 99.97,
+    "broken_origin_500": [
+      "https://docs.copilotkit.ai/ms-agent-harness-dotnet/tutorials/ai-powered-textarea/step-2-setup-copilotkit/"
+    ]
+  },
+  "total_urls": 4554,
+  "total_files": 4552,
+  "total_size": "99M",
+  "llms_files": [
+    "docs.copilotkit.ai_llms-full.txt",
+    "docs.copilotkit.ai_llms.txt"
+  ],
+  "by_method": {
+    "scrapling+scrapegraph": 4304,
+    "crawl4ai+scrapegraph": 247,
+    "httpx+scrapegraph": 3
+  },
+  "by_host": {
+    "docs.copilotkit.ai": 4529,
+    "dashboard.operations.copilotkit.ai": 4,
+    "copilotkit.ai": 3,
+    "www.copilotkit.ai": 1,
+    "intelligence.copilotkit.ai": 2,
+    "go.copilotkit.ai": 2,
+    "feature-viewer.copilotkit.ai": 13
+  },
+  "failed_blocked": 20,
+  "tools": [
+    "scrapling Fetcher.get (primary) - D4Vinci/Scrapling",
+    "crawl4AI AsyncWebCrawler (fallback) - unclecode/crawl4AI",
+    "scrapegraph-ai cleanup_html/convert_to_md - ScrapeGraphAI/Scrapegraph-ai"
+  ],
+  "notes": "4554 urls -> 4552 files (2 scheme/trailing-slash dupes share a file). Reruns are no-ops (5s, visited unchanged)."
+}

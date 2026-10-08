@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/mastra/files-and-multimodality/",
+  "file": "teams/mastra/files-and-multimodality.md",
+  "title": "Microsoft Teams + Mastra: Files and multimodal input",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:37.620619+00:00",
+  "html_len": 153219,
+  "md_len": 9001,
+  "depth": 0
+}

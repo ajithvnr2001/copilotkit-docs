@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/ms-agent-harness-dotnet/intelligence/self-hosting-ecs/",
+  "file": "ms-agent-harness-dotnet/intelligence/self-hosting-ecs.md",
+  "title": "Self-host Intelligence on AWS ECS/Fargate",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:20:51.548282+00:00",
+  "html_len": 355230,
+  "md_len": 26346,
+  "depth": 0
+}

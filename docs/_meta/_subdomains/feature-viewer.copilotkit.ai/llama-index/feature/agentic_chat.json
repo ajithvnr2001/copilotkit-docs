@@ -1,0 +1,10 @@
+{
+  "url": "https://feature-viewer.copilotkit.ai/llama-index/feature/agentic_chat/",
+  "file": "_subdomains/feature-viewer.copilotkit.ai/llama-index/feature/agentic_chat.md",
+  "title": "Demo Viewer by CopilotKit",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:38:03.562846+00:00",
+  "html_len": 44770,
+  "md_len": 867,
+  "depth": 1
+}

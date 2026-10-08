@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/mastra/commands-and-reactions/",
+  "file": "teams/mastra/commands-and-reactions.md",
+  "title": "Microsoft Teams + Mastra: Commands and reactions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:35.385563+00:00",
+  "html_len": 170825,
+  "md_len": 6920,
+  "depth": 0
+}

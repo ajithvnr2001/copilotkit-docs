@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/ag2/tools/",
+  "file": "teams/ag2/tools.md",
+  "title": "Microsoft Teams + AG2: Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:25.046667+00:00",
+  "html_len": 239005,
+  "md_len": 8789,
+  "depth": 0
+}

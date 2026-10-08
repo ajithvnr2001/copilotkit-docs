@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/ms-agent-harness-dotnet/files-and-multimodality/",
+  "file": "teams/ms-agent-harness-dotnet/files-and-multimodality.md",
+  "title": "Microsoft Teams + MS Agent Harness (.NET): Files and multimodal input",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:49.161709+00:00",
+  "html_len": 155385,
+  "md_len": 9273,
+  "depth": 0
+}

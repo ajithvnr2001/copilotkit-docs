@@ -1,0 +1,10 @@
+{
+  "url": "https://intelligence.copilotkit.ai",
+  "file": "_subdomains/intelligence.copilotkit.ai/_index.md",
+  "title": "CopilotKit Intelligence",
+  "method": "httpx+scrapegraph (scrapling: scrapling empty html | crawl4ai: crawl4ai failed: Blocked by anti-bot protection: Structural: minimal_text on small page (1237 bytes, 10 chars visible))",
+  "fetched_at": "2026-10-08T09:35:44.652028+00:00",
+  "html_len": 481,
+  "md_len": 74,
+  "depth": 1
+}

@@ -1,0 +1,259 @@
+---
+url: https://docs.copilotkit.ai/langgraph-typescript/threads-import/
+title: Add AG-UI Streams to LangGraph Threads
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:12:12.919884+00:00
+---
+
+# Add AG-UI Streams to LangGraph Threads
+
+> Source: https://docs.copilotkit.ai/langgraph-typescript/threads-import/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendLangGraph (TypeScript)
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/langgraph-typescript)[Quickstart](https://docs.copilotkit.ai/langgraph-typescript/quickstart)[Build with agents](https://docs.copilotkit.ai/langgraph-typescript/build-with-agents)[Intelligence](https://docs.copilotkit.ai/langgraph-typescript/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/langgraph-typescript/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/langgraph-typescript/webmcp)
+
+Agent capabilities
+
+LangGraph (TypeScript)
+
+[Sub-agents](https://docs.copilotkit.ai/langgraph-typescript/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/langgraph-typescript/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Overview](https://docs.copilotkit.ai/langgraph-typescript/threads)[Bring your own thread system](https://docs.copilotkit.ai/langgraph-typescript/intelligence/bring-your-own-thread-system)[Add to Existing Threads](https://docs.copilotkit.ai/langgraph-typescript/threads-import)[Thread & History Lifecycle](https://docs.copilotkit.ai/langgraph-typescript/threads-lifecycle)[Streams & Framework Threads](https://docs.copilotkit.ai/langgraph-typescript/intelligence/threads-explained)
+
+[Automatic Learning](https://docs.copilotkit.ai/langgraph-typescript/learning)
+
+[User Memories](https://docs.copilotkit.ai/langgraph-typescript/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/langgraph-typescript/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/langgraph-typescript/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/langgraph-typescript/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/langgraph-typescript/intelligence/analytics)[Channels](https://docs.copilotkit.ai/langgraph-typescript/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Deployment
+
+Debugging
+
+Learn
+
+Concepts
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/langgraph-typescript/telemetry)[Community frameworks](https://docs.copilotkit.ai/langgraph-typescript/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Add to Existing Threads
+
+IntelligenceFeaturesAG-UI Streams
+
+# Add AG-UI Streams to LangGraph Threads
+
+Add Intelligence’s AG-UI streams to your existing agent conversations, with optional historical import for supported stores.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+## Add Intelligence to your existing app#
+
+Give users reconnection, catch-up, and delivery across devices around your LangGraph agent. Follow the [Intelligence quickstart](https://docs.copilotkit.ai/langgraph-typescript/intelligence/quickstart) to connect your existing CopilotKit app and Runtime, then verify that a new conversation is saved. This enables AG-UI streams for runs through CopilotKit; no historical import is required.
+
+Keep LangGraph or LangSmith storage and analytics configured for agent context and execution state. Maintain a stable mapping between CopilotKit `threadId` values and native LangGraph conversation identifiers so later runs reach the same conversation. See [how streams work with framework storage](https://docs.copilotkit.ai/langgraph-typescript/intelligence/threads-explained#how-threads-work-with-framework-storage).
+
+## Include earlier conversations (optional)#
+
+To let users reopen conversations recorded before Intelligence was connected, use the importer below to copy supported historical content. Importing does not enable live delivery or establish ongoing database replication, and it cannot recover history the source no longer exposes.
+
+The LangGraph importer reads LangGraph Server, LangGraph Platform, or LangSmith Deployment threads. This works for LangGraph Python, LangGraph TypeScript, and LangGraph FastAPI when the source history is available through the LangGraph SDK thread and run APIs. It does not read arbitrary checkpoint databases, classic LangChain message history stores, or LangSmith traces. The CLI also accepts supported standalone checkpoint exports with `--langgraph-snapshot <path>`. The steps below use a LangGraph deployment.
+
+The following prerequisites and commands apply only to that historical import. Use Threads Drawer or [Headless Threads](https://docs.copilotkit.ai/langgraph-typescript/headless-threads) to open imported and new conversations through the same UI.
+
+## Prerequisites#
+
+  * An existing CopilotKit app with Intelligence connected.
+  * A LangGraph Server, LangGraph Platform, or LangSmith Deployment URL.
+  * A LangGraph API key, LangSmith API key, or LangChain API key accepted by the LangGraph SDK.
+  * Source threads that belong to one `graph_id` per thread. Threads spanning multiple graph IDs are skipped instead of imported partially.
+
+
+
+## Confirm the target project#
+
+Choose the Intelligence project that will receive the history. Its app-api URL and project-scoped runtime key select the destination. You will export those values before importing.
+
+For a CLI-created app, you can select a cloud-hosted project:
+
+Terminal
+    
+    
+    npx copilotkit@latest project select
+
+The command updates the project selected for the current directory and writes its project-scoped runtime key to the app's generated `.env`.
+
+## Configure the source#
+
+Set the LangGraph deployment URL and API key in your shell. The importer reads source credentials from framework-native environment variables, not raw CLI flags.
+
+Terminal
+    
+    
+    export LANGGRAPH_API_URL="https://your-langgraph-deployment"
+    export LANGGRAPH_API_KEY="..."
+
+`LANGSMITH_API_KEY` or `LANGCHAIN_API_KEY` can be used instead when that is how your deployment authenticates. If your LangGraph Cloud workspace requires a tenant header, set `LANGGRAPH_TENANT_ID` or `LANGSMITH_TENANT_ID`.
+
+The examples below assume each thread has a top-level `user_id` field in its LangGraph metadata. Its value must match the application user ID returned by your runtime's `identifyUser`. Use `--user-source metadata.user_id` to read that field. If every source thread belongs to one user, use `--user-source literal:user-123` with that user's actual ID.
+
+## Run a dry run#
+
+Start with a preview. This reads the source, discovers graph IDs, counts conversations, reports skips, and estimates upload size without writing to CopilotKit Intelligence. It does not need a CopilotKit Intelligence URL or API key.
+
+Terminal
+    
+    
+    npx copilotkit@latest import --source langgraph --user-source metadata.user_id --dry-run
+
+## Map graph IDs to CopilotKit agent IDs#
+
+The source agent key for LangGraph is the thread's `graph_id`. Map each discovered graph ID to the `agentId` your live CopilotKit runtime uses.
+
+agent-map.json
+    
+    
+    {
+      "support": "support"
+    }
+
+This example maps the LangGraph graph `support` to the runtime agent `support`. Replace both values with your app's IDs. Use the same runtime agent ID for import and later runs.
+
+## Prepare the CopilotKit Intelligence destination#
+
+A real import needs the destination app-api URL and project-scoped runtime key. A CLI-created starter writes them to `.env`, but the importer reads the current process environment and does not load `.env` or `.copilotkit/project.json` automatically.
+
+Copy the generated values into your shell before importing:
+
+Terminal
+    
+    
+    export INTELLIGENCE_API_URL="https://..."
+    export CPK_INTELLIGENCE_API_KEY="cpk-..."
+
+`COPILOTKIT_API_KEY` is also accepted for the key. You can pass the destination directly with `--api-url` and `--api-key` instead.
+
+## Import the threads#
+
+Run the import after the dry run and agent mapping look right. Import earlier history before the first connected run for those threads. If live recording or another import already reserved the native thread ID, the importer reports `IMPORT_NATIVE_ID_CONFLICT`. It does not overwrite that record.
+
+Terminal
+    
+    
+    npx copilotkit@latest import \
+      --source langgraph \
+      --agent-map ./agent-map.json \
+      --user-source metadata.user_id
+
+For self-hosted CopilotKit Intelligence, pass the target connection explicitly:
+
+Terminal
+    
+    
+    npx copilotkit@latest import \
+      --source langgraph \
+      --api-url "$INTELLIGENCE_API_URL" \
+      --api-key "$CPK_INTELLIGENCE_API_KEY" \
+      --agent-map ./agent-map.json \
+      --user-source metadata.user_id \
+      --yes
+
+## Verify the imported threads#
+
+Sign in as the application user whose ID you imported. Open the conversation from the Threads Drawer and make sure that its earlier messages appear. Send a message and make sure that LangGraph updates the same native thread. Intelligence records this new interaction alongside the imported history.
+
+## Re-run or replace#
+
+Re-running the same import is idempotent. Conversations already imported from the same source thread are skipped.
+
+Use `--replace` to refresh an earlier import. Running threads and threads continued after import remain unchanged:
+
+Terminal
+    
+    
+    npx copilotkit@latest import \
+      --source langgraph \
+      --agent-map ./agent-map.json \
+      --user-source metadata.user_id \
+      --replace
+
+## Continue using LangGraph persistence#
+
+Importing copies supported history; it does not establish ongoing database replication. Intelligence rename, archive, and delete operations affect only Intelligence records, leaving the native LangGraph thread records unchanged.
+
+Your connected app sends future CopilotKit conversations to CopilotKit Intelligence. To continue an imported conversation, use its `thread.id` from the Drawer or `useThreads` as the CopilotKit `threadId`. If your agent remains wired to a durable LangGraph checkpointer or Platform deployment, the same future runs continue to persist in LangGraph or LangSmith for native storage and analytics.
+
+  * **Threads Drawer:** already included in CLI-created starters. Use the [Threads Drawer guide](https://docs.copilotkit.ai/langgraph-typescript/prebuilt-components/copilot-threads-drawer) to customize its ready-made thread UI.
+  * **Headless Threads:** use the [Headless Threads guide](https://docs.copilotkit.ai/langgraph-typescript/headless-threads) only when you need a custom UI. Select a thread with `useThreads`, store its `thread.id`, and pass that value to your chat component as `threadId`.
+
+
+
+If your backend maps CopilotKit thread IDs to LangGraph thread IDs, keep that mapping stable so a resumed CopilotKit thread reaches the expected LangGraph thread. LangGraph Platform thread IDs must be UUIDs, so persist a mapping instead of reusing the CopilotKit `threadId` when necessary.
+
+For automatic recording without historical import, follow the [existing LangGraph conversation example](https://docs.copilotkit.ai/langgraph-typescript/threads-lifecycle#example-keep-an-existing-langgraph-conversation).
+
+### On this page
+
+Add Intelligence to your existing appInclude earlier conversations (optional)PrerequisitesConfirm the target projectConfigure the sourceRun a dry runMap graph IDs to CopilotKit agent IDsPrepare the CopilotKit Intelligence destinationImport the threadsVerify the imported threadsRe-run or replaceContinue using LangGraph persistence

@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/langgraph-fastapi/prebuilt-components/sidebar/",
+  "file": "langgraph-fastapi/prebuilt-components/sidebar.md",
+  "title": "CopilotSidebar",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:05:51.918189+00:00",
+  "html_len": 209065,
+  "md_len": 11859,
+  "depth": 0
+}

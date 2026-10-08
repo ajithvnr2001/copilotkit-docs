@@ -52,7 +52,7 @@ curl -s -o /dev/null -w '%{http_code}\n' https://docs.copilotkit.ai/ms-agent-har
 ```
 crawl_copilotkit.py  update_incremental.py
 guide_code/          # in-depth coder guide + coder_scrape.py / coder_update.py
-docs/                # git-ignored output
+docs/                # full crawl output (committed: 4,552 files, all <10MB)
 tools/               # git-ignored (symlinks to shared clones)
 ```
 

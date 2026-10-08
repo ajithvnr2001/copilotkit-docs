@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/langgraph-fastapi/commands-and-reactions/",
+  "file": "slack/langgraph-fastapi/commands-and-reactions.md",
+  "title": "Slack + LangGraph (FastAPI): Commands and reactions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:27:23.255711+00:00",
+  "html_len": 170611,
+  "md_len": 7167,
+  "depth": 0
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/crewai-crews/interactive/",
+  "file": "slack/crewai-crews/interactive.md",
+  "title": "Slack + CrewAI Flows: Interactive messages and approvals",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:26:59.988910+00:00",
+  "html_len": 224747,
+  "md_len": 10746,
+  "depth": 0
+}

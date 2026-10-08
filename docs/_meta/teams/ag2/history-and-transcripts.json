@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/ag2/history-and-transcripts/",
+  "file": "teams/ag2/history-and-transcripts.md",
+  "title": "Microsoft Teams + AG2: History and transcripts",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:22.679381+00:00",
+  "html_len": 185135,
+  "md_len": 8150,
+  "depth": 0
+}

@@ -1,0 +1,390 @@
+---
+url: https://docs.copilotkit.ai/teams/mastra/connect/
+title: Connect and run your agent in Microsoft Teams
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:33:35.627924+00:00
+---
+
+# Connect and run your agent in Microsoft Teams
+
+> Source: https://docs.copilotkit.ai/teams/mastra/connect/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+ChannelTeamsAgent backendMastra
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+Getting Started
+
+[Overview](https://docs.copilotkit.ai/teams/mastra)[Configure the Channel in Intelligence](https://docs.copilotkit.ai/teams/mastra/intelligence)[Connect and run your agent](https://docs.copilotkit.ai/teams/mastra/connect)
+
+Build
+
+[Tools and context](https://docs.copilotkit.ai/teams/mastra/tools)[Identity and Memory](https://docs.copilotkit.ai/teams/mastra/identity-and-memory)[Rich messages and components](https://docs.copilotkit.ai/teams/mastra/rich-messages)[Interactive messages and approvals](https://docs.copilotkit.ai/teams/mastra/interactive)[Commands and reactions](https://docs.copilotkit.ai/teams/mastra/commands-and-reactions)[Files and multimodal input](https://docs.copilotkit.ai/teams/mastra/files-and-multimodality)[Threads and state](https://docs.copilotkit.ai/teams/mastra/threads-and-state)
+
+Production
+
+[Persistence and scaling](https://docs.copilotkit.ai/teams/mastra/persistence-and-scaling)[History and transcripts](https://docs.copilotkit.ai/teams/mastra/history-and-transcripts)[Deploy and operate](https://docs.copilotkit.ai/teams/mastra/deploy-and-operate)[API reference](https://docs.copilotkit.ai/reference/channels)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Connect and run your agent
+
+Getting Started
+
+# Connect and run your agent in Microsoft Teams
+
+Run any supported agent framework in Teams through a cloud-hosted Intelligence connection.
+
+In this guide, you will connect an AG-UI agent to a managed Microsoft Teams bot, start a long-running Channels SDK listener, and verify a real Microsoft Teams message. CopilotKit Intelligence owns the public messaging endpoint and Teams credentials; your process owns the agent and application logic.
+
+The bot is created in your own Microsoft tenant and belongs to you. Setup registers it in Teams Developer Portal — no Azure subscription and no Azure Bot resource are involved.
+
+New to the product? Start with the [Channels overview](https://docs.copilotkit.ai/teams/mastra) to understand how the SDK, Runtime, Intelligence, and provider connection fit together.
+
+Before you continue, [configure the Channel in Intelligence](https://docs.copilotkit.ai/teams/mastra/intelligence). You should have `CHANNEL_CODE` and `CPK_INTELLIGENCE_API_KEY`.
+
+## Start with your coding agent#
+
+Use this prompt to connect your agent to Microsoft Teams, start the Channels SDK listener, and verify a real channel message. You can also follow the manual steps below.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+## What kind of bot this is#
+
+Microsoft supports more than one kind of bot identity. Setup creates a **Teams-managed** bot: Teams Developer Portal owns the registration, and its app ID and client secrets live there under **Tools → Bot management** , in your directory, rotatable by your own admins. It is registered single-tenant, so it is scoped to your organization. Nothing is created in your Azure account and nothing is billable. If you stop using CopilotKit the registration stays in your Developer Portal; removing it is yours to do.
+
+The alternative Microsoft offers is an **Azure Bot** — a billable Azure Bot Service resource in your own subscription, needing a subscription, resource group, and region. Microsoft's Teams CLI recognizes only these two kinds; a self-managed Microsoft Entra app registration that you create and manage yourself is not something it can produce or consume.
+
+Treat the choice as permanent. Microsoft provides a one-way `teams app bot migrate` to Azure that replaces the existing registration, with nothing to migrate back. CopilotKit itself is indifferent to which kind you point a Channel at — Intelligence performs an ordinary client-credentials grant with the app ID, tenant ID, and secret — but the app ID is embedded in the app package as the bot ID, so changing identity means generating a fresh package, uploading it, and re-installing.
+
+## Before you start#
+
+  * Node.js 22 or later; the managed launcher requires the global `WebSocket` available in Node.js 22+
+  * A long-running Node host or container; serverless request handlers cannot own the persistent gateway connection
+
+
+
+## Build and run your Channel#
+
+### Create the runner#
+
+Terminal
+    
+    
+    mkdir my-teams-channel
+    cd my-teams-channel
+    npm init -y
+    npm pkg set type=module
+
+Use this tested package combination. Keep exact versions in your lockfile and verify compatibility before changing either package.
+
+Terminal
+    
+    
+    npm install --save-exact @copilotkit/channels@0.11.0 @copilotkit/runtime@1.73.3
+
+Terminal
+    
+    
+    npm install -D tsx typescript @types/node
+
+tsconfig.json
+    
+    
+    {
+      "compilerOptions": {
+        "target": "ES2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "strict": true,
+        "skipLibCheck": true,
+        "noEmit": true,
+        "types": ["node"]
+      },
+      "include": ["*.ts", "*.tsx"]
+    }
+
+### Connect your agent backend#
+
+The selector's **Agent backend** controls the setup below. It must export a fresh `makeAgent(threadId)` result for each Teams conversation.
+
+Follow the [Mastra quickstart](https://docs.copilotkit.ai/mastra/quickstart) and keep that application running with its existing command:
+
+Mastra application
+    
+    
+    npm run dev
+
+Mastra's current Next.js example exposes CopilotKit's single-route protocol, not a URL that `HttpAgent` can call directly. Add this one multi-route bridge beside the existing route. It reuses the quickstart's registered `myAgent` while creating a request-scoped adapter for each incoming thread:
+
+src/app/api/copilotkit/[...path]/route.ts
+    
+    
+    import { getLocalAgent } from "@ag-ui/mastra";
+    import {
+      CopilotRuntime,
+      createCopilotRuntimeHandler,
+    } from "@copilotkit/runtime/v2";
+    import { mastra } from "@/mastra";
+    
+    const runtime = new CopilotRuntime({
+      agents: async ({ request }) => {
+        const input =
+          request.method === "POST"
+            ? await request
+                .clone()
+                .json()
+                .catch(() => ({}) as { threadId?: string })
+            : ({} as { threadId?: string });
+        const threadId =
+          typeof input.threadId === "string" ? input.threadId : "channels-info";
+    
+        return {
+          myAgent: getLocalAgent({
+            mastra,
+            agentId: "myAgent",
+            resourceId: threadId,
+          }),
+        };
+      },
+    });
+    
+    const handler = createCopilotRuntimeHandler({
+      runtime,
+      basePath: "/api/copilotkit",
+      cors: true,
+    });
+    
+    export const GET = handler;
+    export const POST = handler;
+    export const OPTIONS = handler;
+
+The standalone Channels runner calls the bridge's concrete agent-run route:
+
+.env
+    
+    
+    AGENT_URL=http://localhost:3000/api/copilotkit/agent/myAgent/run
+
+If you registered a different Mastra agent id, replace `myAgent` in both the bridge and URL with that exact id.
+
+Install the HTTP adapter in the Channels runner and create a fresh client for each channel thread:
+
+Channels runner
+    
+    
+    npm install @ag-ui/client@0.0.59
+
+agent.ts
+    
+    
+    import { HttpAgent } from "@ag-ui/client";
+    
+    export function makeAgent(threadId: string) {
+      const agent = new HttpAgent({ url: process.env.AGENT_URL! });
+      agent.threadId = threadId;
+      return agent;
+    }
+
+### Declare the managed Teams Channel#
+
+Create the listener below. Replace `support-teams` with the exact Code shown in Intelligence.
+
+Set `agent: makeAgent` on the Channel because this handler calls `thread.runAgent()`. Channels do not inherit `runtime.agents`. A Channel whose handlers reply directly without `runAgent()` can omit `agent`.
+
+channel.ts
+    
+    
+    import { createServer } from "node:http";
+    import { createChannel } from "@copilotkit/channels";
+    import {
+      CopilotKitIntelligence,
+      CopilotRuntime,
+    } from "@copilotkit/runtime/v2";
+    import { createCopilotNodeListener } from "@copilotkit/runtime/v2/node";
+    import { makeAgent } from "./agent.js";
+    
+    function required(name: string): string {
+      const value = process.env[name];
+      if (!value) throw new Error(`Missing required environment variable: ${name}`);
+      return value;
+    }
+    
+    const channel = createChannel({
+      name: required("CHANNEL_CODE"),
+      identifyUser: "platform",
+      agent: makeAgent,
+    });
+    
+    channel.onMessage(async ({ thread, message }) => {
+      await thread.runAgent({
+        prompt: message.contentParts?.length
+          ? [
+              ...(message.text
+                ? [{ type: "text" as const, text: message.text }]
+                : []),
+              ...message.contentParts,
+            ]
+          : message.text,
+        context: [
+          { description: "Originating platform", value: message.platform },
+        ],
+      });
+    });
+    
+    const intelligence = new CopilotKitIntelligence({
+      apiKey: required("CPK_INTELLIGENCE_API_KEY"),
+      // Cloud-hosted deployments use the default URLs. Override both URLs
+      // together only for self-hosted or non-production Intelligence.
+      apiUrl: process.env.INTELLIGENCE_API_URL,
+      wsUrl: process.env.INTELLIGENCE_GATEWAY_WS_URL,
+    });
+    
+    const runtime = new CopilotRuntime({
+      agents: {},
+      intelligence,
+      channels: [channel],
+    });
+    
+    // Wire teardown before the listener exists, because creating it is what
+    // starts the Channel. A Ctrl-C during the connect window then still tears
+    // the Channel down instead of hitting Node's default handler.
+    let teardown: (() => Promise<void>) | undefined;
+    const shutdown = async () => {
+      await teardown?.();
+    };
+    process.once("SIGINT", shutdown);
+    process.once("SIGTERM", shutdown);
+    
+    const listener = createCopilotNodeListener({
+      runtime,
+      basePath: "/api/copilotkit",
+    });
+    const channels = listener.channels;
+    const server = createServer(listener);
+    teardown = async () => {
+      await channels.stop();
+      if (server.listening) server.close();
+    };
+    
+    // Optional: block startup until the activation above settles, so a broken
+    // deploy fails loudly instead of serving as a bot that never answers.
+    await channels.ready({ timeoutMs: 30_000 });
+    const status = channels.status();
+    if (status.overall !== "online") {
+      throw new Error(`Teams Channel is not online: ${JSON.stringify(status)}`);
+    }
+    
+    const port = Number(process.env.PORT ?? 3001);
+    server.listen(port, () => {
+      console.log(`Teams Channel online; lifecycle server listening on :${port}`);
+    });
+
+Creating the Node listener starts the Channel: it owns its own process lifetime, so a declared Channel connects because it was declared. `ready()` is therefore optional and purely await-and-observe — it resolves once activation settles and rejects with the activation failure. Because it can settle with setup still required, inspect `status()` before reporting the Channel online. Skip `ready()` and activation failures land in your logs instead.
+
+The runner does not expose a Teams webhook. Teams delivers to the Intelligence messaging endpoint, which setup registered on the bot for you.
+
+### Configure secrets and start#
+
+.env
+    
+    
+    CPK_INTELLIGENCE_API_KEY=<project-api-key>
+    CHANNEL_CODE=support-teams
+    # Add the agent variables shown for your selected backend.
+    PORT=3001
+    
+    # Optional paired overrides for self-hosted or non-production Intelligence:
+    # INTELLIGENCE_API_URL=https://intelligence.example.com
+    # INTELLIGENCE_GATEWAY_WS_URL=wss://realtime.intelligence.example.com
+
+The lifecycle server uses port `3001` so it can run alongside a web app on port `3000`. If `3001` is already in use, set `PORT` to another free port.
+
+#### Where these values come from
+
+Three variables matter here, and you supply only one:
+
+  * `OPENAI_API_KEY`, or the key for whichever model provider your agent uses. This one is yours to create and paste.
+  * `CPK_INTELLIGENCE_API_KEY` is written for you by `copilotkit project select`, which provisions the project and its key.
+  * `CHANNEL_CODE` is written for you by the onboarding run once it has declared the Channel; the run knows the Code it just created.
+
+
+
+So both Intelligence values land in the environment file your app loads and you never copy either one by hand. Setting them yourself still works: see [configure the runtime handoff](https://docs.copilotkit.ai/teams/mastra/intelligence#configure-the-runtime-handoff) for where each value appears in Intelligence.
+
+Cloud-hosted Intelligence supplies both default base URLs. For a self-hosted or non-production deployment, override both together. The REST and realtime planes use separate hosts, so do not derive the WebSocket URL from the API URL. Pass each as a bare base URL without `/api`, `/socket`, `/runner`, or `/client`. Create the project-scoped runtime key from **API Keys** in the Intelligence project sidebar.
+
+Start the selected agent backend, then run:
+
+Terminal
+    
+    
+    node --env-file=.env --import tsx channel.ts
+
+Intelligence should report **Online**.
+
+#### Know the healthy state
+
+Starting the process is what connects the Channel, so it should become **Online** on its own; the `await channels.ready(...)` in this guide only waits for that to settle.
+
+Status| What to check  
+---|---  
+**Disabled**|  Enable the Channel before expecting delivery.  
+**Setup incomplete**|  Finish the selected provider's required setup fields before starting the runtime.  
+**Setup failed**|  Reopen platform setup and correct the rejected credentials or configuration.  
+**Waiting for runtime**|  Start the process — creating the listener connects the Channel — and match its Code and provider to this Channel.  
+**Conflict**|  Compare every replica's complete Channel declaration set. Identical replicas should elect one active owner and connected standbys; different but overlapping sets are unsafe.  
+**Offline**|  Check the listener process, network, and Intelligence gateway connection.  
+**Delivery failing**|  Check platform credentials, app permissions, and the provider response.  
+**Online**|  The runtime is connected; send a real provider message to verify the full path.  
+  
+### Verify a real Teams message#
+
+Open the app in Teams, add it to a chat or team, then send:
+
+Microsoft Teams
+    
+    
+    Summarize the decisions in this conversation.
+
+In a team channel, mention the bot. A message that does not mention it is ambient, and an ambient message only reaches your agent once a thread has been subscribed to.
+
+A real response validates the bot registration, Intelligence messaging endpoint, managed credentials, gateway listener, agent, and Adaptive Card reply path.
+
+## Troubleshooting#
+
+The Channel stays at Waiting for runtime
+
+Confirm the Code matches `CHANNEL_CODE` and the API key belongs to the same Intelligence project. Provider routing comes from the Teams connection attached in Intelligence, not from a `createChannel` option.
+
+Teams cannot reach the bot
+
+In Teams Developer Portal, open **Tools → Bot management** , select the bot, and compare its endpoint address with the messaging endpoint shown in Intelligence. They must match exactly, including no leading or trailing space — Developer Portal rejects a padded value and reports it as a save failure, which reads like a portal fault rather than a bad value. A bot with the wrong endpoint completes setup and then never receives anything.
+
+This is not your runner's `PORT`. The runner takes no inbound provider traffic at all.
+
+The app package is rejected
+
+Upload the complete zip that setup produced; do not unzip it and upload only `manifest.json`. If the app is already in the team and you are re-adding it to change permissions, remove it first — Teams settles app permissions only while the app is being added.
+
+Startup settles but does not become Online
+
+Inspect `channels.status()` after the guard in the runner. Finish any **Setup incomplete** state in Intelligence. If Intelligence reports **Conflict** , compare the complete Channel declaration set on every replica; identical replicas should elect an active owner and standbys.
+
+Next, [map application users and choose Memory grants](https://docs.copilotkit.ai/teams/mastra/identity-and-memory), add [tools and context](https://docs.copilotkit.ai/teams/mastra/tools), or build [interactive approvals](https://docs.copilotkit.ai/teams/mastra/interactive).
+
+### On this page
+
+Start with your coding agentWhat kind of bot this isBefore you startBuild and run your ChannelTroubleshooting

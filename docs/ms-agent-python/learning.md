@@ -1,0 +1,293 @@
+---
+url: https://docs.copilotkit.ai/ms-agent-python/learning/
+title: Automatic Learning
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:22:27.201005+00:00
+---
+
+# Automatic Learning
+
+> Source: https://docs.copilotkit.ai/ms-agent-python/learning/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendMS Agent Framework (Python)
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/ms-agent-python)[Quickstart](https://docs.copilotkit.ai/ms-agent-python/quickstart)[Build with agents](https://docs.copilotkit.ai/ms-agent-python/build-with-agents)[Intelligence](https://docs.copilotkit.ai/ms-agent-python/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/ms-agent-python/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/ms-agent-python/webmcp)
+
+Agent capabilities
+
+Microsoft Agent Framework
+
+[Sub-agents](https://docs.copilotkit.ai/ms-agent-python/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/ms-agent-python/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/ms-agent-python/learning)
+
+[Skill delivery](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills)
+
+[User Memories](https://docs.copilotkit.ai/ms-agent-python/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/ms-agent-python/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/ms-agent-python/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/ms-agent-python/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/ms-agent-python/intelligence/analytics)[Channels](https://docs.copilotkit.ai/ms-agent-python/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Debugging
+
+Learn
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/ms-agent-python/telemetry)[Community frameworks](https://docs.copilotkit.ai/ms-agent-python/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Automatic Learning
+
+IntelligenceFeaturesAutomatic Learning
+
+# Automatic Learning
+
+Turn real use of your app into skills you can review and publish.
+
+## Overview#
+
+Automatic Learning turns patterns from real agent runs into skills you can publish. It reads completed conversations in [AG-UI Streams](https://docs.copilotkit.ai/ms-agent-python/threads), writes insights, and proposes instructions you review before you publish them.
+
+The video also shows [User Memory](https://docs.copilotkit.ai/ms-agent-python/intelligence/memories), then an expense-review workflow that becomes a skill.
+
+## Start with your coding agent#
+
+Copy this prompt into your coding agent to inspect your existing app and configure Automatic Learning for one focused workflow. Prefer to work through the setup yourself? Follow the manual steps below.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+## How Automatic Learning works#
+
+Learning starts with a container, which groups Threads from the same kind of work. Intelligence analyzes completed runs in that container and summarizes recurring patterns as Insights.
+
+When a pattern can be reused, Learning proposes a Skill. You review the supporting Threads and decide whether to publish it. A published Skill is a versioned set of instructions that you load into your agent; Learning does not change the model itself.
+
+Automatic Learning checks eligible containers on a daily schedule. After you approve a skill, [skill delivery](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills) makes it available to connected agents. A scheduled run does not approve skills. Turning on delivery does not connect your agent for you.
+
+To record what people do in your app around the agent, such as clicks in a tool's UI and page changes, see [Capture interactions](https://docs.copilotkit.ai/ms-agent-python/intelligence/capture-interactions).
+
+## Collect runs and deliver Skills#
+
+The learning loop has two connections. Run ingestion collects evidence in a Learning container. Skill delivery loads published instructions into an agent.
+
+Connection| Configuration| Result  
+---|---|---  
+Runtime to Automatic Learning| `CopilotKitIntelligence.getLearningContainerId`| Assigns selected Threads to a container for analysis.  
+Learning to agent| An Intelligence SDK adapter for your framework| Makes published Skills available during agent invocations.  
+  
+When an agent must learn from its own workflow, use the same project and container for both connections. The SDK adapters also work with native agents outside a CopilotKit frontend, but they do not collect those agents' runs automatically.
+
+For agent setup, use the [Mastra](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills#mastra), [LangGraph TypeScript](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills#langgraph-typescript), or [LangGraph Python](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills#langgraph-python) example. The delivery guide also covers [Google ADK](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills#google-adk), [BuiltInAgent](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills#builtinagent), and [Microsoft Agent Framework](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills#microsoft-agent-framework).
+
+## Set up Automatic Learning manually#
+
+When you are done, your Runtime will send selected Threads to a Learning container, ready to be analyzed and turned into reviewed Skills.
+
+### Connect CopilotKit Intelligence#
+
+Complete the [Intelligence quickstart](https://docs.copilotkit.ai/ms-agent-python/intelligence/quickstart). That page signs you in with the CLI and selects the project. Then send a message and make sure that it appears in [AG-UI Streams](https://docs.copilotkit.ai/ms-agent-python/threads). Open your project in [CopilotKit Intelligence](https://dashboard.operations.copilotkit.ai/) and make sure that Learning is available.
+
+### Create a Learning container#
+
+In your Intelligence project, open **Learning** and choose **Create Learning container**. Give the container a stable ID, a descriptive name, and optional guidance about what good work looks like.
+
+Keep each container focused on one kind of work, such as expense review, support quality, or customer onboarding. Stable IDs contain 1–64 lowercase letters, numbers, or single hyphens; for example, `expense-review`.
+
+### Assign Threads from your Runtime#
+
+Return the container's stable ID from `getLearningContainerId` on the CopilotKit runtime you already run. Keep your agents as they are. The callback is the same for every agent framework.
+
+Your CopilotKit runtime
+    
+    
+    import {
+      CopilotKitIntelligence,
+      CopilotRuntime,
+    } from "@copilotkit/runtime/v2";
+    
+    const intelligence = new CopilotKitIntelligence({
+      apiKey: process.env.CPK_INTELLIGENCE_API_KEY!,
+      getLearningContainerId: ({ agentId }) =>
+        agentId === "expense-agent" ? "expense-review" : undefined,
+    });
+    
+    const runtime = new CopilotRuntime({
+      agents,
+      intelligence,
+      identifyUser,
+    });
+
+Return `null` or `undefined` when a run should not participate. You can use the callback's user, surface, agent, and run input to route different workflows to different containers.
+
+Keep a Thread's assignment stable
+
+Assign a Thread before its first agent run and return the same container ID for every later run. Existing evidence is not backfilled, and a Thread cannot move between containers.
+
+### Collect examples#
+
+Use the application normally and complete several related workflows. Corrections, tool calls, and application interactions all help Learning understand what a good result looks like.
+
+The container shows how many eligible Threads are ready and how many more are needed. By default, Automatic Learning requires **15 eligible Threads** for both the first run and each run after a success. Use the count shown in your container if your deployment has a different threshold.
+
+### Choose the daily schedule#
+
+In the container, select **Edit schedule**. Under **This project** , keep **Use organization schedule** or choose **Custom project schedule** , set the daily time and time zone, and save. The schedule applies to all containers in the project.
+
+Organizations start with a daily default of **02:00 UTC**. The **Organization default** tab changes the schedule for every project without an override and asks you to confirm that scope. Projects with a custom schedule keep it; choosing **Use organization schedule** again restores inheritance, including future changes to the default.
+
+When the container is eligible, **Next scheduled run** shows a countdown and the scheduled time in your local zone and UTC. This is the next eligibility check: reaching the Thread threshold does not start a run immediately. An active analysis, a failure block, or disabled Automatic Learning can prevent a run. Saving a schedule does not start or cancel an analysis.
+
+### Run Learning and review#
+
+Wait for the scheduled run, or select **Start manual run now** to analyze available evidence without waiting for the daily schedule or automatic Thread threshold. Follow its progress under **Analysis results**.
+
+Review the resulting Insights and their source Threads, then approve or reject each proposed Skill. Approved revisions appear under **Skills**. Automatic runs use the same review process; only published Skills are available for delivery.
+
+See this in Inspector
+
+Open Inspector on localhost. Go to **Automatic Learning**. Review published Skills, their supporting Insights, and the Thread evidence behind each pattern. Inspector also shows when new Threads are ready for a Learning run; start runs and review Skill candidates in the Intelligence web app.
+
+More detail: [Inspector](https://docs.copilotkit.ai/ms-agent-python/inspector).
+
+## Use published Skills#
+
+### Set up skill delivery#
+
+Once you have published a Skill, connect the agent that should use it:
+
+#### Enable delivery for the container
+
+Open the container's **Skills** tab and check that **Skill delivery** shows **Delivery enabled**. This controls new requests for published Skills from this container.
+
+#### Connect your agent
+
+Select **Set up skill delivery** , then **Copy setup prompt** , and paste it into your coding agent. The prompt includes your container ID and asks the coding agent to inspect your framework, preserve existing agent behavior, and configure the supported native adapter.
+
+For manual setup, follow the [framework adapter examples](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills#native-setup). Pick the adapter for the agent you already run. Configure that adapter in the agent server environment with the same project key and container ID used above.
+
+If that server does not already have the key, sign in and select the project from its directory:
+
+Terminal
+    
+    
+    npx copilotkit@latest login
+    npx copilotkit@latest project select
+
+Agent server environment
+    
+    
+    CPK_INTELLIGENCE_API_KEY=cpk-...
+    CPK_INTELLIGENCE_LEARNING_CONTAINER_ID=expense-review
+
+Keep the key server-side. Leave `CPK_INTELLIGENCE_SKILLS_REVISION` unset to follow the latest published Skills. See [container configuration](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills#configure-one-container) for self-hosted endpoints and exact revision pins.
+
+#### Verify delivery in a new invocation
+
+Initialize the adapter and start a new agent invocation. Confirm that the published Skill appears in its catalog, `copilotkit_load_skill` can load its `SKILL.md`, and `copilotkit_read_skill_file` can read a supporting file if the Skill has one. Copying the setup prompt or enabling the toggle alone does not verify the connection.
+
+The adapter refreshes published Skills automatically, with a default freshness window of five seconds. Each invocation keeps one snapshot; a newly published revision is available to later invocations after refresh. The model decides when to load and follow a Skill.
+
+Pausing delivery is separate from Learning
+
+Turning off **Skill delivery** does not stop Learning runs or revoke published revisions. Once an adapter checks delivery and receives the denial, it blocks new invocations; invocations already in progress keep their captured Skills. Pausing Learning runs likewise does not stop delivery of published Skills.
+
+### Download Skills manually#
+
+Use the CLI for offline inspection or frameworks without a supported adapter. If you switch an agent from downloaded Skills to automatic delivery, remove the old manual loading for that container to avoid loading the same Skills twice.
+
+From the agent directory, sign in and select the same Intelligence project. Then download the container's published Skills:
+
+Terminal
+    
+    
+    npx copilotkit@latest login
+    npx copilotkit@latest project select
+    npx copilotkit@latest skills download expense-review --output ./learned-skills
+
+The output contains a directory and `SKILL.md` for each published Skill. Configure your agent environment to load `./learned-skills` before expecting the new behavior in a run.
+
+## Troubleshooting#
+
+Problem| What to check  
+---|---  
+A Thread never appears in the container| Confirm the callback returned an existing stable ID before the Thread's first run and that the run reached a terminal state.  
+The Runtime reports a container conflict| The selector returned a different ID for an already-bound Thread. Restore the original mapping or start a new Thread.  
+A run has no new evidence| Runs created before assignment, still in progress, or already included in an earlier Learning run are not new input.  
+An automatic run has not started| Check the container's readiness count, daily schedule, and active or failed analysis. If it shows **Automatic learning is off** , scheduling is disabled for the deployment; editing the time does not enable it. Manual runs remain available.  
+Learning is waiting after a failed run| Inspect the failure under **Analysis results**. Automatic Learning waits for additional eligible Threads before retrying that evidence; you can also start a manual run.  
+A run succeeds without a Skill candidate| Inspect the Insights. The evidence may be useful without supporting a reusable procedural Skill.  
+An approved Skill does not affect the agent| Confirm delivery is enabled, the adapter uses the correct project and container, and a new invocation can load the Skill. Check for an exact revision pin. For manual loading, download the latest bundle and confirm your agent loads its directory.  
+Delivery status is unavailable| Select **Retry delivery status**. For self-hosted deployments, verify the delivery endpoint and migration are installed before relying on an adapter. See [deployment requirements](https://docs.copilotkit.ai/ms-agent-python/intelligence/learned-skills#deployment-requirements).  
+  
+## Related guides#
+
+  * [CopilotKit Intelligence overview](https://docs.copilotkit.ai/ms-agent-python/intelligence/overview)
+  * [Connect CopilotKit Intelligence](https://docs.copilotkit.ai/ms-agent-python/intelligence/quickstart)
+  * [AG-UI Streams](https://docs.copilotkit.ai/ms-agent-python/threads)
+  * [AG-UI Streams & Framework Threads](https://docs.copilotkit.ai/ms-agent-python/intelligence/threads-explained)
+  * [CopilotKit CLI](https://docs.copilotkit.ai/ms-agent-python/cli)
+
+
+
+### On this page
+
+OverviewStart with your coding agentHow Automatic Learning worksCollect runs and deliver SkillsSet up Automatic Learning manuallyUse published SkillsSet up skill deliveryDownload Skills manuallyTroubleshootingRelated guides

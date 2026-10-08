@@ -1,0 +1,533 @@
+---
+url: https://docs.copilotkit.ai/ms-agent-python/generative-ui/state-rendering/
+title: State Rendering
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:22:14.435546+00:00
+---
+
+# State Rendering
+
+> Source: https://docs.copilotkit.ai/ms-agent-python/generative-ui/state-rendering/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendMS Agent Framework (Python)
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/ms-agent-python)[Quickstart](https://docs.copilotkit.ai/ms-agent-python/quickstart)[Build with agents](https://docs.copilotkit.ai/ms-agent-python/build-with-agents)[Intelligence](https://docs.copilotkit.ai/ms-agent-python/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/ms-agent-python/frontend-tools)
+
+Generative UI
+
+Controlled
+
+[Components as Tools](https://docs.copilotkit.ai/ms-agent-python/generative-ui/tool-based)[Tool Call Rendering](https://docs.copilotkit.ai/ms-agent-python/generative-ui/tool-rendering)[State Rendering](https://docs.copilotkit.ai/ms-agent-python/generative-ui/state-rendering)
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/ms-agent-python/webmcp)
+
+Agent capabilities
+
+Microsoft Agent Framework
+
+[Sub-agents](https://docs.copilotkit.ai/ms-agent-python/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/ms-agent-python/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/ms-agent-python/learning)
+
+[User Memories](https://docs.copilotkit.ai/ms-agent-python/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/ms-agent-python/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/ms-agent-python/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/ms-agent-python/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/ms-agent-python/intelligence/analytics)[Channels](https://docs.copilotkit.ai/ms-agent-python/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Debugging
+
+Learn
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/ms-agent-python/telemetry)[Community frameworks](https://docs.copilotkit.ai/ms-agent-python/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+State Rendering
+
+Generative UIControlled
+
+# State Rendering
+
+Render the state of your agent with custom UI components.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+DemoCode
+
+## What is this?#
+
+Microsoft Agent Framework agents can maintain state throughout their execution. CopilotKit allows you to render this state in your application with custom UI components, which we call **Agentic Generative UI**. State updates can be streamed to the frontend as your agent processes requests.
+
+## When should I use this?#
+
+Rendering the state of your agent in the UI is useful when you want to provide the user with feedback about the overall state of a session. A great example of this is a situation where a user and an agent are working together to solve a problem. The agent can store a draft in its state which is then rendered in the UI.
+
+## Implementation#
+
+### Define your agent state#
+
+Define a state snapshot class that represents the data you want to stream to the frontend. This class should be JSON-serializable and contain only UI-relevant properties.
+
+.NETPython
+
+Program.cs
+    
+    
+    using System.Text.Json.Serialization;
+    
+    public class SearchInfo
+    {
+        [JsonPropertyName("query")]
+        public string Query { get; set; } = string.Empty;
+    
+        [JsonPropertyName("done")]
+        public bool Done { get; set; }
+    }
+    
+    public class AgentStateSnapshot
+    {
+        [JsonPropertyName("searches")]
+        public List<SearchInfo> Searches { get; set; } = new();
+    }
+
+agent/src/agent.py (excerpt)
+    
+    
+    from typing import Annotated
+    from pydantic import BaseModel, Field
+    
+    class SearchItem(BaseModel):
+        query: str
+        done: bool
+    
+    # JSON schema used by AG-UI to validate and forward state to the frontend
+    STATE_SCHEMA: dict[str, object] = {
+        "searches": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string"},
+                    "done": {"type": "boolean"},
+                },
+                "required": ["query", "done"],
+                "additionalProperties": False,
+            },
+            "description": "List of searches and whether each is done.",
+        }
+    }
+
+On the frontend, define the matching TypeScript type:
+
+app/page.tsx
+    
+    
+    type SearchInfo = {
+      query: string;
+      done: boolean;
+    };
+    
+    type AgentState = {
+      searches: SearchInfo[];
+    };
+
+### Stream state from your agent#
+
+To stream state updates to the frontend, wrap your agent with a `DelegatingAIAgent` that intercepts the streaming response and emits state snapshots as `DataContent`.
+
+Here's an example of a state-streaming agent wrapper:
+
+.NETPython
+
+Program.cs
+    
+    
+    using System.Runtime.CompilerServices;
+    using System.Text.Json;
+    using AGUI.Abstractions;
+    using AGUI.Server;
+    using Microsoft.Agents.AI;
+    using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Http.Json;
+    using Microsoft.Extensions.AI;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
+    using OpenAI;
+    using OpenAI.Chat;
+    using AIChatMessage = Microsoft.Extensions.AI.ChatMessage;
+    using AIChatResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat;
+    
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Services.AddAGUIServer();
+    var app = builder.Build();
+    
+    string openAiApiKey = builder.Configuration["OPENAI_API_KEY"]
+        ?? throw new InvalidOperationException("Set OPENAI_API_KEY");
+    
+    // Get JSON serializer options
+    var jsonOptions = app.Services.GetRequiredService<IOptions<JsonOptions>>();
+    
+    // Create the base agent
+    AIAgent baseAgent = new OpenAIClient(openAiApiKey)
+        .GetChatClient("gpt-5.4-mini")
+        .AsAIAgent(
+            name: "ResearchAssistant",
+            instructions: "You are a research assistant that tracks your progress.");
+    
+    // Wrap with state-streaming agent
+    AIAgent agent = new StateStreamingAgent(baseAgent, jsonOptions.Value.SerializerOptions);
+    
+    // Map the AG-UI endpoint
+    app.MapAGUIServer("/", agent);
+    await app.RunAsync();
+    
+    // Agent wrapper that streams state updates
+    internal sealed class StateStreamingAgent : DelegatingAIAgent
+    {
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+    
+        public StateStreamingAgent(AIAgent innerAgent, JsonSerializerOptions jsonSerializerOptions)
+            : base(innerAgent)
+        {
+            this._jsonSerializerOptions = jsonSerializerOptions;
+        }
+    
+        protected override Task<AgentResponse> RunCoreAsync(
+            IEnumerable<AIChatMessage> messages,
+            AgentSession? session = null,
+            AgentRunOptions? options = null,
+            CancellationToken cancellationToken = default) =>
+            RunCoreStreamingAsync(messages, session, options, cancellationToken)
+                .ToAgentResponseAsync(cancellationToken);
+    
+        protected override async IAsyncEnumerable<AgentResponseUpdate> RunCoreStreamingAsync(
+            IEnumerable<AIChatMessage> messages,
+            AgentSession? session = null,
+            AgentRunOptions? options = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            // Recover the state sent in the AG-UI request
+            JsonElement? currentState = null;
+            if (options is ChatClientAgentRunOptions { ChatOptions: { } chatOptions } &&
+                chatOptions.TryGetRunAgentInput(out RunAgentInput? input) &&
+                input?.State is { ValueKind: JsonValueKind.Object } state)
+            {
+                currentState = state;
+            }
+    
+            // Clone the run options, then request structured state output
+            var chatRunOptions = options as ChatClientAgentRunOptions;
+            var stateChatOptions = chatRunOptions?.ChatOptions?.Clone() ?? new ChatOptions();
+            stateChatOptions.ResponseFormat = AIChatResponseFormat.ForJsonSchema<AgentStateSnapshot>(
+                schemaName: "AgentStateSnapshot",
+                schemaDescription: "Research progress state");
+    
+            ChatClientAgentRunOptions stateOptions = new(stateChatOptions)
+            {
+                ChatClientFactory = chatRunOptions?.ChatClientFactory,
+            };
+    
+            // Add system message with current state
+            var stateMessage = new AIChatMessage(ChatRole.System,
+                $"Current state: {currentState?.GetRawText() ?? "{}"}");
+            var messagesWithState = messages.Append(stateMessage);
+    
+            // Collect all updates
+            var allUpdates = new List<AgentResponseUpdate>();
+            await foreach (var update in InnerAgent.RunStreamingAsync(messagesWithState, session, stateOptions, cancellationToken))
+            {
+                allUpdates.Add(update);
+                // Stream non-text updates immediately
+                if (update.Contents.Any(c => c is not TextContent))
+                {
+                    yield return update;
+                }
+            }
+    
+            // Deserialize state snapshot from response
+            var response = allUpdates.ToAgentResponse();
+            JsonElement? stateSnapshot = null;
+            try
+            {
+                stateSnapshot = JsonSerializer.Deserialize<JsonElement>(
+                    response.Text,
+                    this._jsonSerializerOptions);
+            }
+            catch (JsonException)
+            {
+                // The model did not return the requested state snapshot.
+            }
+    
+            if (stateSnapshot is { } parsedStateSnapshot)
+            {
+                byte[] stateBytes = JsonSerializer.SerializeToUtf8Bytes(
+                    parsedStateSnapshot,
+                    this._jsonSerializerOptions.GetTypeInfo(typeof(JsonElement)));
+    
+                // Emit state snapshot as DataContent
+                yield return new AgentResponseUpdate
+                {
+                    Contents = [new DataContent(stateBytes, "application/json")]
+                };
+            }
+    
+            // Stream text summary
+            var summaryMessage = new AIChatMessage(ChatRole.System, "Provide a brief summary of your progress.");
+            await foreach (var update in InnerAgent.RunStreamingAsync(
+                messages.Concat(response.Messages).Append(summaryMessage), session, options, cancellationToken))
+            {
+                yield return update;
+            }
+        }
+    }
+
+main.py
+    
+    
+    from __future__ import annotations
+    import os
+    import uvicorn
+    from agent_framework import Agent, tool, SupportsChatGetResponse
+    from agent_framework.openai import OpenAIChatClient
+    from agent_framework.ag_ui import add_agent_framework_fastapi_endpoint
+    from agent_framework.ag_ui import AgentFrameworkAgent
+    from azure.identity import DefaultAzureCredential
+    from dotenv import load_dotenv
+    from fastapi import FastAPI
+    from typing import Annotated
+    from pydantic import BaseModel, Field
+    
+    load_dotenv()
+    
+    class SearchItem(BaseModel):
+        query: str
+        done: bool
+        
+    STATE_SCHEMA: dict[str, object] = {
+        "searches": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string"},
+                    "done": {"type": "boolean"},
+                },
+                "required": ["query", "done"],
+                "additionalProperties": False,
+            },
+            "description": "List of searches and whether each is done.",
+        }
+    }
+    PREDICT_STATE_CONFIG: dict[str, dict[str, str]] = {
+        "searches": {
+            "tool": "update_searches",
+            "tool_argument": "searches",
+        }
+    }
+    
+    @tool
+    def update_searches(
+        searches: Annotated[list[SearchItem], Field(description=("The complete source of truth for the user's searches. Maintain ordering and include the full list on each call."))],
+    ) -> str:
+        return f"Searches updated. Tracking {len(searches)} item(s)."
+    
+    
+    def _build_chat_client():
+        if os.getenv("AZURE_OPENAI_ENDPOINT"):
+            azure_api_key = os.getenv("AZURE_OPENAI_API_KEY")
+            return OpenAIChatClient(
+                model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME", "gpt-4o-mini"),
+                api_key=azure_api_key,
+                credential=None if azure_api_key else DefaultAzureCredential(),
+                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+            )
+        if os.getenv("OPENAI_API_KEY"):
+            return OpenAIChatClient(
+                model=os.getenv("OPENAI_CHAT_MODEL_ID", "gpt-4o-mini"),
+                api_key=os.getenv("OPENAI_API_KEY"),
+            )
+        raise RuntimeError(
+            "Set AZURE_OPENAI_ENDPOINT (uses az login unless AZURE_OPENAI_API_KEY is set) or OPENAI_API_KEY."
+        )
+    
+    
+    
+    def create_agent(chat_client: SupportsChatGetResponse) -> AgentFrameworkAgent:
+        base_agent = Agent(
+            name="search_agent",
+            instructions=(
+                "You help users create and run searches.\\n\\n"
+                "State sync rules:\\n"
+                "- Maintain a list of searches: each item has { query, done }.\\n"
+                "- When adding a new search, call `update_searches` with the FULL list, including the new item with done=true.\\n"
+                "- All searches in the list should have done=true unless explicitly in progress.\\n"
+                "- Never send partial updates. Always include the full list on each call.\\n"
+            ),
+            client=chat_client,
+            tools=[update_searches],
+        )
+    
+        return AgentFrameworkAgent(
+            agent=base_agent,
+            name="CopilotKitMicrosoftAgentFrameworkAgent",
+            description="Maintains a list of searches and streams state to the UI.",
+            state_schema=STATE_SCHEMA,
+            predict_state_config=PREDICT_STATE_CONFIG,
+            require_confirmation=False,
+        )
+    chat_client = _build_chat_client()
+    
+    agent = create_agent(chat_client)
+    
+    app = FastAPI(title="Microsoft Agent Framework - Quickstart")
+    add_agent_framework_fastapi_endpoint(app=app, agent=agent, path="/")
+    
+    if __name__ == "__main__":
+        uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+The `DelegatingAIAgent` wrapper intercepts streaming responses, uses JSON schema response format to generate structured state, and emits it as `DataContent` which the AG-UI protocol forwards to the frontend.
+
+For a complete, production-ready implementation of state streaming, see the [SharedStateAgent sample](https://github.com/microsoft/agent-framework/blob/main/dotnet/samples/AGUIClientServer/AGUIDojoServer/SharedStateAgent.cs) in the Agent Framework repository.
+
+### Render state of the agent in the chat#
+
+Now we can utilize `useAgent` to read the state of our agent and render it **in the chat**.
+
+app/page.tsx
+    
+    
+    import { useAgent } from "@copilotkit/react-core/v2";
+    
+    // For type safety, define the state type matching your agent's state snapshot
+    type AgentState = {
+      searches: {
+        query: string;
+        done: boolean;
+      }[];
+    };
+    
+    function YourMainContent() {
+      // ...
+    
+      const { agent } = useAgent({
+        agentId: "sample_agent",
+      });
+    
+      // styles omitted for brevity
+      const renderedState = (
+        <div>
+          {agent.state?.searches?.map((search, index) => (
+            <div key={index}>
+              {search.done ? "✅" : "❌"} {search.query}{search.done ? "" : "..."}
+            </div>
+          ))}
+        </div>
+      );
+    
+      // ...
+    
+      return <div>{renderedState}</div>;
+    }
+
+### Render state outside of the chat#
+
+You can also render the state of your agent **outside of the chat**. This is useful when you want to render the state of your agent anywhere other than the chat.
+
+app/page.tsx
+    
+    
+    import { useAgent } from "@copilotkit/react-core/v2"; 
+    // ...
+    
+    // Define the state type matching your agent's state snapshot
+    type AgentState = {
+      searches: {
+        query: string;
+        done: boolean;
+      }[];
+    };
+    
+    function YourMainContent() {
+      // ...
+    
+      const { agent } = useAgent({
+        agentId: "sample_agent",
+      })
+    
+      // ...
+    
+      return (
+        <div>
+          {/* ... */}
+          <div className="flex flex-col gap-2 mt-4">
+            {agent.state?.searches?.map((search, index) => (
+              <div key={index} className="flex flex-row">
+                {search.done ? "✅" : "❌"} {search.query}
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+### Give it a try!#
+
+You've now created a component that will render the agent's state in the chat.
+
+### On this page
+
+What is this?When should I use this?Implementation

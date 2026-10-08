@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/channels/identity-and-memory/",
+  "file": "channels/identity-and-memory.md",
+  "title": "Slack: Identity and Memory",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:35:30.392772+00:00",
+  "html_len": 177066,
+  "md_len": 9396,
+  "depth": 1
+}

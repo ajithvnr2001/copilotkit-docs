@@ -1,0 +1,10 @@
+{
+  "url": "https://dashboard.operations.copilotkit.ai/sign-in/",
+  "file": "_subdomains/dashboard.operations.copilotkit.ai/sign-in.md",
+  "title": "CopilotKit Intelligence \u2014 Operations",
+  "method": "crawl4ai+scrapegraph (scrapling: scrapling thin content (104 chars), fallback to crawl4ai)",
+  "fetched_at": "2026-10-08T09:34:48.804671+00:00",
+  "html_len": 12349,
+  "md_len": 679,
+  "depth": 1
+}

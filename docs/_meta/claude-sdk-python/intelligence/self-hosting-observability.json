@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/claude-sdk-python/intelligence/self-hosting-observability/",
+  "file": "claude-sdk-python/intelligence/self-hosting-observability.md",
+  "title": "Monitor self-hosted Intelligence with OpenTelemetry",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T08:53:38.373354+00:00",
+  "html_len": 270148,
+  "md_len": 17131,
+  "depth": 0
+}

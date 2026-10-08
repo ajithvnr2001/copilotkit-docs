@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/channels/files-and-multimodality/",
+  "file": "channels/files-and-multimodality.md",
+  "title": "Slack: Files and multimodal input",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:35:32.436161+00:00",
+  "html_len": 151077,
+  "md_len": 7535,
+  "depth": 1
+}

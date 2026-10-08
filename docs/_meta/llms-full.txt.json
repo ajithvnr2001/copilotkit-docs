@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/llms-full.txt",
+  "file": "llms-full.txt.md",
+  "title": "https://docs.copilotkit.ai/llms-full.txt",
+  "method": "crawl4ai+scrapegraph (scrapling: scrapling thin content (75 chars), fallback to crawl4ai)",
+  "fetched_at": "2026-10-08T09:34:48.529683+00:00",
+  "html_len": 8137115,
+  "md_len": 8756233,
+  "depth": 0
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/ag2/tools/",
+  "file": "slack/ag2/tools.md",
+  "title": "Slack + AG2: Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:26:37.806256+00:00",
+  "html_len": 239663,
+  "md_len": 8763,
+  "depth": 0
+}

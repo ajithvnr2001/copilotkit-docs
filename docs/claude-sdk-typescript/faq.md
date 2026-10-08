@@ -1,0 +1,176 @@
+---
+url: https://docs.copilotkit.ai/claude-sdk-typescript/faq/
+title: Common Questions
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T08:54:44.443777+00:00
+---
+
+# Common Questions
+
+> Source: https://docs.copilotkit.ai/claude-sdk-typescript/faq/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendClaude Agent SDK (TypeScript)
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/claude-sdk-typescript)[Quickstart](https://docs.copilotkit.ai/claude-sdk-typescript/quickstart)[Build with agents](https://docs.copilotkit.ai/claude-sdk-typescript/build-with-agents)[Intelligence](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/claude-sdk-typescript/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/claude-sdk-typescript/webmcp)
+
+Agent capabilities
+
+[Sub-agents](https://docs.copilotkit.ai/claude-sdk-typescript/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/claude-sdk-typescript/learning)
+
+[User Memories](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/analytics)[Channels](https://docs.copilotkit.ai/claude-sdk-typescript/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Deployment
+
+Debugging
+
+Learn
+
+Concepts
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/claude-sdk-typescript/telemetry)[Community frameworks](https://docs.copilotkit.ai/claude-sdk-typescript/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+[Claude Agent SDK (TypeScript)](https://docs.copilotkit.ai/claude-sdk-typescript)
+
+# Common Questions
+
+We've got answers to some common questions!
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+# Common Questions
+
+We've got answers to some common questions!
+
+What is a Copilot?
+
+A Copilot is a trusted partner that lives in your application to help your users get things done. There are two main types, the **Concierge** and the **Worker**.
+
+### Concierge#
+
+The Concierge Copilot understands your application's capabilities and full user context. It translates high-level user intent into actions by serving as an intelligent intermediary.
+
+For example, our [Banking Assistant](https://github.com/CopilotKit/CopilotKit/tree/main/examples/showcases/reskinnable-demo) implements Concierge Copilots to help users manage their (_fake_) banking needs.
+
+### Worker#
+
+The Worker Copilot is a domain-specific agent that can help users perform their core work tasks. It serves as a partner to the user that is better at performing some tasks and worse at others. Ultimately, it amplifies your users to produce better work than they thought possible. This pattern is often used in backoffice copilots.
+
+Think of the Worker Copilot as Cursor, Replit Agent, or Windsurf, but for any domain. For example, see our [Open Researcher ANA](https://github.com/CopilotKit/CopilotKit/tree/main/examples/showcases/research-canvas).
+
+What are the main features of CopilotKit?
+
+### Batteries included chat components#
+
+Beautiful, powerful and customizable chat components just an import away. 
+
+|   
+---|---  
+**Chat**|  Simple and powerful chat interface  
+**Pop-up**|  The Chat component in a pop-up format  
+**Sidebar**|  The Chat component in a sidebar format  
+**Copilot Textarea**|  Powerful AI autocompletion as a drop-in replacement for any textarea  
+[**Headless**](https://docs.copilotkit.ai/claude-sdk-typescript/custom-look-and-feel/slots)|  Full customization of the chat interfaces  
+  
+### Deeply integrated Copilots#
+
+Give Copilots the ability to execute tools directly in your application. 
+
+|   
+---|---  
+**Copilot Readable State**|  Enables Copilots to read and understand the application state  
+**Frontend Tools**|  Copilots can execute tools in the application  
+[**Generative UI**](https://docs.copilotkit.ai/claude-sdk-typescript/generative-ui/your-components/display-only)|  Render any component in the copilot chat interface  
+**AI Autosuggestions**|  AI-powered autosuggestions in your AI chat interface  
+**Copilot Tasks**|  Let your copilots execute tools proactively based on application state  
+  
+### Rich agentic experiences#
+
+Integrate your LangChain agents into your product with ease. 
+
+|   
+---|---  
+**Deep support for LangChain**|  Bring your LangChain agents directly into your product  
+**Human-in-the-loop**|  Allow your users to work with your agents to solve complex problems  
+**Shared state**|  Render the state of your LangChain agents with less than 10 lines of code  
+  
+How does it all work?
+
+Great question! CopilotKit has three main components:
+
+  1. **CopilotKit UI** : The UI components that you use to build your Copilots and Agents.
+  2. **CopilotKit Runtime** : The runtime that you use to build your Copilots and Agents. This serves as the backend for your Copilots and Agents.
+  3. **CopilotKit SDK** : In more complex applications, you'll use the SDK to deeply integrate CopilotKit into your agents.
+
+
+
+Can I use any LLM with CopilotKit?
+
+Yes! CopilotKit supports most LLMs, including OpenAI, Anthropic, Google, and more. In addition, you can use any LLM that is supported by LangChain.
+
+For more information, checkout our documentation on [bringing your own LLM](https://docs.copilotkit.ai/claude-sdk-typescript/model-selection).

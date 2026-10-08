@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/guides/self-hosting/",
+  "file": "guides/self-hosting.md",
+  "title": "Copilot Runtime",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:39:16.170721+00:00",
+  "html_len": 389451,
+  "md_len": 23585,
+  "depth": 1
+}

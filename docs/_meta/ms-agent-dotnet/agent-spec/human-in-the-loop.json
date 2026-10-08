@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/ms-agent-dotnet/agent-spec/human-in-the-loop/",
+  "file": "ms-agent-dotnet/agent-spec/human-in-the-loop.md",
+  "title": "Human-in-the-Loop",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:17:41.892946+00:00",
+  "html_len": 197451,
+  "md_len": 6668,
+  "depth": 0
+}

@@ -1,0 +1,252 @@
+---
+url: https://docs.copilotkit.ai/ms-agent-python/human-in-the-loop/tool-based/
+title: Tool-based
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:22:16.991063+00:00
+---
+
+# Tool-based
+
+> Source: https://docs.copilotkit.ai/ms-agent-python/human-in-the-loop/tool-based/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendMS Agent Framework (Python)
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/ms-agent-python)[Quickstart](https://docs.copilotkit.ai/ms-agent-python/quickstart)[Build with agents](https://docs.copilotkit.ai/ms-agent-python/build-with-agents)[Intelligence](https://docs.copilotkit.ai/ms-agent-python/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/ms-agent-python/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/ms-agent-python/webmcp)
+
+Agent capabilities
+
+Microsoft Agent Framework
+
+[Sub-agents](https://docs.copilotkit.ai/ms-agent-python/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/ms-agent-python/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/ms-agent-python/learning)
+
+[User Memories](https://docs.copilotkit.ai/ms-agent-python/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/ms-agent-python/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/ms-agent-python/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/ms-agent-python/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/ms-agent-python/intelligence/analytics)[Channels](https://docs.copilotkit.ai/ms-agent-python/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Debugging
+
+Learn
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/ms-agent-python/telemetry)[Community frameworks](https://docs.copilotkit.ai/ms-agent-python/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+On this page
+
+[MS Agent Framework (Python)](https://docs.copilotkit.ai/ms-agent-python)[Human-in-the-Loop](https://docs.copilotkit.ai/ms-agent-python/human-in-the-loop)
+
+# Tool-based
+
+Gate an action behind a frontend tool that renders UI and waits for the user.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+DemoCode
+
+## What is this?#
+
+Frontend tools enable you to define client-side functions that your Microsoft Agent Framework agent can invoke, with execution happening entirely in the user's browser. When your agent calls a frontend tool, the logic runs on the client side, giving you direct access to the frontend environment.
+
+This can be utilized to let [your agent control the UI](https://docs.copilotkit.ai/microsoft-agent-framework/frontend-tools), [power generative UI](https://docs.copilotkit.ai/microsoft-agent-framework/frontend-tools), or support Human-in-the-loop interactions.
+
+In this guide, we cover the use of frontend tools for Human-in-the-loop.
+
+## When should I use this?#
+
+Use frontend tools when you need your agent to interact with client-side primitives such as:
+
+  * Reading or modifying React component state
+  * Accessing browser APIs like localStorage, sessionStorage, or cookies
+  * Triggering UI updates or animations
+  * Interacting with third-party frontend libraries
+  * Performing actions that require the user's immediate browser context
+
+
+
+## Implementation#
+
+### Run and connect your agent#
+
+You'll need to run your agent and connect it to CopilotKit before proceeding. If you haven't done so already, you can follow the instructions in the [Getting Started](https://docs.copilotkit.ai/langgraph/quickstart) guide.
+
+If you don't already have an agent, you can use the [coagent starter](https://github.com/copilotkit/copilotkit/tree/main/examples/coagents-starter) as a starting point as this guide uses it as a starting point.
+
+### Create a frontend human-in-the-loop tool#
+
+Frontend tools can be leveraged in a variety of ways. One of those ways is to have a human-in-the-loop flow where the response of the tool is gated by a user's decision.
+
+In this example we will simulate a "approval" flow for executing a command. First, use the `useHumanInTheLoop` hook to create a tool that prompts the user for approval.
+
+page.tsx
+    
+    
+    import { useHumanInTheLoop } from "@copilotkit/react-core/v2"
+    import { z } from "zod"
+    
+    export function Page() {
+      // ...
+    
+      useHumanInTheLoop({
+        name: "humanApprovedCommand",
+        description: "Ask human for approval to run a command.",
+        parameters: z.object({
+          command: z.string().describe("The command to run"),
+        }),
+        render: ({ args, respond }) => {
+          if (!respond) return <></>;
+          return (
+            <div>
+              <pre>{args.command}</pre>
+              <button onClick={() => respond(`Command is APPROVED`)}>Approve</button>
+              <button onClick={() => respond(`Command is DENIED`)}>Deny</button>
+            </div>
+          );
+        },
+      });
+    
+      // ...
+    }
+
+### Receiving frontend tools in your AG-UI server#
+
+Frontend tools registered with `useHumanInTheLoop` are forwarded to your AG-UI server and passed to the underlying agent via the AgentRunOptions on the server. They are automatically available by default to the underlying chat client.
+
+.NETPython
+
+Program.cs
+    
+    
+    using Microsoft.Agents.AI;
+    using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
+    using OpenAI;
+    using OpenAI.Chat;
+    
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Services.AddAGUIServer();
+    var app = builder.Build();
+    
+    string openAiApiKey = builder.Configuration["OPENAI_API_KEY"]
+        ?? throw new InvalidOperationException("Set OPENAI_API_KEY");
+    
+    // Create the agent - frontend tools are automatically available
+    var agent = new OpenAIClient(openAiApiKey)
+        .GetChatClient("gpt-5.4-mini")
+        .AsAIAgent(name: "AGUIAssistant", instructions: "You are a helpful assistant.");
+    
+    // Map the AG-UI endpoint
+    app.MapAGUIServer("/", agent);
+    await app.RunAsync();
+
+agent/src/agent.py
+    
+    
+    from __future__ import annotations
+    import os
+    from fastapi import FastAPI
+    from dotenv import load_dotenv
+    from agent_framework import Agent
+    from agent_framework import SupportsChatGetResponse
+    from agent_framework.openai import OpenAIChatClient
+    from agent_framework.ag_ui import add_agent_framework_fastapi_endpoint
+    from azure.identity import DefaultAzureCredential
+    
+    load_dotenv()
+    
+    def _build_chat_client() -> SupportsChatGetResponse:
+        if bool(os.getenv("AZURE_OPENAI_ENDPOINT")):
+            azure_api_key = os.getenv("AZURE_OPENAI_API_KEY")
+            return OpenAIChatClient(
+                model=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME", "gpt-5.4-mini"),
+                api_key=azure_api_key,
+                credential=None if azure_api_key else DefaultAzureCredential(),
+                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+            )
+        if bool(os.getenv("OPENAI_API_KEY")):
+            return OpenAIChatClient(
+                model=os.getenv("OPENAI_CHAT_MODEL_ID", "gpt-5.4-mini"),
+                api_key=os.getenv("OPENAI_API_KEY"),
+            )
+        raise RuntimeError("Set AZURE_OPENAI_ENDPOINT (uses az login unless AZURE_OPENAI_API_KEY is set) or OPENAI_API_KEY")
+    
+    chat_client = _build_chat_client()
+    # Frontend tools registered with useHumanInTheLoop are automatically available
+    agent = Agent(
+        name="sample_agent",
+        instructions="You are a helpful assistant.",
+        client=chat_client,
+    )
+    
+    app = FastAPI(title="AG-UI Server (Python)")
+    add_agent_framework_fastapi_endpoint(app=app, agent=agent, path="/")
+
+Frontend tools defined with `useHumanInTheLoop` are automatically forwarded to your agent through the AG-UI protocol. The tool execution and rendering happen on the frontend, providing seamless human-in-the-loop interactions.
+
+### Give it a try!#
+
+You've now given your agent the ability to directly call any frontend tools you've defined. These tools will be available to the agent where they can be used as needed.
+
+### On this page
+
+What is this?When should I use this?Implementation

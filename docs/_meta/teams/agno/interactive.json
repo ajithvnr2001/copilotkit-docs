@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/agno/interactive/",
+  "file": "teams/agno/interactive.md",
+  "title": "Microsoft Teams + Agno: Interactive messages and approvals",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:28.694439+00:00",
+  "html_len": 217368,
+  "md_len": 9958,
+  "depth": 0
+}

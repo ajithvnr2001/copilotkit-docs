@@ -1,0 +1,10 @@
+{
+  "url": "https://dashboard.operations.copilotkit.ai/",
+  "file": "_subdomains/dashboard.operations.copilotkit.ai/_index.md",
+  "title": "CopilotKit Intelligence \u2014 Operations",
+  "method": "crawl4ai+scrapegraph (scrapling: scrapling thin content (96 chars), fallback to crawl4ai)",
+  "fetched_at": "2026-10-08T09:35:30.086823+00:00",
+  "html_len": 4586,
+  "md_len": 489,
+  "depth": 1
+}

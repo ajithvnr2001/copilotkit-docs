@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/langgraph-fastapi/prebuilt-components/chat/",
+  "file": "langgraph-fastapi/prebuilt-components/chat.md",
+  "title": "CopilotChat",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:05:44.846859+00:00",
+  "html_len": 211446,
+  "md_len": 12167,
+  "depth": 0
+}

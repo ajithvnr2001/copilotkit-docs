@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/langgraph-fastapi/interactive/",
+  "file": "slack/langgraph-fastapi/interactive.md",
+  "title": "Slack + LangGraph (FastAPI): Interactive messages and approvals",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:27:27.577101+00:00",
+  "html_len": 222486,
+  "md_len": 10850,
+  "depth": 0
+}

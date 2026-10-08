@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/history-and-transcripts/",
+  "file": "slack/history-and-transcripts.md",
+  "title": "Slack: History and transcripts",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:27:19.789516+00:00",
+  "html_len": 185025,
+  "md_len": 8077,
+  "depth": 0
+}

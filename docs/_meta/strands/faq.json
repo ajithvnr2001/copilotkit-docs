@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/strands/faq/",
+  "file": "strands/faq.md",
+  "title": "Common Questions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:31:17.054686+00:00",
+  "html_len": 166457,
+  "md_len": 6321,
+  "depth": 0
+}

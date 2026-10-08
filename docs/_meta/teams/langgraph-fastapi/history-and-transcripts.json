@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/langgraph-fastapi/history-and-transcripts/",
+  "file": "teams/langgraph-fastapi/history-and-transcripts.md",
+  "title": "Microsoft Teams + LangGraph (FastAPI): History and transcripts",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:11.517585+00:00",
+  "html_len": 183121,
+  "md_len": 8406,
+  "depth": 0
+}

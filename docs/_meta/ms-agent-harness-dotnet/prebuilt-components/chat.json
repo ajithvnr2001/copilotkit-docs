@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/ms-agent-harness-dotnet/prebuilt-components/chat/",
+  "file": "ms-agent-harness-dotnet/prebuilt-components/chat.md",
+  "title": "CopilotChat",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:20:54.604966+00:00",
+  "html_len": 223095,
+  "md_len": 18151,
+  "depth": 0
+}

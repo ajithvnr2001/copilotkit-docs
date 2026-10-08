@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/crewai-crews/human-in-the-loop/",
+  "file": "slack/crewai-crews/human-in-the-loop.md",
+  "title": "Human in the Loop (HITL)",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:39:32.046106+00:00",
+  "html_len": 113920,
+  "md_len": 3913,
+  "depth": 1
+}

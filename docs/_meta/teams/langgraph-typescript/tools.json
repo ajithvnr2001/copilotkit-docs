@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/langgraph-typescript/tools/",
+  "file": "teams/langgraph-typescript/tools.md",
+  "title": "Microsoft Teams + LangGraph (TypeScript): Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:27.955791+00:00",
+  "html_len": 237122,
+  "md_len": 9082,
+  "depth": 0
+}

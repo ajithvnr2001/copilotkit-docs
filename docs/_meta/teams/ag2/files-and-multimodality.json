@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/ag2/files-and-multimodality/",
+  "file": "teams/ag2/files-and-multimodality.md",
+  "title": "Microsoft Teams + AG2: Files and multimodal input",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:21.145078+00:00",
+  "html_len": 154272,
+  "md_len": 8953,
+  "depth": 0
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://go.copilotkit.ai/discord/",
+  "file": "_subdomains/go.copilotkit.ai/discord.md",
+  "title": "Discord",
+  "method": "crawl4ai+scrapegraph (scrapling: scrapling thin content (60 chars), fallback to crawl4ai)",
+  "fetched_at": "2026-10-08T09:35:43.586778+00:00",
+  "html_len": 54310,
+  "md_len": 699,
+  "depth": 1
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/langgraph-fastapi/prebuilt-components/copilot-threads-drawer/",
+  "file": "langgraph-fastapi/prebuilt-components/copilot-threads-drawer.md",
+  "title": "Threads Drawer",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:05:45.061173+00:00",
+  "html_len": 253238,
+  "md_len": 12870,
+  "depth": 0
+}

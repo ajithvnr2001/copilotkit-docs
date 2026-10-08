@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/agno/tools/",
+  "file": "slack/agno/tools.md",
+  "title": "Slack + Agno: Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:26:44.126870+00:00",
+  "html_len": 236202,
+  "md_len": 8780,
+  "depth": 0
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/langgraph-fastapi/intelligence/self-hosting-ecs/",
+  "file": "langgraph-fastapi/intelligence/self-hosting-ecs.md",
+  "title": "Self-host Intelligence on AWS ECS/Fargate",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:05:32.450419+00:00",
+  "html_len": 350892,
+  "md_len": 26188,
+  "depth": 0
+}

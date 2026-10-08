@@ -1,0 +1,635 @@
+---
+url: https://docs.copilotkit.ai/pydantic-ai/backend/custom-agent/
+title: Use any model router
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:23:24.919405+00:00
+---
+
+# Use any model router
+
+> Source: https://docs.copilotkit.ai/pydantic-ai/backend/custom-agent/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendPydanticAI
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/pydantic-ai)[Quickstart](https://docs.copilotkit.ai/pydantic-ai/quickstart)[Build with agents](https://docs.copilotkit.ai/pydantic-ai/build-with-agents)[Intelligence](https://docs.copilotkit.ai/pydantic-ai/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/pydantic-ai/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/pydantic-ai/webmcp)
+
+Agent capabilities
+
+Pydantic AI
+
+[Sub-agents](https://docs.copilotkit.ai/pydantic-ai/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/pydantic-ai/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/pydantic-ai/learning)
+
+[User Memories](https://docs.copilotkit.ai/pydantic-ai/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/pydantic-ai/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/pydantic-ai/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/pydantic-ai/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/pydantic-ai/intelligence/analytics)[Channels](https://docs.copilotkit.ai/pydantic-ai/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Debugging
+
+Learn
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/pydantic-ai/telemetry)[Community frameworks](https://docs.copilotkit.ai/pydantic-ai/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+On this page
+
+[PydanticAI](https://docs.copilotkit.ai/pydantic-ai)Runtime
+
+# Use any model router
+
+Use BuiltInAgent's factory mode to bring your own AI SDK, TanStack AI, or custom LLM backend.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+`BuiltInAgent`'s factory mode gives you full control over the LLM call. You provide a factory function that talks to any backend, and CopilotKit handles converting the stream to AG-UI events, managing lifecycle, and wiring it into the runtime.
+
+## When to use Simple Mode vs Factory Mode#
+
+| Simple Mode| Factory Mode  
+---|---|---  
+**Setup**|  Minimal: pass a model string| You own the LLM call and stream  
+**Model resolution**|  Built-in (`"openai/gpt-4o"`)| You set up the model yourself  
+**Tools, MCP, state tools**|  Automatically wired| You wire them in your factory  
+**Backend support**|  Vercel AI SDK only| Any backend: AI SDK, TanStack AI, or custom  
+**Best for**|  Quick setup, standard use cases| Full control, non-standard backends  
+  
+If simple mode covers your needs, stick with it. Use factory mode when you need control that simple mode doesn't offer.
+
+To write the whole agent yourself instead of a factory, extend AG-UI's `AbstractAgent`. See [Write your own AG-UI agent](https://docs.copilotkit.ai/pydantic-ai/backend/custom-ag-ui-agent).
+
+## Quick Start#
+
+You have an existing LLM backend and you want a CopilotKit copilot using it. Pick your backend:
+
+AI SDKTanStack AICustom
+
+src/copilotkit.ts
+    
+    
+    import {
+      CopilotRuntime,
+      createCopilotRuntimeHandler,
+      InMemoryAgentRunner,
+      BuiltInAgent,
+      convertMessagesToVercelAISDKMessages,
+    } from "@copilotkit/runtime/v2";
+    import { streamText } from "ai";
+    import { openai } from "@ai-sdk/openai";
+    
+    const agent = new BuiltInAgent({
+      type: "aisdk",
+      factory: ({ input, abortSignal }) =>
+        streamText({
+          model: openai("gpt-4o"),
+          messages: convertMessagesToVercelAISDKMessages(input.messages),
+          abortSignal,
+        }),
+    });
+    
+    const runtime = new CopilotRuntime({
+      agents: { default: agent },
+      runner: new InMemoryAgentRunner(),
+    });
+    
+    const copilotEndpoint = createCopilotEndpoint({
+      runtime,
+      basePath: "/api/copilotkit",
+    });
+    export default copilotEndpoint;
+
+src/copilotkit.ts
+    
+    
+    import {
+      CopilotRuntime,
+      createCopilotRuntimeHandler,
+      InMemoryAgentRunner,
+      BuiltInAgent,
+      convertInputToTanStackAI,
+    } from "@copilotkit/runtime/v2";
+    import { chat } from "@tanstack/ai";
+    import { openaiText } from "@tanstack/ai-openai";
+    
+    const agent = new BuiltInAgent({
+      type: "tanstack",
+      factory: ({ input, abortController }) => {
+        const { messages, systemPrompts } = convertInputToTanStackAI(input);
+        return chat({
+          adapter: openaiText("gpt-4o"),
+          messages,
+          systemPrompts,
+          abortController,
+        });
+      },
+    });
+    
+    const runtime = new CopilotRuntime({
+      agents: { default: agent },
+      runner: new InMemoryAgentRunner(),
+    });
+    
+    const copilotEndpoint = createCopilotEndpoint({
+      runtime,
+      basePath: "/api/copilotkit",
+    });
+    export default copilotEndpoint;
+
+src/copilotkit.ts
+    
+    
+    import {
+      CopilotRuntime,
+      createCopilotRuntimeHandler,
+      InMemoryAgentRunner,
+      BuiltInAgent,
+    } from "@copilotkit/runtime/v2";
+    import { EventType, type BaseEvent } from "@ag-ui/client";
+    
+    const agent = new BuiltInAgent({
+      type: "custom",
+      factory: async function* ({ input, abortSignal }) {
+        const response = await fetch("https://your-llm-api.com/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: input.messages }),
+          signal: abortSignal,
+        });
+    
+        const reader = response.body!.getReader();
+        const decoder = new TextDecoder();
+        const messageId = crypto.randomUUID();
+    
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          yield {
+            type: EventType.TEXT_MESSAGE_CHUNK,
+            role: "assistant",
+            messageId,
+            delta: decoder.decode(value),
+          } as BaseEvent;
+        }
+      },
+    });
+    
+    const runtime = new CopilotRuntime({
+      agents: { default: agent },
+      runner: new InMemoryAgentRunner(),
+    });
+    
+    const copilotEndpoint = createCopilotEndpoint({
+      runtime,
+      basePath: "/api/copilotkit",
+    });
+    export default copilotEndpoint;
+
+The frontend setup is the same as [BuiltInAgent](https://docs.copilotkit.ai/pydantic-ai/quickstart): configure the CopilotKit provider and add a chat component.
+
+## How It Works#
+
+Factory mode accepts a config with two fields:
+
+  * **`type`:** which backend you're using: `"aisdk"`, `"tanstack"`, or `"custom"`
+  * **`factory`:** a function that receives the raw request and returns a backend-native stream
+
+
+
+The factory receives an `BuiltInAgentFactoryContext` (from `@copilotkit/runtime/v2`):
+    
+    
+    interface BuiltInAgentFactoryContext {
+      learnedSkills: BuiltInAgentLearnedSkills; // catalog and read-only AI SDK tools, empty when disabled
+      input: RunAgentInput;        // messages, tools, state, context, threadId, runId, forwardedProps
+      abortController: AbortController;  // for TanStack AI (requires AbortController)
+      abortSignal: AbortSignal;          // preferred for AI SDK, fetch, and custom backends
+    }
+
+CopilotKit handles everything else: `RUN_STARTED` and `RUN_FINISHED` lifecycle events, stream-to-AG-UI conversion, error handling, and abort/cancellation. Your factory never needs to emit lifecycle events.
+
+Don't call `.abort()` on the controller you were handed
+
+`abortController` is passed in for backends like TanStack AI that require a full `AbortController` — hand it to them and let them own it. Aborting it yourself from inside the factory cancels the stream underneath CopilotKit rather than through it, so the run's own teardown does not happen. To cancel a run, call `abortRun()` on the agent. For anything that accepts a signal — the AI SDK, `fetch`, a custom backend — pass `abortSignal` instead.
+
+The `runner: new InMemoryAgentRunner()` in the examples above is the persistence backend that stores threads in process memory. To understand the runner abstraction and how to swap in durable persistence, see [AgentRunner & persistence](https://docs.copilotkit.ai/pydantic-ai/backend/agent-runner).
+
+The factory can be async. Return a `Promise` if you need to do setup before streaming:
+    
+    
+    factory: async ({ input, abortSignal }) => {
+      const apiKey = await getApiKeyFromVault();
+      return streamText({ model: openai("gpt-4o", { apiKey }), ... });
+    }
+
+## Examples#
+
+### With Tools#
+
+AI SDKTanStack AICustom
+
+src/copilotkit.ts
+    
+    
+    import {
+      BuiltInAgent,
+      convertMessagesToVercelAISDKMessages,
+      convertToolsToVercelAITools,
+    } from "@copilotkit/runtime/v2";
+    import { streamText } from "ai";
+    import { openai } from "@ai-sdk/openai";
+    
+    const agent = new BuiltInAgent({
+      type: "aisdk",
+      factory: ({ input, abortSignal }) => {
+        const tools = convertToolsToVercelAITools(input.tools);
+        return streamText({
+          model: openai("gpt-4o"),
+          messages: convertMessagesToVercelAISDKMessages(input.messages),
+          tools,
+          abortSignal,
+        });
+      },
+    });
+
+`convertToolsToVercelAITools` converts frontend-defined tools into AI SDK's `ToolSet` format automatically.
+
+src/copilotkit.ts
+    
+    
+    import { BuiltInAgent, convertInputToTanStackAI } from "@copilotkit/runtime/v2";
+    import { chat, toolDefinition } from "@tanstack/ai";
+    import { openaiText } from "@tanstack/ai-openai";
+    import { z } from "zod";
+    
+    const getWeather = toolDefinition({
+      name: "getWeather",
+      description: "Get the weather for a city",
+      inputSchema: z.object({ city: z.string() }),
+    }).server(async ({ city }) => ({ temp: 72, city }));
+    
+    const agent = new BuiltInAgent({
+      type: "tanstack",
+      factory: ({ input, abortController }) => {
+        const { messages, systemPrompts } = convertInputToTanStackAI(input);
+        return chat({
+          adapter: openaiText("gpt-4o"),
+          messages,
+          systemPrompts,
+          tools: [getWeather],
+          abortController,
+        });
+      },
+    });
+
+src/copilotkit.ts
+    
+    
+    import { BuiltInAgent } from "@copilotkit/runtime/v2";
+    import { EventType, type BaseEvent } from "@ag-ui/client";
+    
+    const agent = new BuiltInAgent({
+      type: "custom",
+      factory: async function* ({ input }) {
+        const messageId = crypto.randomUUID();
+        const toolCallId = crypto.randomUUID();
+    
+        // The LLM decides to call a tool
+        yield {
+          type: EventType.TOOL_CALL_START,
+          parentMessageId: messageId,
+          toolCallId,
+          toolCallName: "getWeather",
+        } as BaseEvent;
+    
+        yield {
+          type: EventType.TOOL_CALL_ARGS,
+          toolCallId,
+          delta: JSON.stringify({ city: "San Francisco" }),
+        } as BaseEvent;
+    
+        yield {
+          type: EventType.TOOL_CALL_END,
+          toolCallId,
+        } as BaseEvent;
+    
+        // Execute the tool and return the result
+        yield {
+          type: EventType.TOOL_CALL_RESULT,
+          role: "tool",
+          messageId: crypto.randomUUID(),
+          toolCallId,
+          content: JSON.stringify({ temp: 72, city: "San Francisco" }),
+        } as BaseEvent;
+    
+        // Text response after the tool call
+        yield {
+          type: EventType.TEXT_MESSAGE_CHUNK,
+          role: "assistant",
+          messageId,
+          delta: "The weather in San Francisco is 72°F.",
+        } as BaseEvent;
+      },
+    });
+
+With `type: "custom"`, you yield AG-UI events directly. See the [AG-UI event reference](https://docs.copilotkit.ai/pydantic-ai/backend/ag-ui) for all available event types.
+
+### With Reasoning (Thinking Models)#
+
+AI SDKTanStack AI
+
+src/copilotkit.ts
+    
+    
+    import { BuiltInAgent, convertMessagesToVercelAISDKMessages } from "@copilotkit/runtime/v2";
+    import { streamText } from "ai";
+    import { anthropic } from "@ai-sdk/anthropic";
+    
+    const agent = new BuiltInAgent({
+      type: "aisdk",
+      factory: ({ input, abortSignal }) =>
+        streamText({
+          model: anthropic("claude-sonnet-4-6"),
+          providerOptions: {
+            anthropic: {
+              thinking: { type: "adaptive" },
+              // `effort` replaces the fixed token budget used by the older
+              // `{ type: "enabled", budgetTokens }` form.
+              effort: "high",
+            },
+          },
+          messages: convertMessagesToVercelAISDKMessages(input.messages),
+          abortSignal,
+        }),
+    });
+
+Reasoning events (`REASONING_START`, `REASONING_MESSAGE_CONTENT`, `REASONING_END`) are automatically extracted from the AI SDK stream.
+
+Pick the model with reasoning **visibility** in mind. From Claude Opus 4.7 onward (including Sonnet 5 and Opus 5), Anthropic defaults thinking `display` to `"omitted"` — the model still reasons, but no reasoning text comes back, so the events above arrive empty. `@ai-sdk/anthropic` does not expose `display` yet, so choose a model that defaults to summarized thinking (such as `claude-sonnet-4-6`) when you want the reasoning to be visible.
+
+Using `BuiltInAgent` without a custom factory? The same options go through its `providerOptions` — see [Advanced Configuration](https://docs.copilotkit.ai/pydantic-ai/advanced-configuration#provider-specific-options).
+
+The TanStack AI converter does not surface reasoning events (`REASONING_START`, `REASONING_MESSAGE_CONTENT`, `REASONING_END`). Even if the underlying model supports thinking/reasoning, those events will not be forwarded to the frontend. Use the AI SDK backend if you need reasoning events.
+
+src/copilotkit.ts
+    
+    
+    import { BuiltInAgent, convertInputToTanStackAI } from "@copilotkit/runtime/v2";
+    import { chat } from "@tanstack/ai";
+    import { anthropicText } from "@tanstack/ai-anthropic";
+    
+    const agent = new BuiltInAgent({
+      type: "tanstack",
+      factory: ({ input, abortController }) => {
+        const { messages, systemPrompts } = convertInputToTanStackAI(input);
+        return chat({
+          adapter: anthropicText("claude-sonnet-4-6"),
+          messages,
+          systemPrompts,
+          modelOptions: {
+            thinking: { type: "adaptive", display: "summarized" },
+          },
+          abortController,
+        });
+      },
+    });
+
+### With System Prompt, Context, and State#
+
+AI SDKTanStack AI
+
+src/copilotkit.ts
+    
+    
+    import {
+      BuiltInAgent,
+      convertMessagesToVercelAISDKMessages,
+    } from "@copilotkit/runtime/v2";
+    import { streamText } from "ai";
+    import { openai } from "@ai-sdk/openai";
+    
+    const agent = new BuiltInAgent({
+      type: "aisdk",
+      factory: ({ input, abortSignal }) => {
+        const systemParts: string[] = ["You are a helpful assistant."];
+    
+        // Add context supplied by the frontend
+        if (input.context?.length) {
+          for (const ctx of input.context) {
+            systemParts.push(`${ctx.description}:\n${ctx.value}`);
+          }
+        }
+    
+        // Add shared application state
+        if (input.state && Object.keys(input.state).length > 0) {
+          systemParts.push(
+            `Application State:\n${JSON.stringify(input.state, null, 2)}`,
+          );
+        }
+    
+        const messages = convertMessagesToVercelAISDKMessages(input.messages);
+        messages.unshift({ role: "system", content: systemParts.join("\n\n") });
+    
+        return streamText({
+          model: openai("gpt-4o"),
+          messages,
+          abortSignal,
+        });
+      },
+    });
+
+src/copilotkit.ts
+    
+    
+    import { BuiltInAgent, convertInputToTanStackAI } from "@copilotkit/runtime/v2";
+    import { chat } from "@tanstack/ai";
+    import { openaiText } from "@tanstack/ai-openai";
+    
+    const agent = new BuiltInAgent({
+      type: "tanstack",
+      factory: ({ input, abortController }) => {
+        // convertInputToTanStackAI automatically extracts system/developer messages,
+        // context, and state into the systemPrompts array
+        const { messages, systemPrompts } = convertInputToTanStackAI(input);
+    
+        // Add your own system prompt at the beginning
+        systemPrompts.unshift("You are a helpful assistant.");
+    
+        return chat({
+          adapter: openaiText("gpt-4o"),
+          messages,
+          systemPrompts,
+          abortController,
+        });
+      },
+    });
+
+`convertInputToTanStackAI` handles system/developer messages, `input.context`, and `input.state` automatically. Prepend your own prompt if needed.
+
+### With forwardedProps#
+
+Use `forwardedProps` only for non-secret, browser-controlled preferences. Validate each value against backend-owned limits before it affects execution. Never use these properties for credentials, tenant identity, authorization, or unrestricted model and provider selection.
+
+AI SDKTanStack AI
+
+src/copilotkit.ts
+    
+    
+    import {
+      BuiltInAgent,
+      convertMessagesToVercelAISDKMessages,
+    } from "@copilotkit/runtime/v2";
+    import { streamText } from "ai";
+    import { openai } from "@ai-sdk/openai";
+    
+    const agent = new BuiltInAgent({
+      type: "aisdk",
+      factory: ({ input, abortSignal }) => {
+        const props = (input.forwardedProps ?? {}) as Record<string, unknown>;
+    
+        const model = props.model === "openai/gpt-4o-mini"
+          ? openai("gpt-4o-mini")
+          : openai("gpt-4o");
+    
+        const temperature =
+          typeof props.temperature === "number" &&
+          props.temperature >= 0 && props.temperature <= 1
+            ? props.temperature
+            : 0.7;
+    
+        return streamText({
+          model,
+          temperature,
+          messages: convertMessagesToVercelAISDKMessages(input.messages),
+          abortSignal,
+        });
+      },
+    });
+
+src/copilotkit.ts
+    
+    
+    import { BuiltInAgent, convertInputToTanStackAI } from "@copilotkit/runtime/v2";
+    import { chat } from "@tanstack/ai";
+    import { openaiText } from "@tanstack/ai-openai";
+    import { anthropicText } from "@tanstack/ai-anthropic";
+    
+    const agent = new BuiltInAgent({
+      type: "tanstack",
+      factory: ({ input, abortController }) => {
+        const props = (input.forwardedProps ?? {}) as Record<string, unknown>;
+        const { messages, systemPrompts } = convertInputToTanStackAI(input);
+    
+        const adapter =
+          props.model === "anthropic/claude-sonnet-4-6"
+            ? anthropicText("claude-sonnet-4-6")
+            : openaiText("gpt-4o");
+    
+        const modelOptions: Record<string, unknown> = {};
+        if (
+          typeof props.temperature === "number" &&
+          props.temperature >= 0 && props.temperature <= 1
+        )
+          modelOptions.temperature = props.temperature;
+    
+        return chat({
+          adapter,
+          messages,
+          systemPrompts,
+          modelOptions,
+          abortController,
+        });
+      },
+    });
+
+The examples above accept only explicit model choices and a bounded temperature. Forward those preferences from the frontend provider:
+
+app/page.tsx
+    
+    
+    <CopilotKit
+      properties={{ model: "openai/gpt-4o-mini", temperature: 0.3 }}
+      useSingleEndpoint={false}
+    >
+      <CopilotChat />
+    </CopilotKit>
+
+About the explicit useSingleEndpoint
+
+The route above serves multi-route, the default. `<CopilotKitProvider>` negotiates the transport when the prop is omitted, but every released `<CopilotKit>` still pins it to `true` internally — which selects the single-route transport and 404s against a multi-route route. Keep the `{false}`. See [Provider and handler pairs](https://docs.copilotkit.ai/pydantic-ai/backend/runtime-endpoints#provider-and-handler-pairs).
+
+## Helper Utilities#
+
+These utilities are exported from `@copilotkit/runtime/v2` to help convert between CopilotKit's input format and your backend's expected format:
+
+Utility| Description  
+---|---  
+`convertInputToTanStackAI(input)`| Converts `RunAgentInput` to `{ messages, systemPrompts }` for TanStack AI's `chat()`. Handles system/developer messages, context, and state.  
+`convertMessagesToVercelAISDKMessages(messages)`| Converts AG-UI messages to Vercel AI SDK's `ModelMessage[]` format.  
+`convertToolsToVercelAITools(tools)`| Converts frontend-defined tools (JSON Schema) to AI SDK's `ToolSet`.  
+`convertToolDefinitionsToVercelAITools(tools)`| Converts `defineTool()` definitions (Standard Schema) to AI SDK's `ToolSet`.  
+`resolveModel(spec)`| Resolves `"openai/gpt-4o"` strings to AI SDK `LanguageModel` instances.  
+  
+### On this page
+
+When to use Simple Mode vs Factory ModeQuick StartHow It WorksExamplesWith ToolsWith Reasoning (Thinking Models)With System Prompt, Context, and StateWith forwardedPropsHelper Utilities

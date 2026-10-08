@@ -1,0 +1,199 @@
+---
+url: https://docs.copilotkit.ai/teams/ag2/threads-and-state/
+title: Microsoft Teams + AG2: Threads and state
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:32:24.992670+00:00
+---
+
+# Microsoft Teams + AG2: Threads and state
+
+> Source: https://docs.copilotkit.ai/teams/ag2/threads-and-state/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+ChannelTeamsAgent backendAG2
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+Getting Started
+
+[Overview](https://docs.copilotkit.ai/teams/ag2)[Configure the Channel in Intelligence](https://docs.copilotkit.ai/teams/ag2/intelligence)[Connect and run your agent](https://docs.copilotkit.ai/teams/ag2/connect)
+
+Build
+
+[Tools and context](https://docs.copilotkit.ai/teams/ag2/tools)[Identity and Memory](https://docs.copilotkit.ai/teams/ag2/identity-and-memory)[Rich messages and components](https://docs.copilotkit.ai/teams/ag2/rich-messages)[Interactive messages and approvals](https://docs.copilotkit.ai/teams/ag2/interactive)[Commands and reactions](https://docs.copilotkit.ai/teams/ag2/commands-and-reactions)[Files and multimodal input](https://docs.copilotkit.ai/teams/ag2/files-and-multimodality)[Threads and state](https://docs.copilotkit.ai/teams/ag2/threads-and-state)
+
+Production
+
+[Persistence and scaling](https://docs.copilotkit.ai/teams/ag2/persistence-and-scaling)[History and transcripts](https://docs.copilotkit.ai/teams/ag2/history-and-transcripts)[Deploy and operate](https://docs.copilotkit.ai/teams/ag2/deploy-and-operate)[API reference](https://docs.copilotkit.ai/reference/channels)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Threads and state
+
+Build
+
+# Threads and state
+
+Understand managed conversation identity and history, then persist the SDK state your Slack or Teams workflow owns.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+Every delivered Slack or Teams conversation becomes a Channels SDK `Thread`. It is the reply and workflow handle passed to `onMessage`, tools, interactions, and interrupt callbacks.
+
+A Channels thread is not an Intelligence thread
+
+A Channels `Thread` is one platform conversation inside the SDK. [Threads Drawer](https://docs.copilotkit.ai/teams/ag2/prebuilt-components/copilot-threads-drawer) provides the application UI for browsing and restoring agent conversations; use [`useThreads`](https://docs.copilotkit.ai/reference/hooks/useThreads) to build a custom UI. They share a stable thread id. They are different APIs.
+
+## Conversation identity#
+
+`thread.conversationKey` is the opaque, stable key Intelligence supplies for the native conversation. Do not parse it or infer workspace, team, channel, or thread identifiers from its value. The SDK passes that same value to your `agent(threadId)` factory (or sets it on a cloned singleton), which is why every quickstart creates a fresh agent and assigns its `threadId`.
+
+agent.ts
+    
+    
+    export function makeAgent(threadId: string) {
+      const agent = createAgentForYourFramework();
+      agent.threadId = threadId;
+      return agent;
+    }
+
+Prefer an agent **factory** so each turn gets an explicit new instance. You may also pass a singleton (`agent: shared`); under the hood the SDK calls `shared.clone()` per run so concurrent turns do not share one mutable object. Managed history is loaded onto that per-run agent after isolation.
+
+Managed delivery admission keeps one canonical conversation exclusive while unrelated conversations run in parallel. The SDK `store.concurrency` setting still governs other adapter paths and shared workflow state; it does not raise the managed same-Thread delivery limit.
+
+The native provider is available on both `message.platform` and `thread.platform`. Managed turns report `"slack"` or `"teams"`.
+
+Keep conversation and user identity separate
+
+A Thread can contain several provider actors and has no personal owner. See [Identity and Memory](https://docs.copilotkit.ai/teams/ag2/identity-and-memory) before attaching application-user data or personal Memory to a turn.
+
+## Welcome a new installation or conversation#
+
+`onWelcome` handles a provider installation or conversation-activation event. It is a lifecycle event, not a synthetic user message, so it does not run `onMessage` or add a made-up user turn to the conversation.
+
+channel.ts
+    
+    
+    channel.onWelcome(async ({ thread, user }) => {
+      await thread.post(
+        user ? `Welcome, ${user.name}.` : "Welcome. How can I help?",
+      );
+    });
+
+The `user` is the nullable application user selected by `identifyUser` for that event. The provider account that caused the event remains available as `actor`.
+
+## What Intelligence restores#
+
+For each new turn, the managed transport reconstructs recent conversation history for the agent. The current in-flight message is not in that fetched history. `runAgent()` automatically injects it when `prompt` is omitted; pass an explicit combined prompt when a turn can contain both text and attachments:
+
+channel.ts
+    
+    
+    channel.onMessage(async ({ thread, message }) => {
+      await thread.runAgent({
+        prompt: message.contentParts?.length
+          ? [
+              ...(message.text
+                ? [{ type: "text" as const, text: message.text }]
+                : []),
+              ...message.contentParts,
+            ]
+          : message.text,
+      });
+    });
+
+This history is the conversational record used to seed the agent. It is separate from application workflow state such as an approval step, selected environment, or form draft.
+
+## Persist workflow state#
+
+Use `thread.state()` and `thread.setState()` for JSON-serializable state keyed by `conversationKey`. A Standard Schema makes reads typed and validates writes:
+
+Terminal
+    
+    
+    npm install zod
+
+channel.ts
+    
+    
+    import { createChannel } from "@copilotkit/channels";
+    import { z } from "zod";
+    import { makeAgent } from "./agent.js";
+    import { durableStateStore } from "./state-store.js";
+    
+    function required(name: string): string {
+      const value = process.env[name];
+      if (!value) throw new Error(`Missing ${name}`);
+      return value;
+    }
+    
+    const workflowState = z.object({
+      incidentId: z.string(),
+      stage: z.enum(["triage", "awaiting-approval", "resolved"]),
+    });
+    
+    const channel = createChannel({
+      name: required("CHANNEL_CODE"),
+      identifyUser: "platform",
+      agent: makeAgent,
+      store: {
+        state: workflowState,
+        adapter: durableStateStore,
+      },
+    });
+    
+    channel.onMessage(async ({ thread, message }) => {
+      const current = await thread.state();
+      await thread.setState({
+        incidentId: current?.incidentId ?? "INC-421",
+        stage: "triage",
+      });
+      await thread.runAgent({ prompt: message.text });
+    });
+
+`setState` replaces the stored value; it does not merge a partial patch.
+
+## Choose the persistence boundary deliberately#
+
+The managed realtime path restores platform conversation history, but it does not automatically wire a durable SDK `StateStore`. Without `store.adapter`, the default MemoryStore keeps these only in the current process:
+
+  * `thread.state()`
+  * registered interactive-action snapshots
+  * SDK locks, deduplication windows, and queues
+
+
+
+For production workflows that must survive a deploy, provide a durable application implementation of the [`StateStore` contract](https://docs.copilotkit.ai/reference/channels/classes/Channel#statestore-contract). The contract includes key/value, list, lock, deduplication, and queue operations. Values must round-trip through JSON.
+
+Do not infer durability from Online status
+
+**Online** confirms a healthy managed connection that can receive delivery invitations. Send a real provider message to test delivery. This status does not prove your application workflow state survives a process restart, so test a restart while an approval card is pending before shipping a durable workflow.
+
+## Operational checklist#
+
+  * Use one fresh agent per `conversationKey`.
+  * Pass the current inbound message to `runAgent`.
+  * Branch on `message.platform` for the current turn; `thread.platform` carries the same native provider when only the Thread is available.
+  * Store only JSON-serializable workflow data.
+  * Replace, do not patch, values passed to `setState`.
+  * Configure a durable `StateStore` before promising restart-safe approvals.
+  * Stop the listener on `SIGINT` and `SIGTERM` so Intelligence can release the runtime cleanly.
+
+
+
+See the [Thread API](https://docs.copilotkit.ai/reference/channels/classes/Thread) for methods and [interactive approvals](https://docs.copilotkit.ai/teams/ag2/interactive) for the managed resume flow.
+
+### On this page
+
+Conversation identityWelcome a new installation or conversationWhat Intelligence restoresPersist workflow stateChoose the persistence boundary deliberatelyOperational checklist

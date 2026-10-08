@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/agno/tools/",
+  "file": "teams/agno/tools.md",
+  "title": "Microsoft Teams + Agno: Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:30.893962+00:00",
+  "html_len": 235544,
+  "md_len": 8806,
+  "depth": 0
+}

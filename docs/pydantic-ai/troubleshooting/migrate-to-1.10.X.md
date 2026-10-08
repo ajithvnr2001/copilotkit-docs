@@ -1,0 +1,285 @@
+---
+url: https://docs.copilotkit.ai/pydantic-ai/troubleshooting/migrate-to-1.10.X
+title: Migrate to 1.10.X
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T09:24:35.456334+00:00
+---
+
+# Migrate to 1.10.X
+
+> Source: https://docs.copilotkit.ai/pydantic-ai/troubleshooting/migrate-to-1.10.X
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendPydanticAI
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/pydantic-ai)[Quickstart](https://docs.copilotkit.ai/pydantic-ai/quickstart)[Build with agents](https://docs.copilotkit.ai/pydantic-ai/build-with-agents)[Intelligence](https://docs.copilotkit.ai/pydantic-ai/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/pydantic-ai/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/pydantic-ai/webmcp)
+
+Agent capabilities
+
+Pydantic AI
+
+[Sub-agents](https://docs.copilotkit.ai/pydantic-ai/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/pydantic-ai/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/pydantic-ai/learning)
+
+[User Memories](https://docs.copilotkit.ai/pydantic-ai/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/pydantic-ai/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/pydantic-ai/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/pydantic-ai/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/pydantic-ai/intelligence/analytics)[Channels](https://docs.copilotkit.ai/pydantic-ai/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Debugging
+
+Learn
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Migrate to V2](https://docs.copilotkit.ai/pydantic-ai/troubleshooting/migrate-to-v2)[Error Debugging & Observability](https://docs.copilotkit.ai/pydantic-ai/troubleshooting/error-debugging)[Common Copilot Issues](https://docs.copilotkit.ai/pydantic-ai/troubleshooting/common-issues)[Migrate to 1.10.X](https://docs.copilotkit.ai/pydantic-ai/troubleshooting/migrate-to-1.10.X)[Migrate to 1.8.2](https://docs.copilotkit.ai/pydantic-ai/troubleshooting/migrate-to-1.8.2)
+
+[Open-source telemetry](https://docs.copilotkit.ai/pydantic-ai/telemetry)[Community frameworks](https://docs.copilotkit.ai/pydantic-ai/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Migrate to 1.10.X
+
+OtherTroubleshooting
+
+# Migrate to 1.10.X
+
+Migration guide for CopilotKit 1.10.X
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+## Overview#
+
+CopilotKit 1.10.X introduces a new headless UI system and simplified message formats. Most existing code will continue to work, but you may need to update custom message handling.
+
+**What you need to know:**
+
+  * Message format has changed from classes to plain objects
+  * New headless UI hook available for advanced use cases
+  * Backwards compatibility maintained for most features
+
+
+
+## Key Improvements & Changes#
+
+### Enhanced Message Format#
+
+Messages now use plain objects instead of classes for better performance and simpler handling.
+
+#### Before
+    
+    
+    const message = new TextMessage({
+      role: MessageRole.Assistant,
+      content: "Hello, how are you?",
+    });
+
+#### After
+    
+    
+    const message = {
+      role: "assistant",
+      content: "Hello, how are you?",
+    };
+
+### Simplified Message Type Checking#
+
+Message type checking has been streamlined for better developer experience. Instead of using the previous `isTextMessage` or adjacent methods, you can now check the `role` property of the message.
+
+#### Before
+    
+    
+    if (message.isTextMessage()) {
+      if (message.role === "assistant") {
+        console.log(message.content);
+      }
+      if (message.role === "user") {
+        console.log(message.content);
+      }
+    }
+    
+    if (message.isImageMessage()) {
+      console.log(message.image);
+    }
+    
+    if (message.isActionExecutionMessage()) {
+      console.log(message.toolCalls);
+    }
+    
+    // etc...
+
+#### After
+    
+    
+    if (message.role === "assistant") {
+      console.log(message.content, message.toolCalls, message.image);
+    }
+    
+    if (message.role === "user") {
+      console.log(message.content, message.image);
+    }
+
+### Custom Assistant Messages#
+
+Previously, you had to use the `subComponent` property to render custom assistant messages. Now you can use the `generativeUI` property instead.
+
+**Important!** Both will continue to work.
+
+#### Before
+    
+    
+    import { AssistantMessageProps } from "@copilotkit/react-ui";
+    
+    export const AssistantMessage = (props: AssistantMessageProps) => {
+      const { message, subComponent } = props;
+    
+      return <div style={{ marginBottom: "0.5rem" }}>{subComponent}</div>;
+    };
+
+#### After
+    
+    
+    import { AssistantMessageProps } from "@copilotkit/react-ui";
+    
+    export const AssistantMessage = (props: AssistantMessageProps) => {
+      const { message } = props;
+    
+      return <div style={{ marginBottom: "0.5rem" }}>{message.generativeUI}</div>;
+    };
+
+#### Backwards Compatibility
+
+  * Custom sub-components remain fully supported
+  * Both `subComponent` (legacy) and `generativeUI` (new) properties work
+  * Existing `useCopilotChat` code continues to function
+
+
+
+## New Features#
+
+### Advanced Headless UI Hook#
+
+New `useCopilotChatHeadless_c` hook provides complete control over chat UI:
+
+**Features:**
+
+  * Complete control over chat UI rendering
+  * Built-in generative UI support
+  * Advanced suggestions management
+  * Interrupt handling for human-in-the-loop workflows
+
+
+
+An example of how you might use the new Headless UI hook:
+    
+    
+    const { messages, suggestions, interrupt } = useCopilotChatHeadless_c();
+    
+    return (
+      <div>
+        {suggestions.map((suggestion) => (
+          <div key={suggestion.id}>{suggestion.title}</div>
+        ))}
+    
+        {interrupt}
+    
+        {messages.map((message) => {
+          switch (message.role) {
+            case "assistant":
+              if (message.generativeUI) return message.generativeUI;
+              return <div key={message.id}>{message.content}</div>;
+            case "user":
+              return <div key={message.id}>{message.content}</div>;
+          }
+        })}
+      </div>
+    );
+
+[Read more about the new headless UI hook and get started](https://docs.copilotkit.ai/pydantic-ai/intelligence/headless-ui).
+
+## What about `useCopilotChat`?#
+
+With the introduction of the new headless UI hook, we are starting the deprecation of `useCopilotChat`. While it will remain supported for several months in maintenance mode, all new headless UI features will be added to `useCopilotChatHeadless_c`.
+
+We recommend migrating to the new hook for new projects. However, please feel free to continue using `useCopilotChat` until you are ready to migrate.
+
+### When to Migrate#
+
+**Continue using`useCopilotChat` if:**
+
+  * Your current implementation works well
+  * You don't need advanced headless features
+  * You prefer gradual migration
+
+
+
+**Migrate to`useCopilotChatHeadless_c` if:**
+
+  * Starting a new project
+  * Building new headless UI implementations
+  * Need generative UI capabilities
+  * Want access to advanced suggestions and interrupts
+  * Building fully custom chat experiences
+
+
+
+### On this page
+
+OverviewKey Improvements & ChangesEnhanced Message FormatSimplified Message Type CheckingCustom Assistant MessagesNew FeaturesAdvanced Headless UI HookWhat about useCopilotChat?When to Migrate

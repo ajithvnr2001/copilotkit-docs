@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/interactive/",
+  "file": "slack/interactive.md",
+  "title": "Slack: Interactive messages and approvals",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:27:20.018011+00:00",
+  "html_len": 223603,
+  "md_len": 10489,
+  "depth": 0
+}

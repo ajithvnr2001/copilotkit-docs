@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/llamaindex/prebuilt-components/chat/",
+  "file": "llamaindex/prebuilt-components/chat.md",
+  "title": "CopilotChat",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:15:20.326890+00:00",
+  "html_len": 205003,
+  "md_len": 15367,
+  "depth": 0
+}

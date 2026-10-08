@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/channels/tools/",
+  "file": "channels/tools.md",
+  "title": "Slack: Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:35:30.528984+00:00",
+  "html_len": 238871,
+  "md_len": 8707,
+  "depth": 1
+}

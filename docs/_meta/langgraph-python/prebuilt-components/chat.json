@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/langgraph-python/prebuilt-components/chat/",
+  "file": "langgraph-python/prebuilt-components/chat.md",
+  "title": "CopilotChat",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:08:39.524060+00:00",
+  "html_len": 202550,
+  "md_len": 7509,
+  "depth": 0
+}

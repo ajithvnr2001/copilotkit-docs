@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/langgraph-fastapi/intelligence/self-hosting-observability/",
+  "file": "langgraph-fastapi/intelligence/self-hosting-observability.md",
+  "title": "Monitor self-hosted Intelligence with OpenTelemetry",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:05:36.911856+00:00",
+  "html_len": 272483,
+  "md_len": 17140,
+  "depth": 0
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/mastra/history-and-transcripts/",
+  "file": "teams/mastra/history-and-transcripts.md",
+  "title": "Microsoft Teams + Mastra: History and transcripts",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:37.795148+00:00",
+  "html_len": 184094,
+  "md_len": 8204,
+  "depth": 0
+}

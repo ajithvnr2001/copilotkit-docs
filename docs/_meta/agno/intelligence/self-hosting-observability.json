@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/agno/intelligence/self-hosting-observability/",
+  "file": "agno/intelligence/self-hosting-observability.md",
+  "title": "Monitor self-hosted Intelligence with OpenTelemetry",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T08:47:29.693264+00:00",
+  "html_len": 262843,
+  "md_len": 16755,
+  "depth": 0
+}

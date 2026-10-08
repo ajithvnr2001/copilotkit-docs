@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/mastra/prebuilt-components/chat/",
+  "file": "mastra/prebuilt-components/chat.md",
+  "title": "CopilotChat",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:16:52.594500+00:00",
+  "html_len": 272319,
+  "md_len": 59245,
+  "depth": 0
+}

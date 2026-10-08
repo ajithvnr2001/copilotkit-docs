@@ -1,0 +1,10 @@
+{
+  "url": "https://copilotkit.ai/talk-to-an-engineer/",
+  "file": "_subdomains/copilotkit.ai/talk-to-an-engineer.md",
+  "title": "Talk to an Engineer | CopilotKit",
+  "method": "crawl4ai+scrapegraph (scrapling: scrapling thin content (372 chars), fallback to crawl4ai)",
+  "fetched_at": "2026-10-08T09:34:49.962768+00:00",
+  "html_len": 114656,
+  "md_len": 1899,
+  "depth": 1
+}

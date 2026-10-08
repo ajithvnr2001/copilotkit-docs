@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/deepagents/prebuilt-components/chat/",
+  "file": "deepagents/prebuilt-components/chat.md",
+  "title": "CopilotChat",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:00:47.081558+00:00",
+  "html_len": 181719,
+  "md_len": 7177,
+  "depth": 0
+}

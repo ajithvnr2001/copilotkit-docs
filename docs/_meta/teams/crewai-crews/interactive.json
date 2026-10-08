@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/crewai-crews/interactive/",
+  "file": "teams/crewai-crews/interactive.md",
+  "title": "Microsoft Teams + CrewAI Flows: Interactive messages and approvals",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:48.873703+00:00",
+  "html_len": 221094,
+  "md_len": 10102,
+  "depth": 0
+}

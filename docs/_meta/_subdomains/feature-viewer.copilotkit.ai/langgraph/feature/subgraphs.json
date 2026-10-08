@@ -1,0 +1,10 @@
+{
+  "url": "https://feature-viewer.copilotkit.ai/langgraph/feature/subgraphs/",
+  "file": "_subdomains/feature-viewer.copilotkit.ai/langgraph/feature/subgraphs.md",
+  "title": "Demo Viewer by CopilotKit",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:37:32.555270+00:00",
+  "html_len": 66337,
+  "md_len": 1724,
+  "depth": 1
+}

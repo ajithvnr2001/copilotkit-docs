@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/deploy/aws-lambda/",
+  "file": "deploy/aws-lambda.md",
+  "title": "AWS Lambda",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:01:53.613573+00:00",
+  "html_len": 472113,
+  "md_len": 21652,
+  "depth": 0
+}

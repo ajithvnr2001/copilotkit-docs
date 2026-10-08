@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/ms-agent-python/prebuilt-components/copilot-threads-drawer/",
+  "file": "slack/ms-agent-python/prebuilt-components/copilot-threads-drawer.md",
+  "title": "Threads Drawer",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:39:48.967999+00:00",
+  "html_len": 200097,
+  "md_len": 12342,
+  "depth": 1
+}

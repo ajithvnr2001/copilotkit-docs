@@ -1,0 +1,239 @@
+---
+url: https://docs.copilotkit.ai/agno/frontend-tools/
+title: Frontend Tools
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T08:46:58.063940+00:00
+---
+
+# Frontend Tools
+
+> Source: https://docs.copilotkit.ai/agno/frontend-tools/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendAgno
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/agno)[Quickstart](https://docs.copilotkit.ai/agno/quickstart)[Build with agents](https://docs.copilotkit.ai/agno/build-with-agents)[Intelligence](https://docs.copilotkit.ai/agno/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/agno/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/agno/webmcp)
+
+Agent capabilities
+
+[Sub-agents](https://docs.copilotkit.ai/agno/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/agno/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/agno/learning)
+
+[User Memories](https://docs.copilotkit.ai/agno/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/agno/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/agno/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/agno/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/agno/intelligence/analytics)[Channels](https://docs.copilotkit.ai/agno/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+Debugging
+
+Learn
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/agno/telemetry)[Community frameworks](https://docs.copilotkit.ai/agno/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Frontend-tools
+
+Basics
+
+# Frontend Tools
+
+Create frontend tools and use them within your Agno agent.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+DemoCode
+
+## What is this?#
+
+Frontend tools enable you to define client-side functions that your Agno agent can invoke, with execution happening entirely in the user's browser. When your agent calls a frontend tool, the logic runs on the client side, giving you direct access to the frontend environment.
+
+This can be utilized for to let [your agent control the UI](https://docs.copilotkit.ai/agno/frontend-tools), [generative UI](https://docs.copilotkit.ai/agno/frontend-tools), or for [Human-in-the-loop](https://docs.copilotkit.ai/agno/human-in-the-loop) interactions.
+
+In this guide, we cover the use of frontend tools driving and interacting with the UI.
+
+## When should I use this?#
+
+Use frontend tools when you need your agent to interact with client-side primitives such as:
+
+  * Reading or modifying React component state
+  * Accessing browser APIs like localStorage, sessionStorage, or cookies
+  * Triggering UI updates or animations
+  * Interacting with third-party frontend libraries
+  * Performing actions that require the user's immediate browser context
+
+
+
+## Implementation#
+
+Configure session storage
+
+Agno must store the paused run before a frontend tool can return its result. Configure a database on the `Agent` that owns the external tool.
+
+Install the SQLite dependency:
+    
+    
+    pip install sqlalchemy
+
+Use a project-relative SQLite file for local development:
+    
+    
+    from agno.agent import Agent
+    from agno.db.sqlite import SqliteDb
+    
+    db = SqliteDb(db_file="tmp/agno.db")
+    
+    agent = Agent(
+        # ...
+        db=db,
+    )
+
+The deployed showcase uses `/tmp/agno.db` because its application directory is read-only to the runtime user.
+
+For production, use durable shared storage such as `PgDb`. An ephemeral container file cannot resume a run on another instance.
+
+### Run and connect your agent#
+
+You'll need to run your agent and connect it to CopilotKit before proceeding. If you haven't done so already, you can follow the instructions in the [Getting Started](https://docs.copilotkit.ai/langgraph/quickstart) guide.
+
+If you don't already have an agent, you can use the [coagent starter](https://github.com/copilotkit/copilotkit/tree/main/examples/coagents-starter) as a starting point as this guide uses it as a starting point.
+
+### Create a frontend tool#
+
+First, you'll need to create a frontend tool using the [useFrontendTool](https://docs.copilotkit.ai/reference/v1/hooks/useFrontendTool) hook. Here's a simple one to get you started that says hello to the user.
+
+page.tsx
+    
+    
+    import { z } from "zod";
+    import { useFrontendTool } from "@copilotkit/react-core/v2"
+    
+    export function Page() {
+      // ...
+    
+      useFrontendTool({
+        name: "sayHello",
+        description: "Say hello to the user",
+        parameters: z.object({
+          name: z.string().describe("The name of the user to say hello to"),
+        }),
+        handler: async ({ name }) => {
+          alert(`Hello, ${name}!`);
+          return `Said hello to ${name}!`;
+        },
+      });
+    
+      // ...
+    }
+
+### Define the frontend tool in your Agno agent#
+
+Now, we'll need to modify the agent to access these frontend tools.
+
+In your Agno agent, define a tool with the `@tool(external_execution=True)` decorator. This tells Agno that the tool will be executed externally (on the frontend).
+
+tools/frontend.py
+    
+    
+    from agno.tools import tool
+    
+    @tool(external_execution=True)
+    def sayHello(name: str):
+        """
+        Say hello to the user.
+    
+        Args:
+            name: The name of the user to say hello to
+        """
+
+Register the tool with your agent:
+
+agent.py
+    
+    
+    from agno.agent import Agent
+    from agno.db.sqlite import SqliteDb
+    from agno.models.openai import OpenAIChat
+    from agno.os import AgentOS
+    from agno.os.interfaces.agui import AGUI
+    from tools.frontend import sayHello
+    
+    db = SqliteDb(db_file="tmp/agno.db")
+    
+    agent = Agent(
+        model=OpenAIChat(id="gpt-5.4"),
+        tools=[sayHello],
+        db=db,
+        description="A helpful assistant that can answer questions and provide information.",
+        instructions="Be helpful and friendly. Format your responses using markdown where appropriate.",
+    )
+    
+    agent_os = AgentOS(agents=[agent], interfaces=[AGUI(agent=agent)])
+    app = agent_os.get_app()
+
+### Give it a try!#
+
+You've now given your agent the ability to directly call any frontend tools you've defined. These tools will be available to the agent where they can be used as needed.
+
+### On this page
+
+What is this?When should I use this?Implementation

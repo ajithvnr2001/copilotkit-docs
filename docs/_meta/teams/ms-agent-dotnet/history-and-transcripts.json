@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/ms-agent-dotnet/history-and-transcripts/",
+  "file": "teams/ms-agent-dotnet/history-and-transcripts.md",
+  "title": "Microsoft Teams + MS Agent Framework (.NET): History and transcripts",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:42.451774+00:00",
+  "html_len": 185988,
+  "md_len": 8386,
+  "depth": 0
+}

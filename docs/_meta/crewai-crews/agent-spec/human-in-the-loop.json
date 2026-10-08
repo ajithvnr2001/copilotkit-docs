@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/crewai-crews/agent-spec/human-in-the-loop/",
+  "file": "crewai-crews/agent-spec/human-in-the-loop.md",
+  "title": "Human-in-the-Loop",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T08:56:03.137274+00:00",
+  "html_len": 197528,
+  "md_len": 6560,
+  "depth": 0
+}

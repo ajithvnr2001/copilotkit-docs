@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/commands-and-reactions/",
+  "file": "slack/commands-and-reactions.md",
+  "title": "Slack: Commands and reactions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:26:55.502384+00:00",
+  "html_len": 171897,
+  "md_len": 6884,
+  "depth": 0
+}

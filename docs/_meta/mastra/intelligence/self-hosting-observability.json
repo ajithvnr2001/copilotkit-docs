@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/mastra/intelligence/self-hosting-observability/",
+  "file": "mastra/intelligence/self-hosting-observability.md",
+  "title": "Monitor self-hosted Intelligence with OpenTelemetry",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:16:49.174937+00:00",
+  "html_len": 266485,
+  "md_len": 16815,
+  "depth": 0
+}

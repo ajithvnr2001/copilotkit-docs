@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/crewai-crews/intelligence/self-hosting-ecs/",
+  "file": "crewai-crews/intelligence/self-hosting-ecs.md",
+  "title": "Self-host Intelligence on AWS ECS/Fargate",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T08:57:41.799878+00:00",
+  "html_len": 347096,
+  "md_len": 26027,
+  "depth": 0
+}

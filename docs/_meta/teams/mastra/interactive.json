@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/mastra/interactive/",
+  "file": "teams/mastra/interactive.md",
+  "title": "Microsoft Teams + Mastra: Interactive messages and approvals",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:37.939745+00:00",
+  "html_len": 219786,
+  "md_len": 9994,
+  "depth": 0
+}

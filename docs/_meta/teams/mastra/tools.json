@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/mastra/tools/",
+  "file": "teams/mastra/tools.md",
+  "title": "Microsoft Teams + Mastra: Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:40.336043+00:00",
+  "html_len": 237958,
+  "md_len": 8840,
+  "depth": 0
+}

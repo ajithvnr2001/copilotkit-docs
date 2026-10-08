@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/crewai-crews/custom-look-and-feel/markdown/",
+  "file": "crewai-crews/custom-look-and-feel/markdown.md",
+  "title": "Markdown Rendering",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T08:56:41.405243+00:00",
+  "html_len": 235660,
+  "md_len": 9114,
+  "depth": 0
+}

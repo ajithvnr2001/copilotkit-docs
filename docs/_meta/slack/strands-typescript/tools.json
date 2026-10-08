@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/slack/strands-typescript/tools/",
+  "file": "slack/strands-typescript/tools.md",
+  "title": "Slack + AWS Strands (TypeScript): Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:28:50.676252+00:00",
+  "html_len": 237924,
+  "md_len": 9030,
+  "depth": 0
+}

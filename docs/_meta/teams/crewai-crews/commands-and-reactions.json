@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/crewai-crews/commands-and-reactions/",
+  "file": "teams/crewai-crews/commands-and-reactions.md",
+  "title": "Microsoft Teams + CrewAI Flows: Commands and reactions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:44.932154+00:00",
+  "html_len": 172109,
+  "md_len": 7016,
+  "depth": 0
+}

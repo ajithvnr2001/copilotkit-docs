@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/ms-agent-dotnet/faq/",
+  "file": "ms-agent-dotnet/faq.md",
+  "title": "Common Questions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:18:28.609884+00:00",
+  "html_len": 163402,
+  "md_len": 6490,
+  "depth": 0
+}

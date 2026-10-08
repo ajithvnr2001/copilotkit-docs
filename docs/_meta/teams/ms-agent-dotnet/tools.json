@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/ms-agent-dotnet/tools/",
+  "file": "teams/ms-agent-dotnet/tools.md",
+  "title": "Microsoft Teams + MS Agent Framework (.NET): Tools and context",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:44.990977+00:00",
+  "html_len": 239834,
+  "md_len": 9013,
+  "depth": 0
+}

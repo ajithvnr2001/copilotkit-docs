@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/ms-agent-harness-dotnet/interactive/",
+  "file": "teams/ms-agent-harness-dotnet/interactive.md",
+  "title": "Microsoft Teams + MS Agent Harness (.NET): Interactive messages and approvals",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:33:51.195455+00:00",
+  "html_len": 222020,
+  "md_len": 10300,
+  "depth": 0
+}

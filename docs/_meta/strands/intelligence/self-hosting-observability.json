@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/strands/intelligence/self-hosting-observability/",
+  "file": "strands/intelligence/self-hosting-observability.md",
+  "title": "Monitor self-hosted Intelligence with OpenTelemetry",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:31:40.914117+00:00",
+  "html_len": 271531,
+  "md_len": 16903,
+  "depth": 0
+}

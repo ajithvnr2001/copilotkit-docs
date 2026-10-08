@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/channels/threads-and-state/",
+  "file": "channels/threads-and-state.md",
+  "title": "Slack: Threads and state",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:35:32.477609+00:00",
+  "html_len": 194347,
+  "md_len": 9309,
+  "depth": 1
+}

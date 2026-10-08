@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/strands/commands-and-reactions/",
+  "file": "teams/strands/commands-and-reactions.md",
+  "title": "Microsoft Teams + AWS Strands (Python): Commands and reactions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:34:10.967027+00:00",
+  "html_len": 169625,
+  "md_len": 6962,
+  "depth": 0
+}

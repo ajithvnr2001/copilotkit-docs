@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/teams/deepagents/commands-and-reactions/",
+  "file": "teams/deepagents/commands-and-reactions.md",
+  "title": "Microsoft Teams + Deep Agents: Commands and reactions",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T09:32:51.918283+00:00",
+  "html_len": 168839,
+  "md_len": 6986,
+  "depth": 0
+}

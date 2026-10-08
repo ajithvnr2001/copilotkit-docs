@@ -1,0 +1,339 @@
+---
+url: https://docs.copilotkit.ai/ag2/copilot-runtime/
+title: Copilot Runtime
+method: scrapling+scrapegraph
+fetched_at: 2026-10-08T08:43:53.159151+00:00
+---
+
+# Copilot Runtime
+
+> Source: https://docs.copilotkit.ai/ag2/copilot-runtime/
+
+[CopilotKitDocs](https://docs.copilotkit.ai/)Docs[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[](https://copilotkit.ai/talk-to-an-engineer)[](https://dashboard.operations.copilotkit.ai/sign-in?post_auth_redirect=ready&utm_source=docs&utm_medium=cta&utm_campaign=intelligence&utm_content=navbar)
+
+[](https://docs.copilotkit.ai/)
+
+FrontendReactAgent backendAG2
+
+[Docs](https://docs.copilotkit.ai/)[Reference](https://docs.copilotkit.ai/reference)[Cookbook](https://docs.copilotkit.ai/cookbook)
+
+[Introduction](https://docs.copilotkit.ai/ag2)[Quickstart](https://docs.copilotkit.ai/ag2/quickstart)[Build with agents](https://docs.copilotkit.ai/ag2/build-with-agents)[Intelligence](https://docs.copilotkit.ai/ag2/intelligence/overview)
+
+Basics
+
+Chat
+
+Threads
+
+[Frontend-tools](https://docs.copilotkit.ai/ag2/frontend-tools)
+
+Generative UI
+
+Controlled
+
+Declarative
+
+Open-ended
+
+Interactivity
+
+Shared state
+
+Human-in-the-loop
+
+[WebMCP](https://docs.copilotkit.ai/ag2/webmcp)
+
+Agent capabilities
+
+AG2
+
+[Sub-agents](https://docs.copilotkit.ai/ag2/multi-agent/subagents)
+
+Intelligence
+
+[Overview](https://docs.copilotkit.ai/ag2/intelligence/overview)
+
+Get started
+
+Features
+
+AG-UI Streams
+
+[Automatic Learning](https://docs.copilotkit.ai/ag2/learning)
+
+[User Memories](https://docs.copilotkit.ai/ag2/intelligence/memories)[Capture interactions](https://docs.copilotkit.ai/ag2/intelligence/capture-interactions)[Standalone collector](https://docs.copilotkit.ai/ag2/intelligence/standalone-collector)[Captured data](https://docs.copilotkit.ai/ag2/intelligence/captured-data)[Product Analytics](https://docs.copilotkit.ai/ag2/intelligence/analytics)[Channels](https://docs.copilotkit.ai/ag2/intelligence/channels)
+
+Hosting
+
+Backend
+
+Runtime
+
+[Copilot Runtime](https://docs.copilotkit.ai/ag2/copilot-runtime)[AG-UI](https://docs.copilotkit.ai/ag2/ag-ui)
+
+Debugging
+
+Learn
+
+[Cookbook](https://docs.copilotkit.ai/cookbook)[Reference](https://docs.copilotkit.ai/reference)
+
+Other
+
+Contributing
+
+Troubleshooting
+
+[Open-source telemetry](https://docs.copilotkit.ai/ag2/telemetry)[Community frameworks](https://docs.copilotkit.ai/ag2/community-frameworks)
+
+Talk to an engineer
+
+[](https://github.com/copilotkit/copilotkit "GitHub")[](https://discord.gg/6dffbvGU3D "Discord")
+
+Copilot Runtime
+
+BackendRuntime
+
+# Copilot Runtime
+
+The Copilot Runtime is the backend that connects your frontend to your AI agents, providing authentication, middleware, routing, and more.
+
+Copy Prompt![](https://docs.copilotkit.ai/images/prompt-claude.webp)![](https://docs.copilotkit.ai/images/prompt-codex.webp)
+
+View prompt
+
+Open your coding agent in your project's folder, or in an empty folder for a new app.This runs in a coding agent on your computer.
+
+The Copilot Runtime is the backend layer that connects your frontend application to your AI agents. It's set up during the [quickstart](https://docs.copilotkit.ai/ag2/quickstart) and is the recommended way to use CopilotKit.
+
+## Runtime languages#
+
+**TypeScript is the default and most fully featured runtime. It is the only runtime that can run without CopilotKit Intelligence.** Use it for an open-source setup, or connect it to Intelligence when you need its services.
+
+Python, Go, Ruby, and C#/.NET runtimes require an Intelligence project and server-side API key. They work with both [cloud-hosted](https://docs.copilotkit.ai/ag2/intelligence/managed-intelligence-platform) and [self-hosted](https://docs.copilotkit.ai/ag2/intelligence/self-hosting) Intelligence; they do not provide an in-memory or SQLite runner.
+
+Language| Host| Without Intelligence  
+---|---|---  
+TypeScript| Next.js, Express, Hono, and other JavaScript servers| Yes  
+Python| ASGI, with Python 3.11+| No  
+Go| `net/http`, with Go 1.22+| No  
+Ruby| Rack, including Rails and Sinatra, with Ruby 2.7+| No  
+C#/.NET| ASP.NET Core, with .NET 8| No  
+  
+Your runtime language does not have to match your agent language. Each runtime can connect to a remote AG-UI agent. A Python agent can stay behind a TypeScript runtime, for example.
+
+Use the [Intelligence quickstart](https://docs.copilotkit.ai/ag2/intelligence/quickstart#connect-your-runtime) for language-specific installation, authentication, and server setup. Shared Intelligence capabilities do not imply identical runtime APIs: TypeScript options such as `BuiltInAgent`, custom `AgentRunner` classes, audio transcription, and Open Generative UI are not available in every implementation.
+
+The examples below use the TypeScript runtime.
+
+## Setting Up the Runtime#
+
+The runtime is a lightweight server endpoint that you add to your backend:
+    
+    
+    npm install @copilotkit/runtime
+
+Here's a minimal example using Next.js. `createCopilotRuntimeHandler` returns a plain fetch handler. It lives at a **catch-all** path and exports **GET, POST, PATCH, and DELETE** , so the runtime can serve its sub-routes (`/info`, agent runs, threads) rather than a single URL:
+
+app/api/copilotkit/[[...slug]]/route.ts
+    
+    
+    import {
+      CopilotRuntime,
+      createCopilotRuntimeHandler,
+      InMemoryAgentRunner,
+    } from "@copilotkit/runtime/v2";
+    
+    const runtime = new CopilotRuntime({
+      agents: {
+        // your agents go here
+      },
+      runner: new InMemoryAgentRunner(),
+    });
+    
+    const handler = createCopilotRuntimeHandler({
+      runtime,
+      basePath: "/api/copilotkit",
+    });
+    
+    export const GET = handler;
+    export const POST = handler;
+    export const PATCH = handler;
+    export const DELETE = handler;
+
+With the route in place, `GET /api/copilotkit/info` returns a JSON description of the runtime and the agents it has registered. That route is how tooling — and the frontend's transport auto-detection — discovers your runtime, so it is the quickest way to confirm the endpoint is wired up.
+
+Then point your frontend at the endpoint:
+    
+    
+    <CopilotKit runtimeUrl="/api/copilotkit" useSingleEndpoint={false}>
+      <YourApp />
+    </CopilotKit>
+
+`useSingleEndpoint={false}` selects the REST transport, which is what `createCopilotRuntimeHandler` serves. Pass it explicitly: in released versions `<CopilotKit>` pins the flag to `true` — the single-route transport, which posts everything to the bare `runtimeUrl` — and a multi-route runtime answers that with a 404 while `GET /info` still returns 200, so the app looks connected. `<CopilotKitProvider>` already negotiates the transport from `/info` when the prop is omitted, and `<CopilotKit>` will too, at which point this stays correct but stops being necessary. See [Provider and handler pairs](https://docs.copilotkit.ai/ag2/backend/runtime-endpoints#provider-and-handler-pairs).
+
+To keep a single POST-only URL instead, mount the runtime with `createCopilotEndpointSingleRoute` at a plain `route.ts` and omit this prop.
+
+For setup with other backend frameworks (Express, NestJS, Node.js HTTP), see the [quickstart](https://docs.copilotkit.ai/ag2/quickstart).
+
+## Which name identifies an agent#
+
+The name you use to address an agent from the frontend must equal a **key of the runtime's`agents` map**. That key is the only name the frontend can ask for. An agent's own `name`, `id`, or class name is never used for routing, and the two are free to differ.
+
+app/api/copilotkit/[[...slug]]/route.ts
+    
+    
+    const runtime = new CopilotRuntime({
+      agents: {
+        // `my_agent` is the key — the one string the frontend may ask for.
+        my_agent: new HttpAgent({ url: "http://localhost:8000/" }),
+      },
+    });
+
+app/providers.tsx
+    
+    
+    <CopilotKit runtimeUrl="/api/copilotkit" agent="my_agent" useSingleEndpoint={false}>
+      <YourApp />
+    </CopilotKit>
+
+Most integrations write that key literally in the runtime route, as above, so the binding is visible in one file. Some derive it instead, and that is where the rule stops being obvious:
+
+  * **Mastra** — `MastraAgent.getRemoteAgents` and `getLocalAgents` both build the map from `listAgents()`, which is keyed by the **record key** in `new Mastra({ agents: { ... } })`, not by the agent's `id`. Given `new Agent({ name: "My Agent" })` exported as `myAgent` and registered as `agents: { myAgent }`, the runtime key is `myAgent`.
+  * **LangGraph** — `graphId` is a _separate_ binding, from the runtime to a key in your deployment's `langgraph.json`. It does not have to equal the runtime's agents-map key, and it is not the name the frontend asks for. The starter template happens to use `sample_agent` for both.
+
+
+
+An agent's declared name is not its routing key
+
+Asking for a name the runtime did not register resolves no agent, and the frontend raises `CopilotKitAgentDiscoveryError` — see [Agent discovery failed](https://docs.copilotkit.ai/ag2/troubleshooting/error-reference). The error message lists the keys the runtime actually returned, which is the quickest way to see the real names.
+
+To read the registered keys directly, hit `GET {runtimeUrl}/info`. It returns the agents the runtime advertises, under exactly the names the frontend must use.
+
+## The Default Agent#
+
+If you register an agent with the name `"default"`, CopilotKit's prebuilt UI components will use it automatically without any additional configuration on the frontend. This is useful when you have one primary agent and don't want to specify an `agentId` everywhere.
+
+app/api/copilotkit/[[...slug]]/route.ts
+    
+    
+    const runtime = new CopilotRuntime({
+      agents: {
+        // Frontend APIs use this agent when no other agent id is selected.
+        default: new HttpAgent({ url: "https://my-agent.example.com" }),
+      },
+    });
+
+When you register multiple agents, the `"default"` agent powers the chat unless a specific agent is selected. Other agents remain addressable through the frontend agent API.
+
+## What the Runtime Provides#
+
+### Authentication and Security#
+
+The runtime runs on your server, which means agent communication stays server-side. This gives you a trusted environment to enforce authentication, validate requests, and keep API keys secure. When you use the runtime, safe defaults are put in place so your agent endpoints are not exposed to unauthenticated access.
+
+### AG-UI Middleware#
+
+The [AG-UI protocol](https://docs.copilotkit.ai/ag-ui-protocol) supports a middleware layer (`agent.use`) for logging, guardrails, request transformation, and more. Because the runtime runs server-side, this middleware executes in a trusted environment where it cannot be tampered with by the client.
+
+### Agent Routing#
+
+When you register multiple agents with the runtime, it handles discovery and routing automatically. Your frontend doesn't need to know the details of where each agent lives or how to reach it.
+
+### CopilotKit Intelligence#
+
+Features like [threads](https://docs.copilotkit.ai/ag2/threads) and the [inspector](https://docs.copilotkit.ai/ag2/inspector) are provided through the runtime and CopilotKit Intelligence. These give you conversation persistence and debugging capabilities out of the box.
+
+## Built-in Middleware#
+
+The runtime supports two first-class middleware options you can enable directly on `CopilotRuntime` without calling `.use()` on each agent manually.
+
+### A2UI#
+
+Pass `a2ui: {}` to automatically apply `A2UIMiddleware` to all registered agents:
+
+app/api/copilotkit/[[...slug]]/route.ts
+    
+    
+    const runtime = new CopilotRuntime({
+      agents: { default: myAgent },
+      a2ui: {}, // enables A2UI rendering for all agents
+    });
+
+To scope it to specific agents only, pass an `agents` list:
+    
+    
+    a2ui: {
+      agents: ["my-agent"];
+    }
+
+On the frontend, the A2UI renderer activates automatically. Configure `a2ui` only when you want to override its defaults:
+    
+    
+    <CopilotKit
+      runtimeUrl="/api/copilotkit"
+      useSingleEndpoint={false}
+      a2ui={{ theme: myCustomTheme }}
+    >
+      {children}
+    </CopilotKit>
+
+### mcpApps#
+
+Pass `mcpApps` to configure MCP servers for all agents from a single place:
+
+app/api/copilotkit/[[...slug]]/route.ts
+    
+    
+    const runtime = new CopilotRuntime({
+      agents: { default: myAgent },
+      mcpApps: {
+        servers: [
+          { type: "http", url: "http://localhost:3108/mcp", serverId: "my-server" },
+        ],
+      },
+    });
+
+Each server entry optionally accepts an `agentId` field to scope that server to a single agent. Without it, the server is available to all agents.
+
+## What If I Want to Connect to My AG-UI Agent Directly?#
+
+CopilotKit is built on the [AG-UI protocol](https://docs.copilotkit.ai/ag-ui-protocol), which is an open standard. If you want to connect your frontend directly to an AG-UI-compatible agent without the runtime, pass the agent instance in your frontend configuration:
+    
+    
+    import { HttpAgent } from "@ag-ui/client";
+    
+    const myAgent = new HttpAgent({
+      url: "https://my-agent.example.com",
+    });
+    
+    <CopilotKit agents__unsafe_dev_only={{ "my-agent": myAgent }}>
+      <YourApp />
+    </CopilotKit>;
+
+Direct agent connections are intended for development and prototyping. This approach is not recommended for production unless you are confident in your setup, and is not officially supported by CopilotKit. If you run into issues with a direct connection, you will need to troubleshoot on your own.
+
+There are important things to understand before going this route:
+
+  1. **Authentication is your responsibility.** When you use the Copilot Runtime, safe defaults are put in place so that your agent endpoints are not exposed to unauthenticated access. When you connect directly, it is entirely up to you to secure your agent endpoint and manage authentication.
+
+  2. **Many ecosystem features won't work.** The AG-UI protocol supports a middleware layer designed to run on the backend. Many features in the CopilotKit ecosystem depend on this server-side middleware. Without the runtime, these features — including [threads](https://docs.copilotkit.ai/ag2/threads) and other capabilities — will not be available.
+
+
+
+
+### Comparison#
+
+| With Runtime| Direct Connection  
+---|---|---  
+**Authentication**|  Safe defaults provided| You manage it  
+**AG-UI Middleware**|  Runs server-side| Not available  
+**Agent Routing**|  Automatic| Manual  
+**Ecosystem Features**|  Full support| Limited  
+**CopilotKit Support**|  Supported| Not supported  
+**Setup**|  Requires a backend endpoint| Frontend-only  
+  
+### On this page
+
+Runtime languagesSetting Up the RuntimeWhich name identifies an agentThe Default AgentWhat the Runtime ProvidesAuthentication and SecurityAG-UI MiddlewareAgent RoutingCopilotKit IntelligenceBuilt-in MiddlewareA2UImcpAppsWhat If I Want to Connect to My AG-UI Agent Directly?Comparison

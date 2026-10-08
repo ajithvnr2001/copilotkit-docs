@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/ag2/intelligence/self-hosting-ecs/",
+  "file": "ag2/intelligence/self-hosting-ecs.md",
+  "title": "Self-host Intelligence on AWS ECS/Fargate",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T08:44:26.069745+00:00",
+  "html_len": 345868,
+  "md_len": 25784,
+  "depth": 0
+}

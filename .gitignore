@@ -1,5 +1,4 @@
-# output + runtime (regenerate via scripts)
-docs/
+# runtime (not content)
 *.log
 crawl_state.json
 __pycache__/

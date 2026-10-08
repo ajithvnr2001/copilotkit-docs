@@ -1,0 +1,10 @@
+{
+  "url": "https://docs.copilotkit.ai/deepagents/custom-look-and-feel/markdown/",
+  "file": "deepagents/custom-look-and-feel/markdown.md",
+  "title": "Markdown Rendering",
+  "method": "scrapling+scrapegraph",
+  "fetched_at": "2026-10-08T08:59:45.927006+00:00",
+  "html_len": 237331,
+  "md_len": 9698,
+  "depth": 0
+}
