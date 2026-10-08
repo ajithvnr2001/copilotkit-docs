@@ -13,6 +13,13 @@ import crawl_copilotkit as C
 DOCS = C.OUT_ROOT
 STATE = C.STATE_FILE
 
+# Sitemap URLs whose origin is broken (verified by hand): excluded from auto-update
+# so the daily Action doesn't re-add an error page every run.
+KNOWN_BROKEN = {
+    # serves Next.js "This page couldn't load" (was HTTP 500 at crawl time)
+    "https://docs.copilotkit.ai/ms-agent-harness-dotnet/tutorials/ai-powered-textarea/step-2-setup-copilotkit/",
+}
+
 async def live_sitemaps():
     import httpx
     out = {}
@@ -35,7 +42,7 @@ async def main():
     live = await live_sitemaps()
     new = {}
     for k, urls in live.items():
-        miss = [u for u in urls if u not in indexed and unquote(u) not in idec and ".json" not in u and "`" not in u]
+        miss = [u for u in urls if u not in indexed and unquote(u) not in idec and ".json" not in u and "`" not in u and u not in KNOWN_BROKEN]
         new[k] = miss
         print(f"{k}: live={len(urls)} indexed~{len(indexed)} new={len(miss)}")
         for u in miss[:20]: print(f"  NEW: {u}")
