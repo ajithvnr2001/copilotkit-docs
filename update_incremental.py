@@ -47,6 +47,23 @@ async def main():
         print(f"{k}: live={len(urls)} indexed~{len(indexed)} new={len(miss)}")
         for u in miss[:20]: print(f"  NEW: {u}")
     targets = [a.force] if a.force else [u for v in new.values() for u in v]
+    if not a.check_only:
+        # daily verification stamp (committed even when nothing new)
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
+        stamp = {"date": now.strftime("%F"), "at": now.isoformat(),
+                 "new": {k: len(v) for k, v in new.items()},
+                 "total_index": len(indexed) + (1 if a.force else 0)}
+        (DOCS / "_last_verified.json").write_text(json.dumps(stamp, indent=2))
+        try:
+            mp = DOCS / "_manifest.json"
+            m = json.loads(mp.read_text()) if mp.exists() else {}
+            m["last_verified"] = stamp["date"]
+            m["generated_at"] = stamp["at"]
+            mp.write_text(json.dumps(m, indent=2))
+        except Exception as e:
+            print("stamp manifest skip:", e)
+        print(f"stamped {stamp['date']} (new={sum(len(v) for v in new.values())})")
     if a.check_only or not targets:
         print("check-only" if a.check_only else "no new docs — up to date")
         return

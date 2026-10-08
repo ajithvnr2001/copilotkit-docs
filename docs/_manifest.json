@@ -1,6 +1,6 @@
 {
   "base": "https://docs.copilotkit.ai",
-  "generated_at": "2026-10-08T09:49:50.014130+00:00",
+  "generated_at": "2026-10-08T11:09:21.593321+00:00",
   "sitemap": {
     "total": 3993,
     "covered": 3992,
@@ -36,5 +36,6 @@
     "crawl4AI AsyncWebCrawler (fallback) - unclecode/crawl4AI",
     "scrapegraph-ai cleanup_html/convert_to_md - ScrapeGraphAI/Scrapegraph-ai"
   ],
-  "notes": "4554 urls -> 4552 files (2 scheme/trailing-slash dupes share a file). Reruns are no-ops (5s, visited unchanged)."
+  "notes": "4554 urls -> 4552 files (2 scheme/trailing-slash dupes share a file). Reruns are no-ops (5s, visited unchanged).",
+  "last_verified": "2026-10-08"
 }

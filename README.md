@@ -4,6 +4,8 @@ Crawls **https://docs.copilotkit.ai/** completely (sitemap + `llms.txt` + subdom
 
 ## Results (verified)
 
+> Last verified: 2026-10-08 — see `docs/_last_verified.json` (rewritten daily by GitHub Actions).
+
 | Scope | Coverage |
 |---|---|
 | docs `sitemap.xml` | 3992/3993 = 99.97% (1 origin-500, curl-confirmed) |
