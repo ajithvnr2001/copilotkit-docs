@@ -7,7 +7,17 @@ import sys, json, importlib.util, asyncio
 from pathlib import Path
 from bs4 import BeautifulSoup
 
-TOOLS = Path("/data/opencode/cloudflare/tools")  # shared clones: scrapegraph-ai, crawl4AI, scrapling
+def _tools():
+    for c in [Path(__file__).resolve().parents[1] / "tools",
+              Path("/data/opencode/cloudflare/tools")]:
+        if (c / "scrapegraph-ai" / "scrapegraphai" / "utils" / "convert_to_md.py").exists():
+            return c
+    try:
+        import scrapegraphai
+        return Path(scrapegraphai.__file__).parent
+    except Exception:
+        return Path(__file__).resolve().parents[1] / "tools"
+TOOLS = _tools()  # shared clones: scrapegraph-ai, crawl4AI, scrapling
 def load(name, fp):
     spec = importlib.util.spec_from_file_location(name, fp)
     m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m

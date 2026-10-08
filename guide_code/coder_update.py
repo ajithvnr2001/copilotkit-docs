@@ -4,9 +4,9 @@ Usage:
   python3 coder_update.py --check-only
   python3 coder_update.py --run --concurrency 10
 """
-import argparse, json, re, asyncio, pathlib, sys
+import argparse, pathlib, json, re, asyncio, pathlib, sys
 from urllib.parse import urljoin, urldefrag
-sys.path.insert(0, "/data/opencode/copilotkit")
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from guide_code.coder_scrape import scrape
 import crawl_copilotkit as C
 

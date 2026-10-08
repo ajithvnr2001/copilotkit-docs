@@ -5,13 +5,13 @@ Usage:
   python3 update_incremental.py
   python3 update_incremental.py --force URL
 """
-import argparse, json, re, pathlib, asyncio, sys
+import argparse, json, os, re, pathlib, asyncio, sys
 from urllib.parse import urlparse, urljoin, urldefrag
-sys.path.insert(0, "/data/opencode/copilotkit")
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import crawl_copilotkit as C
 
 DOCS = C.OUT_ROOT
-STATE = pathlib.Path("/data/opencode/copilotkit/crawl_state.json")
+STATE = C.STATE_FILE
 
 async def live_sitemaps():
     import httpx

@@ -9,6 +9,7 @@ Uses all three requested stacks:
 Saves markdown docs to /data/opencode/copilotkit/docs
 """
 import asyncio
+import os
 import re
 import json
 import time
@@ -21,14 +22,15 @@ from datetime import datetime, timezone
 import httpx
 from bs4 import BeautifulSoup
 
-# ---------- paths ----------
+# ---------- paths (repo-relative so GitHub Actions runners work; override via env) ----------
+REPO_ROOT = Path(__file__).resolve().parent
 BASE_URL = "https://docs.copilotkit.ai"
 SITEMAP_INDEX = "https://docs.copilotkit.ai/sitemap.xml"
 MAIN_LLMS = "https://docs.copilotkit.ai/llms.txt"
 FULL_LLMS = "https://docs.copilotkit.ai/llms-full.txt"
-OUT_ROOT = Path("/data/opencode/copilotkit/docs")
-TOOLS_ROOT = Path("/data/opencode/cloudflare/tools")
-STATE_FILE = Path("/data/opencode/copilotkit/crawl_state.json")
+OUT_ROOT = Path(os.environ.get("DOCS_OUT", str(REPO_ROOT / "docs")))
+TOOLS_ROOT = Path(os.environ.get("TOOLS_DIR", str(REPO_ROOT / "tools")))
+STATE_FILE = Path(os.environ.get("CRAWL_STATE", str(REPO_ROOT / "crawl_state.json")))
 INDEX_FILE = OUT_ROOT / "_index.jsonl"
 MANIFEST_FILE = OUT_ROOT / "_manifest.json"
 
@@ -44,7 +46,25 @@ def load_module_from_file(name, filepath):
     spec.loader.exec_module(mod)
     return mod
 
-SCRAPEGRAPH_UTILS = TOOLS_ROOT / "scrapegraph-ai" / "scrapegraphai" / "utils"
+def _resolve_sg_utils():
+    cands = [
+        TOOLS_ROOT / "scrapegraph-ai" / "scrapegraphai" / "utils",
+        REPO_ROOT / "tools" / "scrapegraph-ai" / "scrapegraphai" / "utils",
+        Path("/data/opencode/cloudflare/tools/scrapegraph-ai/scrapegraphai/utils"),
+    ]
+    for c in cands:
+        if (c / "convert_to_md.py").exists():
+            return c
+    try:  # pip-installed package fallback (utils files are langchain-free)
+        import scrapegraphai
+        c = Path(scrapegraphai.__file__).parent / "utils"
+        if (c / "convert_to_md.py").exists():
+            return c
+    except Exception:
+        pass
+    return cands[0]
+
+SCRAPEGRAPH_UTILS = _resolve_sg_utils()
 convert_to_md_mod = load_module_from_file("sg_convert_to_md", str(SCRAPEGRAPH_UTILS / "convert_to_md.py"))
 cleanup_html_mod = load_module_from_file("sg_cleanup_html", str(SCRAPEGRAPH_UTILS / "cleanup_html.py"))
 sg_convert_to_md = convert_to_md_mod.convert_to_md
