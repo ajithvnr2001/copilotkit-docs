@@ -19,7 +19,7 @@ jobs:
           python-version: "3.11"
       - name: Install deps
         run: |
-          pip install crawl4ai scrapling scrapegraphai beautifulsoup4 lxml html2text httpx
+          pip install -r requirements.txt
           python -m playwright install chromium
       - name: Incremental update (new docs only, never recrawls)
         run: python3 update_incremental.py --concurrency 10
