@@ -99,6 +99,7 @@ async def main():
                 if _rp.exists():
                     _t = _rp.read_text()
                     _t2 = re.sub(r"Last verified: \d{4}-\d{2}-\d{2}", f"Last verified: {stamp['date']}", _t)
+                    _t2 = re.sub(r"## Results \(verified \d{4}-\d{2}-\d{2}\)", f"## Results (verified {stamp['date']})", _t2)
                     if _t2 != _t:
                         _rp.write_text(_t2)
                         print(f"readme date -> {stamp['date']} ({_rp})")
