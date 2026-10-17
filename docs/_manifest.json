@@ -1,6 +1,6 @@
 {
   "base": "https://docs.copilotkit.ai",
-  "generated_at": "2026-10-16T07:39:56.582436+00:00",
+  "generated_at": "2026-10-17T07:18:24.423823+00:00",
   "sitemap": {
     "total": 3993,
     "covered": 3992,
@@ -37,5 +37,5 @@
     "scrapegraph-ai cleanup_html/convert_to_md - ScrapeGraphAI/Scrapegraph-ai"
   ],
   "notes": "4554 urls -> 4552 files (2 scheme/trailing-slash dupes share a file). Reruns are no-ops (5s, visited unchanged).",
-  "last_verified": "2026-10-16"
+  "last_verified": "2026-10-17"
 }
