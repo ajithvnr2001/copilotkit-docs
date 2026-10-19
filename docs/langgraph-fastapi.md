@@ -2,7 +2,7 @@
 url: https://docs.copilotkit.ai/langgraph-fastapi/
 title: Introduction
 method: scrapling+scrapegraph
-fetched_at: 2026-10-18T07:32:17.353302+00:00
+fetched_at: 2026-10-19T08:16:30.434774+00:00
 ---
 
 # Introduction
