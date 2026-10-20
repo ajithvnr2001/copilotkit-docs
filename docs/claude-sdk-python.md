@@ -2,7 +2,7 @@
 url: https://docs.copilotkit.ai/claude-sdk-python/
 title: Claude Agent SDK (Python)
 method: scrapling+scrapegraph
-fetched_at: 2026-10-19T08:16:30.413372+00:00
+fetched_at: 2026-10-20T08:01:35.350556+00:00
 ---
 
 # Claude Agent SDK (Python)
