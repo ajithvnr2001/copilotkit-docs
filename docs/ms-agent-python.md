@@ -2,7 +2,7 @@
 url: https://docs.copilotkit.ai/ms-agent-python/
 title: Introduction
 method: scrapling+scrapegraph
-fetched_at: 2026-10-20T08:01:34.378867+00:00
+fetched_at: 2026-10-21T08:07:00.873343+00:00
 ---
 
 # Introduction

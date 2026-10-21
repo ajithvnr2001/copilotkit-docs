@@ -2,7 +2,7 @@
 url: https://docs.copilotkit.ai/google-adk/
 title: ADK
 method: scrapling+scrapegraph
-fetched_at: 2026-10-20T08:01:35.502169+00:00
+fetched_at: 2026-10-21T08:07:02.508302+00:00
 ---
 
 # ADK
